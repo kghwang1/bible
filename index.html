@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>연대순 성경읽기 개혁1_god1_v24</title>
+<title>연대순 성경읽기 개혁1_god1_v25</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
@@ -894,23 +894,25 @@ async function doShare(){
   try{
     const canvas=await html2canvas(wrap,{backgroundColor:'#140b04',scale:2,useCORS:true});
     const jc=document.createElement('canvas');
-    jc.width=canvas.width;jc.height=canvas.height;
+    jc.width=canvas.width; jc.height=canvas.height;
     const ctx=jc.getContext('2d');
-    ctx.fillStyle='#140b04';ctx.fillRect(0,0,jc.width,jc.height);
+    ctx.fillStyle='#140b04'; ctx.fillRect(0,0,jc.width,jc.height);
     ctx.drawImage(canvas,0,0);
-    const url=jc.toDataURL('image/jpeg',.92);
     const fname='성경읽기_'+new Date().toISOString().slice(0,10)+'.jpg';
-    if(navigator.share&&navigator.canShare){
-      const blob=await(await fetch(url)).blob();
-      const file=new File([blob],fname,{type:'image/jpeg'});
-      if(navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],title:'오늘 성경읽기 완료',text:'말씀을 읽었습니다 ✝'});
-        return;
-      }
+    // toBlob으로 직접 blob 생성 (다운로드 팝업 방지)
+    const blob=await new Promise(res=>jc.toBlob(res,'image/jpeg',0.92));
+    const file=new File([blob],fname,{type:'image/jpeg'});
+    // Web Share API — 공유 시트 바로 표시
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'오늘 성경읽기 완료',text:'말씀을 읽었습니다 ✝'});
+    } else {
+      // 미지원 환경 fallback
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download=fname; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
     }
-    const a=document.createElement('a');a.download=fname;a.href=url;a.click();
-  }catch(e){if(e.name!=='AbortError') alert('오류: '+e.message);}
-  finally{btn.textContent='📤 공유하기';btn.disabled=false;celBtns.style.display='';btn.style.display='';}
+  }catch(e){ if(e.name!=='AbortError') alert('공유 오류: '+e.message); }
+  finally{ btn.textContent='📤 공유하기'; btn.disabled=false; celBtns.style.display=''; btn.style.display=''; }
 }
 
 // ═══ 시작 ═══
