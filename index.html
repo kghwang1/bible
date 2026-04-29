@@ -697,6 +697,46 @@ html, body { height: 100%; height: 100dvh; }
 .info-row{display:flex;flex-direction:column;gap:3px;padding:10px 0;border-bottom:1px solid rgba(201,168,76,.18)}
 .info-row:last-child{border-bottom:none;padding-bottom:0}
 .info-row:first-child{padding-top:0}
+
+/* ── 읽기 헤더 새 레이아웃 ── */
+.rh-left{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.font-sw-v{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:2px}
+.font-sw-v .font-btn{width:28px;height:22px;border-radius:6px;
+  border:1.5px solid var(--gold);background:#fff;
+  color:var(--brown);font-size:.65rem;font-weight:700;
+  font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .18s}
+.font-sw-v .font-btn:hover{background:var(--gold3)}
+.font-sw-v .font-label{font-size:.58rem;color:var(--tx3);font-weight:600}
+
+/* 오른쪽 읽음 버튼 */
+.rh-right-btn{flex-shrink:0;display:flex;align-items:center}
+.cmp-side-btn{
+  width:52px;
+  padding:8px 4px;
+  border-radius:12px;
+  border:none;cursor:pointer;
+  font-size:.72rem;font-weight:700;
+  font-family:'Noto Sans KR',sans-serif;
+  line-height:1.4;text-align:center;
+  transition:all .25s;
+}
+.cmp-side-btn.unread{
+  background:linear-gradient(160deg,#3a7050,#225038);
+  color:#fff;
+  box-shadow:0 3px 12px rgba(58,112,80,.4);
+}
+.cmp-side-btn.read{
+  background:linear-gradient(160deg,#8b5e2a,#5c3d1e);
+  color:#f5e8c8;
+  box-shadow:0 2px 8px rgba(92,61,30,.3);
+}
+.cmp-side-btn:active{transform:scale(.95)}
+
+/* 본문 화면 하단까지 꽉 채움 */
+#s-read{display:flex;flex-direction:column;height:100%;height:100dvh}
+#s-read .read-header{flex-shrink:0}
+#s-read .bible-body{flex:1;min-height:0}
 </style>
 </head>
 <body>
@@ -778,35 +818,32 @@ html, body { height: 100%; height: 100dvh; }
 <!-- ══════════════ 화면 2: 읽기 ══════════════ -->
 <div class="screen" id="s-read">
   <div class="read-header">
-    <!-- 상단 1행: 처음으로 | 날짜·제목 | 글자크기 -->
     <div class="rh-row">
+      <!-- 왼쪽: 버튼 2개 + 글자크기 세로 배치 -->
       <div class="rh-left">
         <button class="rh-btn" onclick="showScreen('s-cover')">처음으로</button>
         <button class="rh-btn" onclick="showScreen('s-list')">목록</button>
+        <div class="font-sw-v">
+          <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+          <span class="font-label" id="fontLabel">기본</span>
+          <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+        </div>
       </div>
+      <!-- 가운데: 날짜·제목 -->
       <div class="rh-center">
         <div class="day-tag" id="dayTag"></div>
         <h2 id="readTitle"></h2>
       </div>
-      <div class="rh-right">
-        <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
-        <span class="font-label" id="fontLabel">기본</span>
-        <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+      <!-- 오른쪽: 읽음 버튼 -->
+      <div class="rh-right-btn">
+        <button class="cmp-side-btn unread" id="cmpBtn" onclick="markDone(0)">
+          <span id="cmpTxt">모두<br>읽음</span>
+        </button>
       </div>
     </div>
   </div>
-  <!-- 개역개정 불가시 안내 배너 -->
-  <div id="nkrvBanner" style="display:none !important;background:#fff3cd;border-bottom:1px solid #e8c96a;padding:7px 18px;font-size:.72rem;color:#7a5c00;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;">
-    ⚠️ 개역개정을 불러오지 못해 <strong>새번역</strong>으로 표시합니다. (Claude.ai 앱에서 열면 개역개정이 지원됩니다)
-  </div>
+  <!-- 본문: 화면 하단 끝까지 꽉 채움 -->
   <div class="bible-body" id="bibleBody" style="padding:0;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;"></div>
-  <!-- 읽음완료 버튼: bibleBody 밖 → iframe에 절대 가려지지 않음 -->
-  <div class="complete-section" id="cmpSec" style="display:none">
-    <p class="complete-msg">📖 말씀을 다 읽으셨나요?</p>
-    <button class="complete-main-btn unread" id="cmpBtn" onclick="markDone(0)">
-      <span>✅</span><span id="cmpTxt">읽음 완료 !</span>
-    </button>
-  </div>
 </div>
 
 <!-- ══════════════ 화면 3: 축하 ══════════════ -->
@@ -1557,11 +1594,10 @@ async function fetchAndRender(p){
     window._curN = p.n;
     const btn = document.getElementById('cmpBtn');
     if(btn){
-      btn.className = 'complete-main-btn ' + (isDone ? 'read' : 'unread');
-      // onclick은 항상 markDone(0) — window._curN에서 읽음
+      btn.className = 'cmp-side-btn ' + (isDone ? 'read' : 'unread');
     }
     const txt = document.getElementById('cmpTxt');
-    if(txt) txt.textContent = isDone ? '읽음 완료됨' : '읽음 완료 !';
+    if(txt) txt.innerHTML = isDone ? '이미<br>읽음' : '모두<br>읽음';
 
   }
   updateFontLabel();
@@ -1588,11 +1624,9 @@ function markDone(n){
   } else {
     // 읽음 취소
     const btn = document.getElementById('cmpBtn');
-    if(btn){
-      btn.className = 'complete-main-btn unread';
-    }
+    if(btn) btn.className = 'cmp-side-btn unread';
     const txt = document.getElementById('cmpTxt');
-    if(txt) txt.textContent = '읽음 완료 !';
+    if(txt) txt.innerHTML = '모두<br>읽음';
     updateProg();
     renderList();
   }
