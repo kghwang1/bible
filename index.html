@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>연대순 성경읽기 개혁1_god1_v25</title>
+<title>연대순 성경읽기 개혁1_god1_v28</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
@@ -47,6 +47,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   width:100%;background:rgba(255,255,255,.06);
   border:1px solid rgba(201,168,76,.25);border-radius:18px;
   padding:20px 18px;display:flex;flex-direction:column;gap:14px;
+  align-items:flex-start;text-align:left;
 }
 .input-label{font-size:.65rem;color:#c9a84c;font-weight:700;letter-spacing:.1em;display:block;margin-bottom:4px}
 .input-field{
@@ -70,6 +71,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   display:flex;align-items:center;gap:10px;
   background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);
   border-radius:10px;padding:9px 13px;margin-top:4px;
+  width:100%;text-align:left;
 }
 .today-label{font-size:.6rem;color:#c9a84c;font-weight:700;letter-spacing:.1em}
 .today-val{font-size:.9rem;color:#f5e8c8;font-family:'Noto Serif KR',serif;font-weight:600}
@@ -213,9 +215,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .info-row{padding:8px 0;border-bottom:1px solid rgba(201,168,76,.15);text-align:center}
 .info-row:last-child{border-bottom:none;padding-bottom:0}
 .info-row:first-child{padding-top:0}
-.info-date{font-size:.85rem;color:rgba(245,232,200,.7)}
-.info-range{font-size:1rem;color:#e8c97a;font-weight:700;font-family:'Noto Serif KR',serif}
-.info-reader{font-size:1.4rem;color:#fff;font-weight:800}
+.info-date{font-size:1.02rem;color:rgba(245,232,200,.7)}
+.info-range{font-size:1.2rem;color:#e8c97a;font-weight:700;font-family:'Noto Serif KR',serif}
+.info-reader{font-size:1.26rem;color:#fff;font-weight:800}
 .info-prog{font-size:.9rem;color:#f5e8c8;font-weight:600}
 .capture-btn{
   width:100%;padding:11px;border-radius:28px;
@@ -889,30 +891,53 @@ async function doShare(){
   const celBtns=document.querySelector('.cel-btns');
   const wrap=document.getElementById('celWrap');
   if(!wrap) return;
+
+  // html2canvas 로드 확인
+  if(typeof html2canvas === 'undefined'){
+    alert('캡처 라이브러리 로딩 중입니다. 잠시 후 다시 눌러주세요.');
+    return;
+  }
+
   btn.textContent='준비 중…'; btn.disabled=true;
   celBtns.style.display='none'; btn.style.display='none';
+
   try{
-    const canvas=await html2canvas(wrap,{backgroundColor:'#140b04',scale:2,useCORS:true});
-    const jc=document.createElement('canvas');
+    const canvas = await html2canvas(wrap,{backgroundColor:'#140b04',scale:2,useCORS:true,logging:false});
+    const jc = document.createElement('canvas');
     jc.width=canvas.width; jc.height=canvas.height;
     const ctx=jc.getContext('2d');
     ctx.fillStyle='#140b04'; ctx.fillRect(0,0,jc.width,jc.height);
     ctx.drawImage(canvas,0,0);
-    const fname='성경읽기_'+new Date().toISOString().slice(0,10)+'.jpg';
-    // toBlob으로 직접 blob 생성 (다운로드 팝업 방지)
-    const blob=await new Promise(res=>jc.toBlob(res,'image/jpeg',0.92));
-    const file=new File([blob],fname,{type:'image/jpeg'});
-    // Web Share API — 공유 시트 바로 표시
+
+    const fname = '성경읽기_'+new Date().toISOString().slice(0,10)+'.jpg';
+    const blob  = await new Promise(res=>jc.toBlob(res,'image/jpeg',0.92));
+    const file  = new File([blob], fname, {type:'image/jpeg'});
+
+    // 1순위: 파일 공유 (크롬 Android 등)
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'오늘 성경읽기 완료',text:'말씀을 읽었습니다 ✝'});
-    } else {
-      // 미지원 환경 fallback
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a'); a.href=url; a.download=fname; a.click();
-      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      await navigator.share({files:[file], title:'오늘 성경읽기 완료', text:'말씀을 읽었습니다 ✝'});
+      return;
     }
-  }catch(e){ if(e.name!=='AbortError') alert('공유 오류: '+e.message); }
-  finally{ btn.textContent='📤 공유하기'; btn.disabled=false; celBtns.style.display=''; btn.style.display=''; }
+
+    // 2순위: 이미지를 새 탭에 열기 → 길게 눌러서 저장/공유
+    const objUrl = URL.createObjectURL(blob);
+    const newTab = window.open(objUrl,'_blank');
+    if(newTab){
+      setTimeout(()=>URL.revokeObjectURL(objUrl), 60000);
+      alert('열린 이미지를 길게 누르면 저장/공유할 수 있습니다.');
+      return;
+    }
+
+    // 3순위: 다운로드
+    const a=document.createElement('a'); a.href=objUrl; a.download=fname; a.click();
+    setTimeout(()=>URL.revokeObjectURL(objUrl),1000);
+
+  }catch(e){
+    if(e.name!=='AbortError') alert('오류: '+e.message);
+  }finally{
+    btn.textContent='📤 공유하기'; btn.disabled=false;
+    celBtns.style.display=''; btn.style.display='';
+  }
 }
 
 // ═══ 시작 ═══
