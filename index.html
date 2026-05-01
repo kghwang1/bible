@@ -5,137 +5,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>연대순 성경읽기 개혁1_god1_v28</title>
+<title>성경읽기 계획표</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap');
-
-/* ── 기본 리셋 ── */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;background:#0a0702}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
 
-/* ── 화면 시스템: 4개 화면, 한 번에 하나만 표시 ── */
-.screen{
-  position:fixed;inset:0;
-  display:none;          /* 기본: 숨김 */
-  flex-direction:column;
-  overflow:hidden;
-}
-.screen.active{display:flex}  /* 활성: 표시 */
-
-/* ═══ 표지 화면 ═══ */
-#s-cover{
-  background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);
-  overflow-y:auto;align-items:center;
-}
+/* 표지 */
+#s-cover{background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);overflow-y:auto;align-items:center}
 #s-cover::-webkit-scrollbar{width:4px}
 #s-cover::-webkit-scrollbar-thumb{background:#c9a84c;border-radius:6px}
+.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:24px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;position:relative;z-index:1}
+.cover-title{font-family:'Noto Serif KR',serif;font-size:1.55rem;font-weight:900;color:#e8c97a;letter-spacing:.04em;text-shadow:0 2px 12px rgba(201,168,76,.3)}
+.cover-subtitle{font-size:.75rem;color:#a07850;letter-spacing:.06em}
 
-.cover-wrap{
-  width:100%;max-width:480px;
-  margin:0 auto;padding:30px 24px 40px;
-  display:flex;flex-direction:column;align-items:center;gap:18px;
-  text-align:center;
-  position:relative;z-index:1;
+/* 계획 선택 */
+.plan-select-row{display:flex;gap:10px;width:100%}
+.plan-sel-btn{
+  flex:1;padding:12px 8px;border-radius:14px;
+  border:2px solid rgba(201,168,76,.3);background:rgba(255,255,255,.05);
+  color:rgba(245,232,200,.65);font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;transition:all .25s;font-weight:700;line-height:1.5;text-align:center;
 }
-.cover-title{
-  font-family:'Noto Serif KR',serif;font-size:1.7rem;font-weight:900;
-  color:#e8c97a;letter-spacing:.04em;
-  text-shadow:0 2px 12px rgba(201,168,76,.3);
+.plan-sel-btn.on{
+  background:linear-gradient(135deg,rgba(201,168,76,.3),rgba(201,168,76,.12));
+  border-color:#c9a84c;color:#e8c97a;
+  box-shadow:0 0 16px rgba(201,168,76,.25);
 }
-.cover-subtitle{font-size:.78rem;color:#a07850;letter-spacing:.06em}
-.input-card{
-  width:100%;background:rgba(255,255,255,.06);
-  border:1px solid rgba(201,168,76,.25);border-radius:18px;
-  padding:20px 18px;display:flex;flex-direction:column;gap:14px;
-  align-items:flex-start;text-align:left;
-}
+.plan-sel-icon{font-size:1.3rem;display:block;margin-bottom:3px}
+.plan-sel-name{font-size:.72rem;color:rgba(201,168,76,.6);font-weight:500;display:block}
+
+.input-card{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.25);border-radius:18px;padding:18px 16px;display:flex;flex-direction:column;gap:13px;align-items:flex-start;text-align:left}
 .input-label{font-size:.65rem;color:#c9a84c;font-weight:700;letter-spacing:.1em;display:block;margin-bottom:4px}
-.input-field{
-  width:100%;padding:10px 14px;border-radius:10px;
-  border:1.5px solid rgba(201,168,76,.3);background:rgba(255,255,255,.08);
-  color:#f5e8c8;font-size:.92rem;outline:none;transition:border .2s;
-  font-family:'Noto Serif KR',serif;
-}
+.input-field{width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(201,168,76,.3);background:rgba(255,255,255,.08);color:#f5e8c8;font-size:.92rem;outline:none;transition:border .2s;font-family:'Noto Serif KR',serif}
 .input-field::placeholder{color:rgba(255,255,255,.25);font-family:'Noto Sans KR',sans-serif}
 .input-field:focus{border-color:#c9a84c}
 .input-field[type=date]{color-scheme:dark}
-.date-row{display:flex;gap:8px;align-items:center}
+.date-row{display:flex;gap:8px;align-items:center;width:100%}
 .date-input{flex:1}
-.reset-btn{
-  padding:9px 14px;border-radius:10px;
-  border:1.5px solid rgba(201,100,80,.5);background:rgba(180,60,40,.15);
-  color:#f0a090;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;
-}
+.reset-btn{padding:9px 14px;border-radius:10px;border:1.5px solid rgba(201,100,80,.5);background:rgba(180,60,40,.15);color:#f0a090;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap}
 .end-badge{font-size:.72rem;color:rgba(201,168,76,.6);font-style:italic;margin-top:2px}
-.today-row{
-  display:flex;align-items:center;gap:10px;
-  background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);
-  border-radius:10px;padding:9px 13px;margin-top:4px;
-  width:100%;text-align:left;
-}
+.today-row{display:flex;align-items:center;gap:10px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:9px 13px;margin-top:4px;width:100%;text-align:left}
 .today-label{font-size:.6rem;color:#c9a84c;font-weight:700;letter-spacing:.1em}
 .today-val{font-size:.9rem;color:#f5e8c8;font-family:'Noto Serif KR',serif;font-weight:600}
-.start-btn{
-  width:100%;padding:15px;border-radius:50px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#c9a84c,#a07020,#c9a84c);
-  background-size:200%;color:#fff;font-size:1.05rem;font-weight:700;
-  font-family:'Noto Serif KR',serif;letter-spacing:.08em;
-  box-shadow:0 4px 20px rgba(201,168,76,.4);transition:all .3s;
-  position:relative;z-index:2;
-}
+.start-btn{width:100%;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#a07020,#c9a84c);background-size:200%;color:#fff;font-size:1.05rem;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.08em;box-shadow:0 4px 20px rgba(201,168,76,.4);transition:all .3s;position:relative;z-index:2}
 .start-btn:hover{transform:translateY(-2px)}
-.cover-photo{
-  width:92%;max-width:400px;border-radius:14px;
-  overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);
-  margin-top:-0.5cm;
-  position:relative;z-index:0;pointer-events:none;
-}
+.cover-photo{width:92%;max-width:400px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);position:relative;z-index:0;pointer-events:none}
 .cover-photo img{width:100%;height:auto;display:block;opacity:.88;filter:brightness(1.15)}
 
-/* ═══ 목록 화면 ═══ */
+/* 목록 */
 #s-list{background:#160e04}
-.list-header{
-  background:linear-gradient(135deg,#221508,#3a2510,#221508);
-  border-bottom:2px solid #c9a84c;padding:11px 14px;
-  display:flex;align-items:center;gap:10px;flex-shrink:0;
-}
+.list-header{background:linear-gradient(135deg,#221508,#3a2510,#221508);border-bottom:2px solid #c9a84c;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .hdr-cross{font-size:20px;color:#c9a84c}
 .hdr-info{flex:1;min-width:0}
 .hdr-info h1{font-family:'Noto Serif KR',serif;font-size:.95rem;color:#e8c97a;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdr-info p{font-size:.6rem;color:#8b5e2a;margin-top:1px}
 .hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
 .prog-label{font-size:.6rem;color:#c9a84c;font-weight:600}
-.prog-bar{width:100px;height:5px;background:rgba(255,255,255,.12);border-radius:8px;overflow:hidden;border:1px solid rgba(201,168,76,.25)}
+.prog-bar{width:100px;height:5px;background:rgba(255,255,255,.12);border-radius:8px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#e8c97a);border-radius:8px;transition:width .6s}
 .hdr-btn-row{display:flex;gap:5px}
-.hdr-btn{
-  font-size:.62rem;color:#c9a84c;cursor:pointer;
-  border:1px solid rgba(201,168,76,.4);border-radius:12px;
-  padding:3px 8px;background:transparent;white-space:nowrap;
-}
-.list-filter{
-  padding:7px 13px;background:#f7eed6;border-bottom:1px solid #eedcb0;
-  display:flex;gap:6px;align-items:center;flex-shrink:0;
-}
+.hdr-btn{font-size:.62rem;color:#c9a84c;cursor:pointer;border:1px solid rgba(201,168,76,.4);border-radius:12px;padding:3px 8px;background:transparent;white-space:nowrap}
+.list-filter{padding:7px 13px;background:#f7eed6;border-bottom:1px solid #eedcb0;display:flex;gap:6px;align-items:center;flex-shrink:0}
 .list-filter span{font-size:.65rem;color:#6b4d28;font-weight:600}
 .f-btn{padding:4px 11px;border-radius:20px;border:1px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.65rem;cursor:pointer;transition:all .18s;font-weight:500}
 .f-btn.on,.f-btn:hover{background:#c9a84c;color:#fff}
 .plan-list{flex:1;overflow-y:auto;background:#fdf8ee}
 .plan-list::-webkit-scrollbar{width:4px}
 .plan-list::-webkit-scrollbar-thumb{background:#c9a84c44}
-.plan-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 14px;border-bottom:1px solid #e8d9a8;
-  cursor:pointer;transition:background .15s;
-}
+.plan-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #e8d9a8;cursor:pointer;transition:background .15s}
 .plan-item:hover{background:#f2e5c0}
-.plan-item.done{opacity:.65}
 .plan-item.today{background:linear-gradient(90deg,rgba(201,168,76,.18),transparent);border-left:3px solid #c9a84c}
-.item-date{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  width:38px;height:38px;border-radius:10px;
-  background:#f7eed6;border:1.5px solid #c9a84c;flex-shrink:0;
-}
+.item-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#f7eed6;border:1.5px solid #c9a84c;flex-shrink:0}
 .plan-item.done .item-date{background:#dff0e8;border-color:#3a7050}
 .plan-item.today .item-date{background:#c9a84c;border-color:#c9a84c}
 .item-date .m{font-size:.52rem;color:#a07850;font-weight:600;line-height:1}
@@ -150,68 +93,31 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .item-done-mark{font-size:.68rem;color:#3a7050;font-weight:700;flex-shrink:0}
 .item-arrow{font-size:11px;color:#a07850;flex-shrink:0}
 
-/* ═══ 읽기 화면 ═══ */
+/* 읽기 */
 #s-read{background:#f0ede6}
-/* 헤더 */
-.read-hdr{
-  background:linear-gradient(180deg,#ece9e0,#f0ede6);
-  border-bottom:1.5px solid #eedcb0;
-  padding:6px 10px 4px;flex-shrink:0;
-}
-.read-hdr-row1{
-  display:flex;align-items:center;gap:6px;margin-bottom:4px;
-}
+.read-hdr{background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;padding:6px 10px 4px;flex-shrink:0}
+.read-hdr-row1{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .read-hdr-left{display:flex;gap:5px;flex-shrink:0}
 .read-hdr-center{flex:1;text-align:center;min-width:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .read-hdr-center .day-tag{font-size:.6rem;color:#6b4d28;font-weight:700;width:100%;text-align:center}
 .read-hdr-center h2{font-family:'Noto Serif KR',serif;font-size:.92rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
-.read-hdr-row2{display:flex;align-items:center;gap:6px}
-.nav-btn{
-  padding:5px 10px;border-radius:16px;
-  border:1.5px solid #c9a84c;background:#fff;
-  color:#5c3d1e;font-size:.67rem;font-weight:600;
-  font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;
-}
+.read-hdr-row2{display:flex;align-items:center;gap:6px;padding-top:1px;margin-top:-2px}
+.nav-btn{padding:5px 10px;border-radius:16px;border:1.5px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.67rem;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}
 .nav-btn:hover{background:#f5e9c8}
-.font-btn{
-  padding:3px 10px;border-radius:14px;
-  border:1.5px solid #c9a84c;background:#fff;
-  color:#5c3d1e;font-size:.7rem;font-weight:700;cursor:pointer;
-}
+.font-btn{padding:3px 10px;border-radius:14px;border:1.5px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.7rem;font-weight:700;cursor:pointer}
 .font-label{font-size:.65rem;color:#a07850;font-weight:600}
-.done-btn{
-  width:52px;min-height:46px;padding:6px 4px;
-  border-radius:10px;border:none;cursor:pointer;
-  font-size:.72rem;font-weight:700;line-height:1.4;text-align:center;
-  font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;
-}
+.done-btn{width:52px;min-height:46px;padding:6px 4px;border-radius:10px;border:none;cursor:pointer;font-size:.72rem;font-weight:700;line-height:1.4;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s}
 .done-btn.unread{background:linear-gradient(160deg,#3a7050,#225038);color:#fff;box-shadow:0 3px 10px rgba(58,112,80,.4)}
 .done-btn.already{background:linear-gradient(160deg,#8b5e2a,#5c3d1e);color:#f5e8c8}
-/* 본문 iframe */
 .bible-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
 .bible-frame{width:calc(100% + 18px);border:none;flex:1;min-height:0}
 
-/* ═══ 축하 화면 ═══ */
-#s-celebrate{
-  background:radial-gradient(ellipse at 50% 20%,#2e1c0a 0%,#140b04 100%);
-  overflow-y:auto;align-items:center;
-}
-.cel-wrap{
-  width:100%;max-width:520px;margin:0 auto;
-  padding:20px 22px 50px;
-  display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;
-}
-.cel-title{
-  font-family:'Noto Serif KR',serif;font-size:1.5rem;font-weight:900;
-  color:#fff;line-height:1.3;
-  text-shadow:0 2px 0 #000,0 4px 8px rgba(0,0,0,.8);
-}
+/* 축하 */
+#s-celebrate{background:radial-gradient(ellipse at 50% 20%,#2e1c0a 0%,#140b04 100%);overflow-y:auto;align-items:center}
+.cel-wrap{width:100%;max-width:520px;margin:0 auto;padding:20px 22px 50px;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.cel-title{font-family:'Noto Serif KR',serif;font-size:1.5rem;font-weight:900;color:#fff;line-height:1.3;text-shadow:0 2px 0 #000,0 4px 8px rgba(0,0,0,.8)}
 .stars-row{display:flex;gap:8px;justify-content:center;font-size:1.2rem}
-.info-card{
-  width:100%;background:rgba(255,255,255,.08);
-  border:1px solid rgba(201,168,76,.3);border-radius:18px;
-  padding:20px 20px;
-}
+.info-card{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(201,168,76,.3);border-radius:18px;padding:20px}
 .info-row{padding:8px 0;border-bottom:1px solid rgba(201,168,76,.15);text-align:center}
 .info-row:last-child{border-bottom:none;padding-bottom:0}
 .info-row:first-child{padding-top:0}
@@ -219,29 +125,33 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .info-range{font-size:1.2rem;color:#e8c97a;font-weight:700;font-family:'Noto Serif KR',serif}
 .info-reader{font-size:1.26rem;color:#fff;font-weight:800}
 .info-prog{font-size:.9rem;color:#f5e8c8;font-weight:600}
-.capture-btn{
-  width:100%;padding:11px;border-radius:28px;
-  border:1.5px solid rgba(201,168,76,.5);background:rgba(201,168,76,.12);
-  color:#e8c97a;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;
-}
+.capture-btn{width:100%;padding:11px;border-radius:28px;border:1.5px solid rgba(201,168,76,.5);background:rgba(201,168,76,.12);color:#e8c97a;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
 .cel-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.cel-btn{
-  padding:10px 20px;border-radius:24px;border:1.5px solid rgba(201,168,76,.4);
-  background:rgba(255,255,255,.08);color:rgba(245,232,200,.8);
-  font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;
-}
+.cel-btn{padding:10px 20px;border-radius:24px;border:1.5px solid rgba(201,168,76,.4);background:rgba(255,255,255,.08);color:rgba(245,232,200,.8);font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
 .cel-btn.next{background:linear-gradient(135deg,#c9a84c,#a07020);color:#fff;border-color:#c9a84c;box-shadow:0 3px 14px rgba(201,168,76,.38)}
 </style>
 </head>
 <body>
 
-<!-- ══ 표지 ══ -->
+<!-- 표지 -->
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
-    <div class="cover-title" id="coverTitle">연대순 성경읽기</div>
-    <div class="cover-subtitle">창세기부터 요한계시록까지 · 365일</div>
+    <div class="cover-title" id="coverTitle">성경읽기 계획표</div>
+    <div class="cover-subtitle">생명수 목장</div>
+    <div class="plan-select-row">
+      <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">
+        <span class="plan-sel-icon">📖</span>
+        연대순 읽기
+        <span class="plan-sel-name">창세기 → 요한계시록</span>
+      </button>
+      <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">
+        <span class="plan-sel-icon">📅</span>
+        1년 통독
+        <span class="plan-sel-name">월별 균등 배분</span>
+      </button>
+    </div>
     <div class="input-card">
-      <div>
+      <div style="width:100%">
         <label class="input-label">📖 시작 날짜 (1일차)</label>
         <div class="date-row">
           <input type="date" class="input-field date-input" id="startDateInput" oninput="onStartDateChange()">
@@ -255,7 +165,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           </div>
         </div>
       </div>
-      <div>
+      <div style="width:100%">
         <label class="input-label">🙏 읽는이</label>
         <input type="text" class="input-field" id="readerInput" placeholder="이름을 입력하세요" maxlength="20">
       </div>
@@ -267,12 +177,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
 </div>
 
-<!-- ══ 목록 ══ -->
+<!-- 목록 -->
 <div class="screen" id="s-list">
   <div class="list-header">
     <div class="hdr-cross">✝</div>
     <div class="hdr-info">
-      <h1 id="listTitle">연대순 성경읽기</h1>
+      <h1 id="listTitle">성경읽기</h1>
       <p id="listSubtitle">생명수 목장</p>
     </div>
     <div class="hdr-right">
@@ -280,7 +190,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
       <div class="hdr-btn-row">
         <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
-        <button class="hdr-btn" onclick="showScreen('s-cover')">⚙ 설정</button>
       </div>
     </div>
   </div>
@@ -293,7 +202,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div class="plan-list" id="planList"></div>
 </div>
 
-<!-- ══ 읽기 ══ -->
+<!-- 읽기 -->
 <div class="screen" id="s-read">
   <div class="read-hdr">
     <div class="read-hdr-row1">
@@ -315,12 +224,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <button class="font-btn" onclick="changeFont(-1)">A-</button>
     </div>
   </div>
-  <div class="bible-wrap" id="bibleWrap">
-    <iframe class="bible-frame" id="bibleFrame" src="" onload="onFrameLoad(this)"></iframe>
+  <div class="bible-wrap">
+    <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
   </div>
 </div>
 
-<!-- ══ 축하 ══ -->
+<!-- 축하 -->
 <div class="screen" id="s-celebrate">
   <div class="cel-wrap" id="celWrap">
     <div class="cel-title">오늘 성경읽기<br>완료했습니다 ✝</div>
@@ -342,12 +251,11 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <script>
-// ═══ 상수 ═══
-const SK = 'bible_v5';
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
 
-const PLAN = [
-{"n":1,"r":"창세기 1-2장"},{"n":2,"r":"창세기 3-5장"},{"n":3,"r":"창세기 6-9장"},
+// 두 가지 계획 데이터
+const PLAN_DATA = {
+  1: [{"n":1,"r":"창세기 1-2장"},{"n":2,"r":"창세기 3-5장"},{"n":3,"r":"창세기 6-9장"},
 {"n":4,"r":"창세기 10-11장"},{"n":5,"r":"창세기 12-14장"},{"n":6,"r":"창세기 15-17장"},
 {"n":7,"r":"창세기 18-21장"},{"n":8,"r":"창세기 22-24장"},{"n":9,"r":"창세기 25-27장"},
 {"n":10,"r":"창세기 28-30장"},{"n":11,"r":"창세기 31-33장"},{"n":12,"r":"창세기 34-36장"},
@@ -497,20 +405,373 @@ const PLAN = [
 {"n":357,"r":"요한일서 1-5장"},{"n":358,"r":"요한이서 1장, 요한삼서 1장"},
 {"n":359,"r":"유다서 1장"},
 {"n":360,"r":"요한계시록 1-3장"},{"n":361,"r":"요한계시록 4-7장"},{"n":362,"r":"요한계시록 8-11장"},
-{"n":363,"r":"요한계시록 12-15장"},{"n":364,"r":"요한계시록 16-18장"},{"n":365,"r":"요한계시록 19-22장"}
-];
-
-
-const INIT_DONE = new Set([
-  1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,
-  18,19,20,21,22,23,24,25,26,27,28,
-  29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,
-  44,45,46,47,48,49,50,51,52,53,
-  188,218,281,282,283,284,285,286,287,288,289,
-  290,291,292,293,294,295,296,297,298,299,300,
-  301,302,303,304,305,306,307,308,309,310,311,
-  312,313,314,315,343,344
-]);
+{"n":363,"r":"요한계시록 12-15장"},{"n":364,"r":"요한계시록 16-18장"},{"n":365,"r":"요한계시록 19-22장"}],
+  2: [{n:1,r:"창세기 1-3장"},
+  {n:2,r:"창세기 4-6장"},
+  {n:3,r:"창세기 7-9장"},
+  {n:4,r:"창세기 10-13장"},
+  {n:5,r:"창세기 14-17장"},
+  {n:6,r:"창세기 18-20장"},
+  {n:7,r:"창세기 21-23장"},
+  {n:8,r:"창세기 24-26장"},
+  {n:9,r:"창세기 27-30장"},
+  {n:10,r:"창세기 31-33장"},
+  {n:11,r:"창세기 34-36장"},
+  {n:12,r:"창세기 37-40장"},
+  {n:13,r:"창세기 41-45장"},
+  {n:14,r:"창세기 46-48장"},
+  {n:15,r:"창세기 49-50장"},
+  {n:16,r:"출애굽기 1-4장"},
+  {n:17,r:"출애굽기 5-7장"},
+  {n:18,r:"출애굽기 8-11장"},
+  {n:19,r:"출애굽기 12-14장"},
+  {n:20,r:"출애굽기 15-17장"},
+  {n:21,r:"출애굽기 18-20장"},
+  {n:22,r:"출애굽기 21-23장"},
+  {n:23,r:"출애굽기 24-26장"},
+  {n:24,r:"출애굽기 27-29장"},
+  {n:25,r:"출애굽기 30-32장"},
+  {n:26,r:"출애굽기 33-35장"},
+  {n:27,r:"출애굽기 36-38장"},
+  {n:28,r:"출애굽기 39-40장"},
+  {n:29,r:"레위기 1-4장"},
+  {n:30,r:"레위기 5-7장"},
+  {n:31,r:"레위기 8-10장"},
+  {n:32,r:"레위기 11-14장"},
+  {n:33,r:"레위기 15-17장"},
+  {n:34,r:"레위기 18-20장"},
+  {n:35,r:"레위기 21-24장"},
+  {n:36,r:"레위기 25-27장"},
+  {n:37,r:"민수기 1-4장"},
+  {n:38,r:"민수기 5-7장"},
+  {n:39,r:"민수기 8-10장"},
+  {n:40,r:"민수기 11-14장"},
+  {n:41,r:"민수기 15-17장"},
+  {n:42,r:"민수기 18-20장"},
+  {n:43,r:"민수기 21-23장"},
+  {n:44,r:"민수기 24-27장"},
+  {n:45,r:"민수기 28-30장"},
+  {n:46,r:"민수기 31-33장"},
+  {n:47,r:"민수기 34-36장"},
+  {n:48,r:"신명기 1-4장"},
+  {n:49,r:"신명기 5-7장"},
+  {n:50,r:"신명기 8-10장"},
+  {n:51,r:"신명기 11-14장"},
+  {n:52,r:"신명기 15-17장"},
+  {n:53,r:"신명기 18-20장"},
+  {n:54,r:"신명기 21-23장"},
+  {n:55,r:"신명기 24-27장"},
+  {n:56,r:"신명기 28-30장"},
+  {n:57,r:"신명기 31-34장"},
+  {n:58,r:"여호수아 1-4장"},
+  {n:59,r:"여호수아 5-7장"},
+  {n:60,r:"여호수아 8-10장"},
+  {n:61,r:"여호수아 11-13장"},
+  {n:62,r:"여호수아 14-17장"},
+  {n:63,r:"여호수아 18-21장"},
+  {n:64,r:"여호수아 22-24장"},
+  {n:65,r:"사사기 1-3장"},
+  {n:66,r:"사사기 4-8장"},
+  {n:67,r:"사사기 9-10장"},
+  {n:68,r:"사사기 11-12장"},
+  {n:69,r:"사사기 13-16장"},
+  {n:70,r:"사사기 17-18장"},
+  {n:71,r:"사사기 19-21장"},
+  {n:72,r:"룻기 1-4장"},
+  {n:73,r:"사무엘상 1-3장"},
+  {n:74,r:"사무엘상 4-7장"},
+  {n:75,r:"사무엘상 8-10장"},
+  {n:76,r:"사무엘상 11-13장"},
+  {n:77,r:"사무엘상 14-16장"},
+  {n:78,r:"사무엘상 17-20장"},
+  {n:79,r:"사무엘상 21-23장"},
+  {n:80,r:"사무엘상 24-26장"},
+  {n:81,r:"사무엘상 27-29장"},
+  {n:82,r:"사무엘상 30-31장"},
+  {n:83,r:"사무엘하 1-3장"},
+  {n:84,r:"사무엘하 4-6장"},
+  {n:85,r:"사무엘하 7-9장"},
+  {n:86,r:"사무엘하 10-12장"},
+  {n:87,r:"사무엘하 13-15장"},
+  {n:88,r:"사무엘하 16-19장"},
+  {n:89,r:"사무엘하 20-22장"},
+  {n:90,r:"사무엘하 23-24장"},
+  {n:91,r:"열왕기상 1-3장"},
+  {n:92,r:"열왕기상 4-7장"},
+  {n:93,r:"열왕기상 8-10장"},
+  {n:94,r:"열왕기상 11-14장"},
+  {n:95,r:"열왕기상 15-17장"},
+  {n:96,r:"열왕기상 18-20장"},
+  {n:97,r:"열왕기상 21-22장"},
+  {n:98,r:"열왕기하 1-4장"},
+  {n:99,r:"열왕기하 5-7장"},
+  {n:100,r:"열왕기하 8-10장"},
+  {n:101,r:"열왕기하 11-13장"},
+  {n:102,r:"열왕기하 14-17장"},
+  {n:103,r:"열왕기하 18-20장"},
+  {n:104,r:"열왕기하 21-25장"},
+  {n:105,r:"역대상 1-4장"},
+  {n:106,r:"역대상 5-8장"},
+  {n:107,r:"역대상 9-12장"},
+  {n:108,r:"역대상 13-16장"},
+  {n:109,r:"역대상 17-19장"},
+  {n:110,r:"역대상 20-22장"},
+  {n:111,r:"역대상 23-25장"},
+  {n:112,r:"역대상 26-29장"},
+  {n:113,r:"역대하 1-3장"},
+  {n:114,r:"역대하 4-7장"},
+  {n:115,r:"역대하 8-9장"},
+  {n:116,r:"역대하 10-12장"},
+  {n:117,r:"역대하 13-15장"},
+  {n:118,r:"역대하 16-18장"},
+  {n:119,r:"역대하 19-21장"},
+  {n:120,r:"역대하 22-24장"},
+  {n:121,r:"역대하 25-28장"},
+  {n:122,r:"역대하 29-32장"},
+  {n:123,r:"역대하 33-36장"},
+  {n:124,r:"에스라 1-4장"},
+  {n:125,r:"에스라 5-7장"},
+  {n:126,r:"에스라 8-10장"},
+  {n:127,r:"느헤미야 1-2장"},
+  {n:128,r:"느헤미야 3-5장"},
+  {n:129,r:"느헤미야 6-9장"},
+  {n:130,r:"느헤미야 10-13장"},
+  {n:131,r:"에스더 1-3장"},
+  {n:132,r:"에스더 4-7장"},
+  {n:133,r:"에스더 8-10장"},
+  {n:134,r:"욥기 1-3장"},
+  {n:135,r:"욥기 4-7장"},
+  {n:136,r:"욥기 8-10장"},
+  {n:137,r:"욥기 11-14장"},
+  {n:138,r:"욥기 15-17장"},
+  {n:139,r:"욥기 18-20장"},
+  {n:140,r:"욥기 21-24장"},
+  {n:141,r:"욥기 25-28장"},
+  {n:142,r:"욥기 29-31장"},
+  {n:143,r:"욥기 32-34장"},
+  {n:144,r:"욥기 35-37장"},
+  {n:145,r:"욥기 38-42장"},
+  {n:146,r:"시편 1-3장"},
+  {n:147,r:"시편 4-6장"},
+  {n:148,r:"시편 7-9장"},
+  {n:149,r:"시편 10-12장"},
+  {n:150,r:"시편 13-15장"},
+  {n:151,r:"시편 16-18장"},
+  {n:152,r:"시편 19-21장"},
+  {n:153,r:"시편 22-24장"},
+  {n:154,r:"시편 25-27장"},
+  {n:155,r:"시편 28-30장"},
+  {n:156,r:"시편 31-33장"},
+  {n:157,r:"시편 34-36장"},
+  {n:158,r:"시편 37-39장"},
+  {n:159,r:"시편 40-42장"},
+  {n:160,r:"시편 43-46장"},
+  {n:161,r:"시편 47-50장"},
+  {n:162,r:"시편 51-54장"},
+  {n:163,r:"시편 55-57장"},
+  {n:164,r:"시편 58-61장"},
+  {n:165,r:"시편 62-64장"},
+  {n:166,r:"시편 65-67장"},
+  {n:167,r:"시편 68-70장"},
+  {n:168,r:"시편 71-73장"},
+  {n:169,r:"시편 74-76장"},
+  {n:170,r:"시편 77-79장"},
+  {n:171,r:"시편 80-82장"},
+  {n:172,r:"시편 83-85장"},
+  {n:173,r:"시편 86-88장"},
+  {n:174,r:"시편 89-91장"},
+  {n:175,r:"시편 92-94장"},
+  {n:176,r:"시편 95-97장"},
+  {n:177,r:"시편 98-100장"},
+  {n:178,r:"시편 101-103장"},
+  {n:179,r:"시편 104-106장"},
+  {n:180,r:"시편 107-110장"},
+  {n:181,r:"시편 111-114장"},
+  {n:182,r:"시편 115-118장"},
+  {n:183,r:"시편 119장"},
+  {n:184,r:"시편 120-123장"},
+  {n:185,r:"시편 124-127장"},
+  {n:186,r:"시편 128-131장"},
+  {n:187,r:"시편 132-135장"},
+  {n:188,r:"시편 136-138장"},
+  {n:189,r:"시편 139-141장"},
+  {n:190,r:"시편 142-144장"},
+  {n:191,r:"시편 145-147장"},
+  {n:192,r:"시편 148-150장"},
+  {n:193,r:"잠언 1-3장"},
+  {n:194,r:"잠언 4-6장"},
+  {n:195,r:"잠언 7-9장"},
+  {n:196,r:"잠언 10-12장"},
+  {n:197,r:"잠언 13-15장"},
+  {n:198,r:"잠언 16-18장"},
+  {n:199,r:"잠언 19-21장"},
+  {n:200,r:"잠언 22-24장"},
+  {n:201,r:"잠언 25-27장"},
+  {n:202,r:"잠언 28-31장"},
+  {n:203,r:"전도서 1-3장"},
+  {n:204,r:"전도서 4-6장"},
+  {n:205,r:"전도서 7-9장"},
+  {n:206,r:"전도서 10-12장"},
+  {n:207,r:"아가 1-4장"},
+  {n:208,r:"아가 5-8장"},
+  {n:209,r:"이사야 1-3장"},
+  {n:210,r:"이사야 4-6장"},
+  {n:211,r:"이사야 7-9장"},
+  {n:212,r:"이사야 10-12장"},
+  {n:213,r:"이사야 13-16장"},
+  {n:214,r:"이사야 17-20장"},
+  {n:215,r:"이사야 21-23장"},
+  {n:216,r:"이사야 24-26장"},
+  {n:217,r:"이사야 27-29장"},
+  {n:218,r:"이사야 30-32장"},
+  {n:219,r:"이사야 33-35장"},
+  {n:220,r:"이사야 36-39장"},
+  {n:221,r:"이사야 40-43장"},
+  {n:222,r:"이사야 44-46장"},
+  {n:223,r:"이사야 47-49장"},
+  {n:224,r:"이사야 50-52장"},
+  {n:225,r:"이사야 53-55장"},
+  {n:226,r:"이사야 56-58장"},
+  {n:227,r:"이사야 59-62장"},
+  {n:228,r:"이사야 63-66장"},
+  {n:229,r:"예레미야 1-3장"},
+  {n:230,r:"예레미야 4-6장"},
+  {n:231,r:"예레미야 7-9장"},
+  {n:232,r:"예레미야 10-12장"},
+  {n:233,r:"예레미야 13-15장"},
+  {n:234,r:"예레미야 16-17장"},
+  {n:235,r:"예레미야 18-20장"},
+  {n:236,r:"예레미야 21-23장"},
+  {n:237,r:"예레미야 24-26장"},
+  {n:238,r:"예레미야 27-29장"},
+  {n:239,r:"예레미야 30-31장"},
+  {n:240,r:"예레미야 32-34장"},
+  {n:241,r:"예레미야 35-37장"},
+  {n:242,r:"예레미야 38-41장"},
+  {n:243,r:"예레미야 42-44장"},
+  {n:244,r:"예레미야 45-48장"},
+  {n:245,r:"예레미야 49-52장"},
+  {n:246,r:"예레미야애가 1-5장"},
+  {n:247,r:"에스겔 1-3장"},
+  {n:248,r:"에스겔 4-6장"},
+  {n:249,r:"에스겔 7-9장"},
+  {n:250,r:"에스겔 10-12장"},
+  {n:251,r:"에스겔 13-15장"},
+  {n:252,r:"에스겔 16-18장"},
+  {n:253,r:"에스겔 19-21장"},
+  {n:254,r:"에스겔 22-24장"},
+  {n:255,r:"에스겔 25-28장"},
+  {n:256,r:"에스겔 29-32장"},
+  {n:257,r:"에스겔 33-36장"},
+  {n:258,r:"에스겔 37-39장"},
+  {n:259,r:"에스겔 40-43장"},
+  {n:260,r:"에스겔 44-48장"},
+  {n:261,r:"다니엘 1-3장"},
+  {n:262,r:"다니엘 4-6장"},
+  {n:263,r:"다니엘 7-9장"},
+  {n:264,r:"다니엘 10-12장"},
+  {n:265,r:"호세아 1-3장"},
+  {n:266,r:"호세아 4-7장"},
+  {n:267,r:"호세아 8-10장"},
+  {n:268,r:"호세아 11-14장"},
+  {n:269,r:"요엘 1-3장"},
+  {n:270,r:"아모스 1-3장"},
+  {n:271,r:"아모스 4-6장"},
+  {n:272,r:"아모스 7-9장"},
+  {n:273,r:"오바댜"},
+  {n:274,r:"요나 1-4장"},
+  {n:275,r:"미가 1-4장"},
+  {n:276,r:"미가 5-7장"},
+  {n:277,r:"나훔 1-3장"},
+  {n:278,r:"하박국 1-3장"},
+  {n:279,r:"스바냐 1-3장"},
+  {n:280,r:"학개 1-2장"},
+  {n:281,r:"스가랴 1-4장"},
+  {n:282,r:"스가랴 5-8장"},
+  {n:283,r:"스가랴 9-11장"},
+  {n:284,r:"스가랴 12-14장"},
+  {n:285,r:"말라기 1-4장"},
+  {n:286,r:"마태복음 1-4장"},
+  {n:287,r:"마태복음 5-7장"},
+  {n:288,r:"마태복음 8-10장"},
+  {n:289,r:"마태복음 11-13장"},
+  {n:290,r:"마태복음 14-16장"},
+  {n:291,r:"마태복음 17-20장"},
+  {n:292,r:"마태복음 21-23장"},
+  {n:293,r:"마태복음 24-26장"},
+  {n:294,r:"마태복음 27-28장"},
+  {n:295,r:"마가복음 1-4장"},
+  {n:296,r:"마가복음 5-8장"},
+  {n:297,r:"마가복음 9-12장"},
+  {n:298,r:"마가복음 13-16장"},
+  {n:299,r:"누가복음 1-4장"},
+  {n:300,r:"누가복음 5-8장"},
+  {n:301,r:"누가복음 9-12장"},
+  {n:302,r:"누가복음 13-16장"},
+  {n:303,r:"누가복음 17-20장"},
+  {n:304,r:"누가복음 21-24장"},
+  {n:305,r:"요한복음 1-3장"},
+  {n:306,r:"요한복음 4-6장"},
+  {n:307,r:"요한복음 7-9장"},
+  {n:308,r:"요한복음 10-13장"},
+  {n:309,r:"요한복음 14-16장"},
+  {n:310,r:"요한복음 17-21장"},
+  {n:311,r:"사도행전 1-4장"},
+  {n:312,r:"사도행전 5-7장"},
+  {n:313,r:"사도행전 8-9장"},
+  {n:314,r:"사도행전 10-12장"},
+  {n:315,r:"사도행전 13-16장"},
+  {n:316,r:"사도행전 17-20장"},
+  {n:317,r:"사도행전 21-23장"},
+  {n:318,r:"사도행전 24-26장"},
+  {n:319,r:"사도행전 27-28장"},
+  {n:320,r:"로마서 1-3장"},
+  {n:321,r:"로마서 4-5장"},
+  {n:322,r:"로마서 6-8장"},
+  {n:323,r:"로마서 9-11장"},
+  {n:324,r:"로마서 12-13장"},
+  {n:325,r:"로마서 14-16장"},
+  {n:326,r:"고린도전서 1-3장"},
+  {n:327,r:"고린도전서 4-6장"},
+  {n:328,r:"고린도전서 7-9장"},
+  {n:329,r:"고린도전서 10-12장"},
+  {n:330,r:"고린도전서 13-16장"},
+  {n:331,r:"고린도후서 1-3장"},
+  {n:332,r:"고린도후서 4-6장"},
+  {n:333,r:"고린도후서 7-9장"},
+  {n:334,r:"고린도후서 10-13장"},
+  {n:335,r:"갈라디아서 1-3장"},
+  {n:336,r:"갈라디아서 4-6장"},
+  {n:337,r:"에베소서 1-3장"},
+  {n:338,r:"에베소서 4-6장"},
+  {n:339,r:"빌립보서 1-4장"},
+  {n:340,r:"골로새서 1-4장"},
+  {n:341,r:"데살로니가전서 1-5장"},
+  {n:342,r:"데살로니가후서 1-3장"},
+  {n:343,r:"디모데전서 1-3장"},
+  {n:344,r:"디모데전서 4-6장"},
+  {n:345,r:"디모데후서 1-4장"},
+  {n:346,r:"디도서 1-3장, 빌레몬서 1장"},
+  {n:347,r:"히브리서 1-2장"},
+  {n:348,r:"히브리서 3-4장"},
+  {n:349,r:"히브리서 5-7장"},
+  {n:350,r:"히브리서 8-10장"},
+  {n:351,r:"히브리서 11장"},
+  {n:352,r:"히브리서 12-13장"},
+  {n:353,r:"야고보서 1-5장"},
+  {n:354,r:"베드로전서 1-5장"},
+  {n:355,r:"베드로후서 1-3장"},
+  {n:356,r:"요한일서 1-5장"},
+  {n:357,r:"요한이서, 요한삼서, 유다서"},
+  {n:358,r:"요한계시록 1-3장"},
+  {n:359,r:"요한계시록 4-5장"},
+  {n:360,r:"요한계시록 6-9장"},
+  {n:361,r:"요한계시록 10-13장"},
+  {n:362,r:"요한계시록 14-16장"},
+  {n:363,r:"요한계시록 17-18장"},
+  {n:364,r:"요한계시록 19-20장"},
+  {n:365,r:"요한계시록 21-22장"}]
+};
 
 const BID={
   '창세기':1,'출애굽기':2,'레위기':3,'민수기':4,'신명기':5,
@@ -529,11 +790,6 @@ const BID={
   '히브리서':58,'야고보서':59,'베드로전서':60,'베드로후서':61,
   '요한일서':62,'요한이서':63,'요한삼서':64,'유다서':65,'요한계시록':66
 };
-
-
-const BNAME=Object.fromEntries(Object.entries(BID).map(([k,v])=>[v,k]));
-
-
 const BNAME_KO = {
   1:'창세기',2:'출애굽기',3:'레위기',4:'민수기',5:'신명기',
   6:'여호수아',7:'사사기',8:'룻기',9:'사무엘상',10:'사무엘하',
@@ -551,8 +807,6 @@ const BNAME_KO = {
   58:'히브리서',59:'야고보서',60:'베드로전서',61:'베드로후서',
   62:'요한일서',63:'요한이서',64:'요한삼서',65:'유다서',66:'요한계시록'
 };
-
-
 const GODPIA_VOL = {
   1:'gen',2:'exo',3:'lev',4:'num',5:'deu',6:'jos',7:'jdg',8:'rut',
   9:'sa1',10:'sa2',11:'ki1',12:'ki2',13:'ch1',14:'ch2',15:'ezr',
@@ -566,122 +820,40 @@ const GODPIA_VOL = {
   65:'jud',66:'rev'
 };
 
-const POPULAR_VERSES = {
-  // 창세기
-  1:  {t:'"태초에 하나님이 천지를 창조하시니라"',r:'창세기 1:1'},
-  2:  {t:'"여호와 하나님이 흙으로 사람을 지으시고 생기를 그 코에 불어넣으시니 사람이 생령이 되니라"',r:'창세기 2:7'},
-  3:  {t:'"네가 흙이니 흙으로 돌아갈 것이니라"',r:'창세기 3:19'},
-  5:  {t:'"아브람이 여호와를 믿으니 여호와께서 이를 그의 의로 여기시고"',r:'창세기 15:6'},
-  8:  {t:'"여호와 이레라 하였더라"',r:'창세기 22:14'},
-  17: {t:'"요셉이 그들에게 이르되 두려워하지 마소서 내가 하나님을 대신하리이까"',r:'창세기 50:19'},
-  // 욥기
-  23: {t:'"나는 알거니와 나의 대속자가 살아 계시니"',r:'욥기 19:25'},
-  28: {t:'"내가 주께 대하여 귀로 듣기만 하였사오나 이제는 눈으로 주를 뵈옵나이다"',r:'욥기 42:5'},
-  // 출애굽기
-  29: {t:'"나는 스스로 있는 자이니라"',r:'출애굽기 3:14'},
-  36: {t:'"나 외에는 다른 신들을 네게 두지 말라"',r:'출애굽기 20:3'},
-  // 레위기
-  49: {t:'"속죄일은 너희에게 안식일 중의 안식일이니라"',r:'레위기 16:31'},
-  // 민수기
-  59: {t:'"여호와는 노하기를 더디 하고 인자가 크사"',r:'민수기 14:18'},
-  // 신명기
-  70: {t:'"이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니"',r:'신명기 6:4'},
-  71: {t:'"네 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라"',r:'신명기 6:5'},
-  // 시편
-  81: {t:'"주의 날개 그늘 아래에 나를 숨기소서"',r:'시편 91:4'},
-  // 여호수아
-  89: {t:'"오직 강하고 극히 담대하라"',r:'여호수아 1:7'},
-  // 룻기
-  98: {t:'"어머니께서 가시는 곳에 나도 가겠나이다"',r:'룻기 1:16'},
-  // 사무엘상
-  104: {t:'"사람은 외모를 보거니와 나 여호와는 중심을 보느니라"',r:'사무엘상 16:7'},
-  // 사무엘하
-  116: {t:'"내가 주께 범죄하였나이다"',r:'사무엘하 12:13'},
-  // 열왕기상
-  143: {t:'"엘리야가 이르되 여호와를 부르라 응답하는 신이 곧 하나님이니라"',r:'열왕기상 18:24'},
-  // 잠언
-  128: {t:'"여호와를 경외하는 것이 지식의 근본이거늘"',r:'잠언 1:7'},
-  129: {t:'"네 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라"',r:'잠언 3:5'},
-  // 전도서
-  138: {t:'"전도자가 이르되 헛되고 헛되며 헛되고 헛되니 모든 것이 헛되도다"',r:'전도서 1:2'},
-  // 이사야
-  168: {t:'"평안을 네게 강같이, 의를 넘치는 시내같이 주리니"',r:'이사야 66:12'},
-  171: {t:'"그가 찔림은 우리의 허물 때문이요 상함은 우리의 죄악 때문이라"',r:'이사야 53:5'},
-  169: {t:'"두려워하지 말라 내가 너와 함께 함이라"',r:'이사야 41:10'},
-  // 예레미야
-  193: {t:'"너희를 향한 나의 생각을 내가 아나니 평안이요 재앙이 아니니라"',r:'예레미야 29:11'},
-  // 에스겔
-  221: {t:'"내가 새 마음을 너희에게 주고 새 영을 너희 속에 두겠다"',r:'에스겔 36:26'},
-  // 다니엘
-  207: {t:'"우리가 섬기는 하나님이 능히 우리를 구원하실 것이요"',r:'다니엘 3:17'},
-  // 시편 후반
-  262: {t:'"복 있는 사람은... 그의 율법을 주야로 묵상하는도다"',r:'시편 1:2'},
-  273: {t:'"여호와는 나의 목자시니 내게 부족함이 없으리로다"',r:'시편 23:1'},
-  275: {t:'"주의 말씀은 내 발에 등이요 내 길에 빛이니이다"',r:'시편 119:105'},
-  276: {t:'"주의 말씀은 내 발에 등이요 내 길에 빛이니이다"',r:'시편 119:105'},
-  // 마태복음
-  281: {t:'"회개하라 천국이 가까이 왔느니라"',r:'마태복음 4:17'},
-  282: {t:'"너희는 먼저 그의 나라와 그의 의를 구하라 그리하면 이 모든 것을 너희에게 더하시리라"',r:'마태복음 6:33'},
-  284: {t:'"수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라"',r:'마태복음 11:28'},
-  288: {t:'"인자가 온 것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고"',r:'마태복음 20:28'},
-  289: {t:'"이것은 죄 사함을 얻게 하려고 많은 사람을 위하여 흘리는 바 나의 피 곧 언약의 피니라"',r:'마태복음 26:28'},
-  // 마가복음
-  290: {t:'"때가 찼고 하나님의 나라가 가까이 왔으니 회개하고 복음을 믿으라"',r:'마가복음 1:15'},
-  // 누가복음
-  296: {t:'"지극히 높은 곳에서는 하나님께 영광이요 땅에서는 하나님이 기뻐하신 사람들 중에 평화로다"',r:'누가복음 2:14'},
-  302: {t:'"인자가 온 것은 잃어버린 자를 찾아 구원하려 함이니라"',r:'누가복음 19:10'},
-  // 요한복음
-  307: {t:'"말씀이 육신이 되어 우리 가운데 거하시매"',r:'요한복음 1:14'},
-  308: {t:'"하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니"',r:'요한복음 3:16'},
-  312: {t:'"내가 곧 길이요 진리요 생명이니"',r:'요한복음 14:6'},
-  314: {t:'"내가 너희를 사랑한 것 같이 너희도 서로 사랑하라"',r:'요한복음 15:12'},
-  // 사도행전
-  316: {t:'"오직 성령이 너희에게 임하시면 너희가 권능을 받고"',r:'사도행전 1:8'},
-  // 로마서
-  337: {t:'"하나님의 은사는 그리스도 예수 우리 주 안에 있는 영생이니라"',r:'로마서 6:23'},
-  338: {t:'"그러므로 이제 그리스도 예수 안에 있는 자에게는 결코 정죄함이 없나니"',r:'로마서 8:1'},
-  // 고린도전서
-  330: {t:'"사랑은 오래 참고 사랑은 온유하며"',r:'고린도전서 13:4'},
-  331: {t:'"우리가 지금은 거울로 보는 것같이 희미하나 그때에는 얼굴과 얼굴을 대하여 볼 것이요"',r:'고린도전서 13:12'},
-  // 갈라디아서
-  324: {t:'"성령의 열매는 사랑과 희락과 화평과 오래 참음과 자비와 양선과 충성과 온유와 절제니"',r:'갈라디아서 5:22-23'},
-  // 에베소서
-  343: {t:'"너희는 그 은혜에 의하여 믿음으로 말미암아 구원을 받았으니"',r:'에베소서 2:8'},
-  // 빌립보서
-  347: {t:'"내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라"',r:'빌립보서 4:13'},
-  // 요한계시록
-  360: {t:'"볼지어다 내가 문 밖에 서서 두드리노니"',r:'요한계시록 3:20'},
-  365: {t:'"아멘 주 예수여 오시옵소서"',r:'요한계시록 22:20'},
-};
-
-
-// ═══ 상태 ═══
+// 계획별 독립 저장소 키
+const SK = {1:'bible_plan1', 2:'bible_plan2'};
+let curPlan = 1;
 let ST = {checks:{},reader:'',startDate:'',filter:'all'};
-let curN = 0;
-let fontIdx = 1;
+let PLAN = PLAN_DATA[1];
+let curN = 0, fontIdx = 1;
 const FONT_LABELS = ['소','기본','중','대','특대'];
-const GODPIA_ZOOM = [0.60,0.72,0.85,1.0,1.35]; // 0=소(작게), 4=특대(크게)
+const GODPIA_ZOOM = [0.60,0.72,0.85,1.0,1.35];
 const OFFSET = 225;
 
-// ═══ 저장/로드 ═══
-function saveST(){ try{localStorage.setItem(SK,JSON.stringify(ST));}catch(e){} }
-function loadST(){
+function saveST(){ try{localStorage.setItem(SK[curPlan],JSON.stringify(ST));}catch(e){} }
+function loadST(plan){
   try{
-    const s=localStorage.getItem(SK);
-    if(s) ST=Object.assign(ST,JSON.parse(s));
-    if(!ST.checks) ST.checks={};
-  }catch(e){}
+    const s=localStorage.getItem(SK[plan]);
+    const def={checks:{},reader:'',startDate:'',filter:'all'};
+    return s ? Object.assign(def,JSON.parse(s)) : def;
+  }catch(e){ return {checks:{},reader:'',startDate:'',filter:'all'}; }
 }
 
-// ═══ 날짜 유틸 ═══
+function selectPlan(n, btn){
+  curPlan = n;
+  PLAN = PLAN_DATA[n];
+  ST = loadST(n);
+  document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('startDateInput').value = ST.startDate || '';
+  document.getElementById('readerInput').value    = ST.reader    || '';
+  updateEndDate();
+}
+
 function today(){ return new Date(); }
-function dateStr(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function parseDate(s){ if(!s) return null; const[y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function fmtKo(d){ return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+WEEKDAYS[d.getDay()]+')'; }
-function nthDate(start,n){
-  const d=parseDate(start); if(!d) return null;
-  d.setDate(d.getDate()+n); return d;
-}
+function nthDate(start,n){ const d=parseDate(start); if(!d) return null; d.setDate(d.getDate()+n); return d; }
 function todayIdx(start){
   const s=parseDate(start); if(!s) return 0;
   const t=today();
@@ -689,7 +861,6 @@ function todayIdx(start){
   return Math.max(0,Math.min(diff,364));
 }
 
-// ═══ 화면 전환 ═══
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -697,13 +868,12 @@ function showScreen(id){
   if(id==='s-list')  renderList();
 }
 
-// ═══ 표지 ═══
 function initCover(){
-  const t=today();
-  document.getElementById('coverTitle').textContent=t.getFullYear()+' 연대순 성경읽기';
-  document.getElementById('todayDisplay').textContent=fmtKo(t);
-  if(ST.startDate) document.getElementById('startDateInput').value=ST.startDate;
-  if(ST.reader)    document.getElementById('readerInput').value=ST.reader;
+  document.getElementById('todayDisplay').textContent = fmtKo(today());
+  document.getElementById('startDateInput').value = ST.startDate || '';
+  document.getElementById('readerInput').value    = ST.reader    || '';
+  document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('selBtn'+curPlan).classList.add('on');
   updateEndDate();
 }
 function onStartDateChange(){ updateEndDate(); }
@@ -711,14 +881,12 @@ function updateEndDate(){
   const s=document.getElementById('startDateInput').value;
   if(!s){ document.getElementById('endDateBadge').textContent='종료 예정일: —'; return; }
   const e=parseDate(s); e.setDate(e.getDate()+364);
-  document.getElementById('endDateBadge').textContent='종료 예정일: '+fmtKo(e).replace(/ \([^)]+\)/,'');
+  document.getElementById('endDateBadge').textContent='종료 예정일: '+(e.getMonth()+1)+'월 '+e.getDate()+'일 ('+e.getFullYear()+')';
 }
 function resetChecks(){
-  if(!confirm('읽음 기록을 모두 초기화할까요?')) return;
-  ST.checks={};
-  PLAN.forEach(p=>ST.checks[p.n]=false);
-  saveST();
-  alert('초기화 완료');
+  if(!confirm('이 계획의 읽음 기록을 모두 초기화할까요?')) return;
+  ST.checks={}; PLAN.forEach(p=>ST.checks[p.n]=false);
+  saveST(); alert('초기화 완료');
 }
 function startReading(){
   try{
@@ -729,29 +897,22 @@ function startReading(){
     ST.startDate=sd; ST.reader=rd; saveST();
     const idx=todayIdx(sd);
     const item=PLAN[Math.min(idx,PLAN.length-1)];
-    renderList();
-    openItem(item.n);
+    renderList(); openItem(item.n);
   }catch(err){ alert('오류: '+err.message); }
 }
 
-// ═══ 목록 ═══
 function setFilter(f,btn){
   ST.filter=f; saveST();
   document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderList();
+  btn.classList.add('on'); renderList();
 }
 function renderList(){
-  const t=today();
   const tidx=ST.startDate?todayIdx(ST.startDate):0;
   const todayN=PLAN[Math.min(tidx,PLAN.length-1)].n;
-  const yr=ST.startDate?parseDate(ST.startDate).getFullYear():t.getFullYear();
-  document.getElementById('listTitle').textContent=yr+' 연대순 성경읽기';
+  const planName=curPlan===1?'연대순 읽기':'1년 통독';
+  document.getElementById('listTitle').textContent=planName;
   document.getElementById('listSubtitle').textContent=ST.reader?'읽는이: '+ST.reader:'생명수 목장';
-  const items=PLAN.filter(p=>
-    ST.filter==='done'?ST.checks[p.n]:
-    ST.filter==='unread'?!ST.checks[p.n]:true
-  );
+  const items=PLAN.filter(p=>ST.filter==='done'?ST.checks[p.n]:ST.filter==='unread'?!ST.checks[p.n]:true);
   document.getElementById('planList').innerHTML=items.map(p=>{
     const d=nthDate(ST.startDate,p.n-1);
     const isToday=p.n===todayN;
@@ -760,19 +921,14 @@ function renderList(){
       dateHtml='<div class="m">'+(d.getMonth()+1)+'월</div><div class="d">'+d.getDate()+'</div>';
       if(isToday) dateHtml+='<div class="today-badge">TODAY</div>';
     }
-    const doneHtml=ST.checks[p.n]
-      ?'<div class="item-done-mark">✓ 읽음</div>'
-      :'<div class="item-arrow">›</div>';
+    const doneHtml=ST.checks[p.n]?'<div class="item-done-mark">✓ 읽음</div>':'<div class="item-arrow">›</div>';
     return '<div class="plan-item'+(ST.checks[p.n]?' done':'')+(isToday?' today':'')+'" onclick="openItem('+p.n+')">'
       +'<div class="item-date">'+dateHtml+'</div>'
       +'<div class="item-info"><div class="item-range">'+p.r+'</div><div class="item-daynum">제 '+p.n+'일차</div></div>'
       +doneHtml+'</div>';
   }).join('');
   updateProg();
-  setTimeout(()=>{
-    const el=document.querySelector('.plan-item.today');
-    if(el) el.scrollIntoView({block:'center',behavior:'smooth'});
-  },80);
+  setTimeout(()=>{const el=document.querySelector('.plan-item.today');if(el)el.scrollIntoView({block:'center',behavior:'smooth'});},80);
 }
 function updateProg(){
   const done=PLAN.filter(p=>ST.checks[p.n]).length;
@@ -781,7 +937,6 @@ function updateProg(){
   document.getElementById('progFill').style.width=pct+'%';
 }
 
-// ═══ 읽기 ═══
 function openItem(n){
   curN=n;
   const p=PLAN.find(x=>x.n===n); if(!p) return;
@@ -789,19 +944,40 @@ function openItem(n){
   let tag=d?(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+WEEKDAYS[d.getDay()]+') · 제'+p.n+'일':'제 '+p.n+'일';
   document.getElementById('dayTag').textContent=tag;
   document.getElementById('readTitle').textContent=p.r;
-  updateDoneBtn();
-  showScreen('s-read');
-  loadBible(p);
+  updateDoneBtn(); showScreen('s-read'); loadBible(p);
 }
 function updateDoneBtn(){
   const done=!!ST.checks[curN];
-  const btn=document.getElementById('cmpBtn');
-  const txt=document.getElementById('cmpTxt');
-  if(btn) btn.className='done-btn '+(done?'already':'unread');
-  if(txt) txt.innerHTML=done?'이미<br>읽음':'모두<br>읽음';
+  document.getElementById('cmpBtn').className='done-btn '+(done?'already':'unread');
+  document.getElementById('cmpTxt').innerHTML=done?'이미<br>읽음':'모두<br>읽음';
 }
 
-// godpia URL
+const BOOK_KEYS=Object.keys(BID).sort((a,b)=>b.length-a.length);
+const BOOK_RE=new RegExp('(' + BOOK_KEYS.map(k=>k.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&')).join('|') + ')\\s*([\\d][\\d\\-,\\s]*(?:장|편)?)', 'g');
+const MAX_CH=[0,50,40,27,36,34,24,21,4,31,24,22,25,29,36,10,13,10,42,150,31,12,8,66,52,5,48,12,14,3,9,1,4,7,3,3,3,2,14,4,28,16,24,41,28,16,16,13,6,6,4,4,5,3,6,4,3,1,13,5,5,3,5,1,1,1,22];
+function parseRange(range){
+  const out=[],seen=new Set();
+  BOOK_RE.lastIndex=0; let m;
+  while((m=BOOK_RE.exec(range))!==null){
+    const bid=BID[m[1]];if(!bid) continue;
+    const nums=m[2].replace(/장|편/g,'').replace(/:\d+/g,'').trim();
+    expandNums(nums,MAX_CH[bid]||999).forEach(ch=>{
+      const k=bid+':'+ch; if(!seen.has(k)){seen.add(k);out.push({bid,ch});}
+    });
+  }
+  return out;
+}
+function expandNums(str,max){
+  const r=[];
+  str.split(',').forEach(p=>{
+    p=p.trim();
+    const rng=p.match(/^(\d+)\s*-\s*(\d+)$/);
+    const one=p.match(/^(\d+)$/);
+    if(rng) for(let c=+rng[1];c<=Math.min(+rng[2],max);c++) r.push(c);
+    else if(one) r.push(+one[1]);
+  });
+  return r;
+}
 function godpiaUrl(bid,ch){
   const vol=GODPIA_VOL[bid]||'gen';
   return 'https://www.godpia.com/read/reading.asp?vol='+vol+'&chap='+ch;
@@ -809,8 +985,10 @@ function godpiaUrl(bid,ch){
 function loadBible(p){
   const segs=parseRange(p.r);
   if(!segs.length) return;
+  const frame=document.getElementById('bibleFrame');
   const url=godpiaUrl(segs[0].bid,segs[0].ch)+'&_t='+Date.now();
-  document.getElementById('bibleFrame').src=url;
+  frame.onload = function(){ onFrameLoad(frame); };
+  frame.src=url;
 }
 function onFrameLoad(frame){
   const zm=GODPIA_ZOOM[fontIdx]||1.0;
@@ -828,52 +1006,14 @@ function changeFont(dir){
 function markDone(){
   if(!curN) return;
   const was=!!ST.checks[curN];
-  ST.checks[curN]=!was;
-  saveST();
-  updateDoneBtn();
-  updateProg();
+  ST.checks[curN]=!was; saveST(); updateDoneBtn(); updateProg();
   if(!was) showCelebration(curN);
 }
-
-// ═══ 성경 범위 파싱 ═══
-const BOOK_KEYS=Object.keys(BID).sort((a,b)=>b.length-a.length);
-const BOOK_RE=new RegExp('('+BOOK_KEYS.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')\\s*([\\d\\-,\\s장편]+)','g');
-const MAX_CH=[0,50,40,27,36,34,24,21,4,31,24,22,25,29,36,10,13,10,42,150,31,12,8,66,52,5,48,12,14,3,9,1,4,7,3,3,3,2,14,4,28,16,24,41,28,16,16,13,6,6,4,4,5,3,6,4,3,1,13,5,5,3,5,1,1,1,22];
-function parseRange(range){
-  const out=[],seen=new Set();
-  BOOK_RE.lastIndex=0;
-  let m;
-  while((m=BOOK_RE.exec(range))!==null){
-    const bid=BID[m[1]];if(!bid) continue;
-    const nums=m[2].replace(/장|편/g,'').replace(/:\d+/g,'').trim();
-    expandNums(nums,MAX_CH[bid]||999).forEach(ch=>{
-      const k=bid+':'+ch;
-      if(!seen.has(k)){seen.add(k);out.push({bid,ch});}
-    });
-  }
-  return out;
-}
-function expandNums(str,max){
-  const r=[];
-  str.split(',').forEach(p=>{
-    p=p.trim();
-    const rng=p.match(/^(\d+)\s*-\s*(\d+)$/);
-    const one=p.match(/^(\d+)$/);
-    if(rng) for(let c=+rng[1];c<=Math.min(+rng[2],max);c++) r.push(c);
-    else if(one) r.push(+one[1]);
-  });
-  return r;
-}
-
-// ═══ 축하 ═══
 function showCelebration(n){
   const p=PLAN.find(x=>x.n===n); if(!p) return;
   const done=PLAN.filter(x=>ST.checks[x.n]).length;
   const pct=Math.round(done/PLAN.length*100);
-  const d=nthDate(ST.startDate,p.n-1);
-  let dateLabel=fmtKo(today());
-  let itemLabel=d?'(제'+p.n+'일차) '+fmtKo(d).replace(/ \([^)]+\)/,''):'제 '+p.n+'일차';
-  document.getElementById('celDate').textContent=dateLabel;
+  document.getElementById('celDate').textContent=fmtKo(today());
   document.getElementById('celRange').textContent=p.r;
   document.getElementById('celReader').textContent=ST.reader||'—';
   document.getElementById('celProg').textContent=done+'일 / '+PLAN.length+'일 ('+pct+'%) 읽음';
@@ -884,65 +1024,37 @@ function goNext(){
   const next=PLAN[idx+1];
   if(next) openItem(next.n); else showScreen('s-list');
 }
-
-// ═══ 공유/캡처 ═══
 async function doShare(){
   const btn=document.getElementById('captureBtn');
   const celBtns=document.querySelector('.cel-btns');
   const wrap=document.getElementById('celWrap');
-  if(!wrap) return;
-
-  // html2canvas 로드 확인
-  if(typeof html2canvas === 'undefined'){
-    alert('캡처 라이브러리 로딩 중입니다. 잠시 후 다시 눌러주세요.');
-    return;
-  }
-
+  if(!wrap||typeof html2canvas==='undefined') return;
   btn.textContent='준비 중…'; btn.disabled=true;
   celBtns.style.display='none'; btn.style.display='none';
-
   try{
-    const canvas = await html2canvas(wrap,{backgroundColor:'#140b04',scale:2,useCORS:true,logging:false});
-    const jc = document.createElement('canvas');
-    jc.width=canvas.width; jc.height=canvas.height;
+    const canvas=await html2canvas(wrap,{backgroundColor:'#140b04',scale:2,useCORS:true,logging:false});
+    const jc=document.createElement('canvas');
+    jc.width=canvas.width;jc.height=canvas.height;
     const ctx=jc.getContext('2d');
-    ctx.fillStyle='#140b04'; ctx.fillRect(0,0,jc.width,jc.height);
+    ctx.fillStyle='#140b04';ctx.fillRect(0,0,jc.width,jc.height);
     ctx.drawImage(canvas,0,0);
-
-    const fname = '성경읽기_'+new Date().toISOString().slice(0,10)+'.jpg';
-    const blob  = await new Promise(res=>jc.toBlob(res,'image/jpeg',0.92));
-    const file  = new File([blob], fname, {type:'image/jpeg'});
-
-    // 1순위: 파일 공유 (크롬 Android 등)
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({files:[file], title:'오늘 성경읽기 완료', text:'말씀을 읽었습니다 ✝'});
-      return;
+    const fname='성경읽기_'+new Date().toISOString().slice(0,10)+'.jpg';
+    const blob=await new Promise(res=>jc.toBlob(res,'image/jpeg',0.92));
+    const file=new File([blob],fname,{type:'image/jpeg'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'오늘 성경읽기 완료',text:'말씀을 읽었습니다 ✝'});
+    } else {
+      const url=URL.createObjectURL(blob);
+      const newTab=window.open(url,'_blank');
+      if(newTab){ setTimeout(()=>URL.revokeObjectURL(url),60000); alert('이미지를 길게 누르면 저장/공유할 수 있습니다.'); }
+      else { const a=document.createElement('a');a.href=url;a.download=fname;a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
     }
-
-    // 2순위: 이미지를 새 탭에 열기 → 길게 눌러서 저장/공유
-    const objUrl = URL.createObjectURL(blob);
-    const newTab = window.open(objUrl,'_blank');
-    if(newTab){
-      setTimeout(()=>URL.revokeObjectURL(objUrl), 60000);
-      alert('열린 이미지를 길게 누르면 저장/공유할 수 있습니다.');
-      return;
-    }
-
-    // 3순위: 다운로드
-    const a=document.createElement('a'); a.href=objUrl; a.download=fname; a.click();
-    setTimeout(()=>URL.revokeObjectURL(objUrl),1000);
-
-  }catch(e){
-    if(e.name!=='AbortError') alert('오류: '+e.message);
-  }finally{
-    btn.textContent='📤 공유하기'; btn.disabled=false;
-    celBtns.style.display=''; btn.style.display='';
-  }
+  }catch(e){ if(e.name!=='AbortError') alert('오류: '+e.message); }
+  finally{ btn.textContent='📤 공유하기';btn.disabled=false;celBtns.style.display='';btn.style.display=''; }
 }
 
-// ═══ 시작 ═══
 document.addEventListener('DOMContentLoaded',()=>{
-  loadST();
+  ST = loadST(1);
   try{fontIdx=parseInt(localStorage.getItem('bible_fi')||'1');}catch(e){}
   initCover();
 });
