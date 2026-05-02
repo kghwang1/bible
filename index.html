@@ -17,17 +17,17 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 #s-cover{background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);overflow-y:auto;align-items:center}
 #s-cover::-webkit-scrollbar{width:4px}
 #s-cover::-webkit-scrollbar-thumb{background:#c9a84c;border-radius:6px}
-.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:24px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;position:relative;z-index:1}
+.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:20px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;position:relative;z-index:1}
 .cover-title{font-family:'Noto Serif KR',serif;font-size:1.55rem;font-weight:900;color:#e8c97a;letter-spacing:.04em;text-shadow:0 2px 12px rgba(201,168,76,.3)}
 .cover-subtitle{font-size:.75rem;color:#a07850;letter-spacing:.06em}
 
 /* 계획 선택 */
 .plan-select-row{display:flex;gap:10px;width:100%}
 .plan-sel-btn{
-  flex:1;padding:12px 8px;border-radius:14px;
+  flex:1;padding:10px 8px;border-radius:14px;
   border:2px solid rgba(201,168,76,.3);background:rgba(255,255,255,.05);
   color:rgba(245,232,200,.65);font-family:'Noto Sans KR',sans-serif;
-  cursor:pointer;transition:all .25s;font-weight:700;line-height:1.5;text-align:center;
+  cursor:pointer;transition:all .25s;font-weight:700;font-size:.88rem;text-align:center;
 }
 .plan-sel-btn.on{
   background:linear-gradient(135deg,rgba(201,168,76,.3),rgba(201,168,76,.12));
@@ -37,7 +37,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .plan-sel-icon{font-size:1.3rem;display:block;margin-bottom:3px}
 .plan-sel-name{font-size:.72rem;color:rgba(201,168,76,.6);font-weight:500;display:block}
 
-.input-card{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.25);border-radius:18px;padding:18px 16px;display:flex;flex-direction:column;gap:13px;align-items:flex-start;text-align:left}
+.input-card{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.25);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left}
 .input-label{font-size:.65rem;color:#c9a84c;font-weight:700;letter-spacing:.1em;display:block;margin-bottom:4px}
 .input-field{width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(201,168,76,.3);background:rgba(255,255,255,.08);color:#f5e8c8;font-size:.92rem;outline:none;transition:border .2s;font-family:'Noto Serif KR',serif}
 .input-field::placeholder{color:rgba(255,255,255,.25);font-family:'Noto Sans KR',sans-serif}
@@ -129,6 +129,43 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .cel-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .cel-btn{padding:10px 20px;border-radius:24px;border:1.5px solid rgba(201,168,76,.4);background:rgba(255,255,255,.08);color:rgba(245,232,200,.8);font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
 .cel-btn.next{background:linear-gradient(135deg,#c9a84c,#a07020);color:#fff;border-color:#c9a84c;box-shadow:0 3px 14px rgba(201,168,76,.38)}
+
+/* 읽는이 인라인 입력 */
+.reader-prefix-row{display:flex;align-items:center;gap:6px;width:100%}
+.reader-prefix{color:#f5e8c8;font-size:.9rem;font-family:'Noto Serif KR',serif;white-space:nowrap;flex-shrink:0}
+.reader-input-inline{
+  width:70%;max-width:200px;padding:10px 12px;border-radius:10px;
+  border:1.5px solid rgba(201,168,76,.3);background:rgba(255,255,255,.08);
+  color:#f5e8c8;font-size:.92rem;outline:none;
+  font-family:'Noto Serif KR',serif;text-align:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+.reader-input-inline::placeholder{color:rgba(255,255,255,.3)}
+.reader-input-inline:focus{border-color:#c9a84c}
+.reader-suffix{color:#f5e8c8;font-size:.9rem;font-family:'Noto Serif KR',serif;flex-shrink:0}
+
+/* 별 애니메이션 + 무지개 색 */
+@keyframes starPop{
+  0%{transform:scale(1) rotate(0deg)}
+  50%{transform:scale(1.5) rotate(18deg)}
+  100%{transform:scale(1) rotate(0deg)}
+}
+@keyframes starFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-9px)}
+}
+@keyframes rainbow1{0%,100%{filter:hue-rotate(0deg) brightness(1.4) drop-shadow(0 0 6px #ff4444)} 50%{filter:hue-rotate(30deg) brightness(1.8) drop-shadow(0 0 12px #ff6644)}}
+@keyframes rainbow2{0%,100%{filter:hue-rotate(60deg) brightness(1.4) drop-shadow(0 0 6px #ffaa00)} 50%{filter:hue-rotate(90deg) brightness(1.8) drop-shadow(0 0 12px #ffdd00)}}
+@keyframes rainbow3{0%,100%{filter:hue-rotate(120deg) brightness(1.4) drop-shadow(0 0 6px #00cc44)} 50%{filter:hue-rotate(150deg) brightness(1.8) drop-shadow(0 0 12px #44ff88)}}
+@keyframes rainbow4{0%,100%{filter:hue-rotate(200deg) brightness(1.4) drop-shadow(0 0 6px #0088ff)} 50%{filter:hue-rotate(230deg) brightness(1.8) drop-shadow(0 0 12px #44aaff)}}
+@keyframes rainbow5{0%,100%{filter:hue-rotate(280deg) brightness(1.4) drop-shadow(0 0 6px #cc44ff)} 50%{filter:hue-rotate(310deg) brightness(1.8) drop-shadow(0 0 12px #ee88ff)}}
+.star-ani{display:inline-block;font-size:1.6rem}
+.s1{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow1 2s ease-in-out infinite;animation-delay:0s,0s,0s}
+.s2{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow2 2s ease-in-out infinite;animation-delay:.3s,.3s,.3s}
+.s3{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow3 2s ease-in-out infinite;animation-delay:.6s,.6s,.6s}
+.s4{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow4 2s ease-in-out infinite;animation-delay:.9s,.9s,.9s}
+.s5{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow5 2s ease-in-out infinite;animation-delay:1.2s,1.2s,1.2s}
 </style>
 </head>
 <body>
@@ -136,19 +173,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 표지 -->
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
-    <div class="cover-title" id="coverTitle">성경읽기 계획표</div>
-    <div class="cover-subtitle">생명수 목장</div>
+    <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
     <div class="plan-select-row">
-      <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">
-        <span class="plan-sel-icon">📖</span>
-        연대순 읽기
-        <span class="plan-sel-name">창세기 → 요한계시록</span>
-      </button>
-      <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">
-        <span class="plan-sel-icon">📅</span>
-        1년 통독
-        <span class="plan-sel-name">월별 균등 배분</span>
-      </button>
+      <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
+      <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
     </div>
     <div class="input-card">
       <div style="width:100%">
@@ -166,8 +194,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         </div>
       </div>
       <div style="width:100%">
-        <label class="input-label">🙏 읽는이</label>
-        <input type="text" class="input-field" id="readerInput" placeholder="이름을 입력하세요" maxlength="20">
+        <div class="reader-prefix-row">
+          <span class="reader-prefix">생명수 목장</span>
+          <input type="text" class="input-field reader-input-inline" id="readerInput" placeholder="이름" maxlength="20">
+        </div>
       </div>
     </div>
     <button class="start-btn" onclick="startReading()">✝ 읽기 시작</button>
@@ -233,7 +263,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen" id="s-celebrate">
   <div class="cel-wrap" id="celWrap">
     <div class="cel-title">오늘 성경읽기<br>완료했습니다 ✝</div>
-    <div class="stars-row">⭐✨🌟💫✨</div>
+    <div class="stars-row" id="starsRow">
+      <span class="star-ani s1">⭐</span>
+      <span class="star-ani s2">✨</span>
+      <span class="star-ani s3">🌟</span>
+      <span class="star-ani s4">💫</span>
+      <span class="star-ani s5">✨</span>
+    </div>
     <div class="info-card">
       <div class="info-row"><div class="info-date" id="celDate">—</div></div>
       <div class="info-row"><div class="info-range" id="celRange">—</div></div>
