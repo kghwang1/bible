@@ -262,7 +262,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 축하 -->
 <div class="screen" id="s-celebrate">
   <div class="cel-wrap" id="celWrap">
-    <div class="cel-title">오늘 성경읽기<br>완료했습니다 ✝</div>
+    <div class="cel-title" id="celTitle">오늘 성경읽기<br>완료했습니다 ✝</div>
     <div class="stars-row" id="starsRow">
       <span class="star-ani s1">⭐</span>
       <span class="star-ani s2">✨</span>
@@ -1045,6 +1045,29 @@ function markDone(){
   ST.checks[curN]=!was; saveST(); updateDoneBtn(); updateProg();
   if(!was) showCelebration(curN);
 }
+// 이름 → 고유 숫자 해시 (같은 이름은 항상 같은 스타일)
+function nameHash(name){
+  let h=0;
+  for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xffffffff;
+  return Math.abs(h);
+}
+
+// 글자체 목록
+const CEL_FONTS=[
+  "'Noto Serif KR', serif",
+  "'Noto Sans KR', sans-serif",
+  "Georgia, serif",
+  "Palatino, 'Palatino Linotype', serif",
+  "'Times New Roman', Times, serif",
+  "Garamond, serif",
+];
+
+// 기호 풀
+const STAR_POOL=['⭐','✨','🌟','💫','🌙','☀️','🔥','💎','🌈','🎖️','🏅','👑','🌸','🕊️','✝️'];
+
+// 무지개 색 풀 (hue-rotate 값)
+const HUE_POOL=[0,40,80,130,200,260,310];
+
 function showCelebration(n){
   const p=PLAN.find(x=>x.n===n); if(!p) return;
   const done=PLAN.filter(x=>ST.checks[x.n]).length;
@@ -1053,6 +1076,32 @@ function showCelebration(n){
   document.getElementById('celRange').textContent=p.r;
   document.getElementById('celReader').textContent=ST.reader||'—';
   document.getElementById('celProg').textContent=done+'일 / '+PLAN.length+'일 ('+pct+'%) 읽음';
+
+  // 이름 기반 고유 스타일 적용
+  const name = ST.reader || '생명수';
+  const h = nameHash(name);
+
+  // 글자체 변경
+  const fontIdx = h % CEL_FONTS.length;
+  const titleEl = document.getElementById('celTitle');
+  if(titleEl) titleEl.style.fontFamily = CEL_FONTS[fontIdx];
+
+  // 별 기호 순서·색 변경 (5개 선택)
+  const starsEl = document.getElementById('starsRow');
+  if(starsEl){
+    // 이름 해시로 기호 5개 선택
+    const picked=[];
+    for(let i=0;i<5;i++){
+      picked.push(STAR_POOL[(h+i*7)%STAR_POOL.length]);
+    }
+    // 색상도 고유하게
+    starsEl.innerHTML=picked.map((s,i)=>{
+      const hue=HUE_POOL[(h+i*3)%HUE_POOL.length];
+      const delay=(i*0.3).toFixed(1);
+      return `<span class="star-ani s${i+1}" style="animation-delay:${delay}s,${delay}s,${delay}s;filter:hue-rotate(${hue}deg) brightness(1.4) drop-shadow(0 0 8px rgba(255,220,50,.6))">${s}</span>`;
+    }).join('');
+  }
+
   showScreen('s-celebrate');
 }
 function goNext(){
