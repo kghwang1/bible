@@ -166,6 +166,30 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .s3{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow3 2s ease-in-out infinite;animation-delay:.6s,.6s,.6s}
 .s4{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow4 2s ease-in-out infinite;animation-delay:.9s,.9s,.9s}
 .s5{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow5 2s ease-in-out infinite;animation-delay:1.2s,1.2s,1.2s}
+
+/* ═══ 지도 화면 ═══ */
+#s-map{background:#1a0e05}
+.map-hdr{
+  background:linear-gradient(135deg,#221508,#3a2510,#221508);
+  border-bottom:2px solid #c9a84c;
+  padding:10px 12px 8px;flex-shrink:0;
+}
+.map-hdr-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:1rem;color:#e8c97a;font-weight:700;
+  text-align:center;margin:6px 0 8px;
+}
+.map-tab-row{display:flex;gap:6px;justify-content:center}
+.map-tab{
+  padding:5px 18px;border-radius:20px;
+  border:1.5px solid rgba(201,168,76,.4);
+  background:transparent;color:rgba(245,232,200,.6);
+  font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.map-tab.on{background:#c9a84c;color:#fff;border-color:#c9a84c}
+.map-body{flex:1;display:flex;flex-direction:column;min-height:0;background:#fff}
+.map-frame{width:100%;flex:1;border:none;min-height:0}
 </style>
 </head>
 <body>
@@ -220,6 +244,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
       <div class="hdr-btn-row">
         <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
+        <button class="hdr-btn" onclick="showScreen('s-map')">🗺 지도</button>
       </div>
     </div>
   </div>
@@ -239,6 +264,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="read-hdr-left">
         <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
         <button class="nav-btn" onclick="showScreen('s-list')">목록</button>
+        <button class="nav-btn" onclick="showScreen('s-map')">🗺</button>
       </div>
       <div class="read-hdr-center">
         <div class="day-tag" id="dayTag"></div>
@@ -256,6 +282,24 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
   <div class="bible-wrap">
     <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
+  </div>
+</div>
+
+<!-- 지도 -->
+<div class="screen" id="s-map">
+  <div class="map-hdr">
+    <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
+    <button class="nav-btn" onclick="showScreen('s-list')">목록</button>
+    <div class="map-hdr-title">✝ 성경 지도</div>
+    <div class="map-tab-row">
+      <button class="map-tab on" onclick="switchMap('geo',this)">지명 지도</button>
+      <button class="map-tab" onclick="switchMap('search',this)">지명 검색</button>
+    </div>
+  </div>
+  <div class="map-body" id="mapBody">
+    <iframe class="map-frame" id="mapFrame"
+      src="https://www.openbible.info/geo/"
+      allowfullscreen></iframe>
   </div>
 </div>
 
@@ -897,11 +941,29 @@ function todayIdx(start){
   return Math.max(0,Math.min(diff,364));
 }
 
+// 지도 탭 전환
+function switchMap(type, btn){
+  document.querySelectorAll('.map-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const frame = document.getElementById('mapFrame');
+  if(type === 'geo'){
+    frame.src = 'https://www.openbible.info/geo/';
+  } else {
+    frame.src = 'https://www.openbible.info/geo/';
+    // 검색 탭: 같은 페이지에서 검색창 사용
+  }
+}
+
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='s-cover') initCover();
   if(id==='s-list')  renderList();
+  if(id==='s-map'){
+    // 지도 화면 진입 시 iframe 로드
+    const f=document.getElementById('mapFrame');
+    if(f && !f.src) f.src='https://www.openbible.info/geo/';
+  }
 }
 
 function initCover(){
