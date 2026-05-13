@@ -109,9 +109,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .done-btn{width:52px;min-height:46px;padding:6px 4px;border-radius:10px;border:none;cursor:pointer;font-size:.72rem;font-weight:700;line-height:1.4;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s}
 .done-btn.unread{background:linear-gradient(160deg,#3a7050,#225038);color:#fff;box-shadow:0 3px 10px rgba(58,112,80,.4)}
 .done-btn.already{background:linear-gradient(160deg,#8b5e2a,#5c3d1e);color:#f5e8c8}
-.bible-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;background:#fff;position:relative}
-.bible-clip{position:absolute;inset:0;overflow:hidden;background:#fff}
-.bible-frame{border:none;background:#fff}
+.bible-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.bible-frame{width:calc(100% + 18px);border:none;flex:1;min-height:0}
 
 /* 축하 */
 #s-celebrate{background:radial-gradient(ellipse at 50% 20%,#2e1c0a 0%,#140b04 100%);overflow-y:auto;align-items:center}
@@ -167,26 +166,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .s3{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow3 2s ease-in-out infinite;animation-delay:.6s,.6s,.6s}
 .s4{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow4 2s ease-in-out infinite;animation-delay:.9s,.9s,.9s}
 .s5{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow5 2s ease-in-out infinite;animation-delay:1.2s,1.2s,1.2s}
-
-/* 스크롤 버튼 */
-.scroll-btn{
-  position:absolute;
-  bottom:80px;right:14px;
-  width:46px;height:46px;
-  border-radius:50%;
-  border:none;
-  background:linear-gradient(160deg,#3a7050,#225038);
-  color:#fff;font-size:1.1rem;
-  cursor:pointer;
-  box-shadow:0 3px 12px rgba(0,0,0,.3);
-  z-index:50;
-  transition:all .2s;
-  display:flex;align-items:center;justify-content:center;
-}
-.scroll-btn:hover{transform:scale(1.1)}
-.scroll-btn:active{transform:scale(.95)}
-#s-read{position:relative}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -275,13 +254,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <button class="font-btn" onclick="changeFont(-1)">A-</button>
     </div>
   </div>
-  <div class="bible-wrap" id="bibleWrap">
-    <div class="bible-clip" id="bibleClip">
-      <iframe class="bible-frame" id="bibleFrame" src="" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;background:#fff"></iframe>
-    </div>
+  <div class="bible-wrap">
+    <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
   </div>
-  <!-- 스크롤 버튼: 하단 우측 고정 -->
-  <button class="scroll-btn" id="scrollBtn" onclick="scrollPage()">▼</button>
 </div>
 
 <!-- 축하 -->
@@ -1047,62 +1022,17 @@ function loadBible(p){
   const segs=parseRange(p.r);
   if(!segs.length) return;
   const frame=document.getElementById('bibleFrame');
-  // 로딩 중 표시
-  const wrap=document.getElementById('bibleWrap');
-  if(wrap){
-    let loader=document.getElementById('bibleLoader');
-    if(!loader){
-      loader=document.createElement('div');
-      loader.id='bibleLoader';
-      loader.style.cssText='position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:20;font-size:.85rem;color:#a07850;font-family:"Noto Sans KR",sans-serif;flex-direction:column;gap:10px';
-      loader.innerHTML='<div style="width:36px;height:36px;border:3px solid #eedcb0;border-top-color:#c9a84c;border-radius:50%;animation:spin .8s linear infinite"></div>성경 본문 불러오는 중…';
-      wrap.appendChild(loader);
-    } else {
-      loader.style.display='flex';
-    }
-  }
-  frame.onload = function(){
-    onFrameLoad(frame);
-    const loader=document.getElementById('bibleLoader');
-    if(loader) loader.style.display='none';
-  };
-  const url=godpiaUrl(segs[0].bid,segs[0].ch);
+  const url=godpiaUrl(segs[0].bid,segs[0].ch)+'&_t='+Date.now();
+  frame.onload = function(){ onFrameLoad(frame); };
   frame.src=url;
 }
 function onFrameLoad(frame){
   const zm=GODPIA_ZOOM[fontIdx]||1.0;
   frame.style.zoom=zm;
-  frame.style.background='#fff';
   const adj=Math.round(OFFSET*zm);
-  // iframe을 위로 당겨서 godpia 상단 메뉴 숨김
-  // position:absolute + top:-adj 로 위치 지정
-  frame.style.position='absolute';
-  frame.style.top='-'+adj+'px';
-  frame.style.left='0';
-  frame.style.width='100%';
+  frame.style.marginTop='-'+adj+'px';
   frame.style.height='calc(100% + '+adj+'px)';
-  // 로더 숨기기
-  const loader=document.getElementById('bibleLoader');
-  if(loader) loader.style.display='none';
 }
-// 본문 한 페이지씩 스크롤 (위로)
-let scrollDir = -1; // -1=위로, 1=아래로
-function scrollPage(){
-  const frame = document.getElementById('bibleFrame');
-  const btn   = document.getElementById('scrollBtn');
-  if(!frame || !frame.contentWindow) return;
-  try{
-    const scrollAmt = window.innerHeight * 0.75; // 화면 75% 만큼 이동
-    frame.contentWindow.scrollBy({top: scrollDir * scrollAmt, behavior:'smooth'});
-    // 버튼 방향 토글
-    scrollDir *= -1;
-    btn.textContent = scrollDir === -1 ? '▲' : '▼';
-  }catch(e){
-    // CORS 차단 시: 스크롤 위치로 이동
-    frame.contentWindow.location.reload();
-  }
-}
-
 function changeFont(dir){
   fontIdx=Math.max(0,Math.min(4,fontIdx+dir));
   document.getElementById('fontLabel').textContent=FONT_LABELS[fontIdx];
