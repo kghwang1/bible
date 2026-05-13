@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=0.45,maximum-scale=4.0,user-scalable=yes">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes">
 <meta charset="UTF-8">
 <title>구약성경 왕·선지자 연대 타임라인</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
   --p-return:#1a6a30;
 
   /* 1년 = 몇 px */
-  --px-per-yr: 2.0px;
+  --px-per-yr: 4.2px;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -40,14 +40,14 @@ body{
   background:var(--bg);
   color:var(--ink);
   min-height:100vh;
-  overflow:auto;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
 }
 
 /* ══ 상단 60%: 연대기 스크롤 영역 ══ */
 #tl-wrap{
-  height:50vh;
+  height:58vh;
   overflow-x:auto;
   overflow-y:hidden;
   flex-shrink:0;
@@ -71,26 +71,26 @@ body{
 
 /* ══ 하단 40%: 인물정보 + 지도 ══ */
 #bottom-panel{
-  height:50vh;
+  height:42vh;
   flex-shrink:0;
   background:#12122a;
   display:flex;
   flex-direction:column;
-  overflow:auto;
+  overflow:hidden;
 }
 
 /* 탭 버튼 */
 #tab-bar{
   display:flex;
   align-items:stretch;
-  height:34px;
+  height:52px;
   background:#0d0d1a;
   border-bottom:2px solid var(--gold);
   flex-shrink:0;
 }
 .tab-btn{
-  padding:0 10px;
-  font-size:12px;
+  padding:0 24px;
+  font-size:22.5px;
   font-weight:700;
   color:#6060a0;
   background:transparent;
@@ -109,16 +109,15 @@ body{
 .tab-btn:hover:not(.active){ color:#aac0ff; }
 
 #selected-name{
-  padding:0 8px;
+  padding:0 16px;
   display:flex;
   align-items:center;
-  font-size:14px;
+  font-size:27px;
   font-weight:900;
   color:#ffe080;
   font-family:'Noto Serif KR',serif;
   border-right:2px solid #2a2a5a;
-  min-width:80px;
-  max-width:120px;
+  min-width:200px;
 }
 
 /* 탭 콘텐츠 */
@@ -134,8 +133,8 @@ body{
   height:100%;
 }
 #info-left{
-  width:120px;
-  min-width:100px;
+  width:240px;
+  min-width:220px;
   background:#0d0d22;
   display:flex;
   flex-direction:column;
@@ -148,20 +147,20 @@ body{
 }
 #info-name{
   font-family:'Noto Serif KR',serif;
-  font-size:22px;
+  font-size:42px;
   font-weight:900;
   color:#ffe080;
   text-align:center;
   line-height:1.2;
 }
 #info-period{
-  font-size:11px;
+  font-size:21px;
   color:#aac0ff;
   font-weight:700;
   text-align:center;
 }
 #info-type-badge{
-  font-size:10px;
+  font-size:18px;
   padding:3px 12px;
   border-radius:20px;
   font-weight:700;
@@ -178,12 +177,12 @@ body{
   gap:7px;
 }
 #info-deeds{
-  font-size:14px;
+  font-size:34px;
   line-height:1.85;
   color:#e0e8ff;
 }
 #info-verses{
-  font-size:13px;
+  font-size:29px;
   color:#80d0a0;
   line-height:1.7;
   border-top:1px solid #2a2a5a;
@@ -266,15 +265,15 @@ h1{
 }
 
 .row-label{
-  width:28px;
-  min-width:28px;
+  width:72px;
+  min-width:72px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:8px;
+  font-size:15px;
   font-weight:700;
   writing-mode:vertical-rl;
-  letter-spacing:1px;
+  letter-spacing:2px;
   color:#fff;
   border-radius:3px 0 0 3px;
   flex-shrink:0;
@@ -360,7 +359,7 @@ h1{
 }
 .king-seg:hover{ filter:brightness(1.15); }
 .king-seg .kname{
-  font-size:26px;
+  font-size:19px;
   font-weight:700;
   color:#fff;
   text-shadow:0 1px 2px rgba(0,0,0,0.5);
@@ -444,14 +443,14 @@ h1{
 /* ══ 선지자 카드 ══ */
 .prophet-card{
   position:absolute;
-  border-radius:10px;
-  padding:0 6px;
-  font-size:20px;
+  border-radius:20px;
+  padding:0 10px;
+  font-size:15px;
   font-weight:700;
   color:#fff;
   display:flex;
   align-items:center;
-  gap:3px;
+  gap:5px;
   overflow:hidden;
   white-space:nowrap;
   box-shadow:0 2px 8px rgba(0,0,0,0.3);
@@ -541,6 +540,23 @@ h1{
 .li{ display:flex;align-items:center;gap:5px; }
 .ld{ width:14px;height:14px;border-radius:3px; }
 .ld.round{ border-radius:8px; }
+</style>
+
+<style id="mobile-fix">
+@media (max-width:900px){
+  /* h1 타이틀 숨김 */
+  h1 { display:none !important; }
+  
+  /* 안내문 크기 */
+  #bottom-empty {
+    font-size:14px !important;
+    padding:12px !important;
+  }
+  
+  /* tab-content 스크롤 */
+  #tab-content { overflow:auto !important; }
+  #info-right { overflow-y:auto !important; }
+}
 </style>
 </head>
 <body>
