@@ -279,20 +279,18 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 }
 .appendix-quick-btn:hover{background:rgba(201,168,76,.3)}
 
-/* 부록 버튼 행 */
-.read-hdr-row-appendix{
-  display:flex;justify-content:flex-end;
-  margin-bottom:2px;
-}
-.appendix-quick-btn{
-  padding:3px 12px;border-radius:14px;
-  border:1.5px solid #c9a84c;
+.read-right-col{display:flex;flex-direction:column;gap:4px;flex-shrink:0;align-items:center}
+.appendix-side-btn{
+  width:52px;padding:4px 2px;border-radius:10px;
+  border:1.5px solid rgba(201,168,76,.6);
   background:rgba(201,168,76,.15);
-  color:#c9a84c;font-size:.68rem;font-weight:700;
-  cursor:pointer;font-family:'Noto Sans KR',sans-serif;
-  transition:all .18s;
+  color:#c9a84c;font-size:.6rem;font-weight:700;
+  cursor:pointer;text-align:center;line-height:1.4;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:all .2s;
 }
-.appendix-quick-btn:hover{background:rgba(201,168,76,.3)}
+.appendix-side-btn:hover{background:rgba(201,168,76,.3)}
+
 </style>
 </head>
 <body>
@@ -372,19 +370,17 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <div class="day-tag" id="dayTag"></div>
         <h2 id="readTitle"></h2>
       </div>
-      <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
-        <span id="cmpTxt">모두<br>읽음</span>
-      </button>
-    </div>
-    <!-- 부록 버튼: 읽음 버튼 바로 아래 -->
-    <div class="read-hdr-row-appendix">
-      <button class="appendix-quick-btn" onclick="showScreen('s-appendix')">📚 부록</button>
+      <div class="read-right-col">
+        <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
+          <span id="cmpTxt">모두<br>읽음</span>
+        </button>
+        <button class="appendix-side-btn" onclick="showScreen('s-appendix')">📚<br><span>부록</span></button>
+      </div>
     </div>
     <div class="read-hdr-row2">
       <button class="font-btn" onclick="changeFont(1)">A+</button>
       <span class="font-label" id="fontLabel">기본</span>
       <button class="font-btn" onclick="changeFont(-1)">A-</button>
-      <button class="appendix-quick-btn" onclick="showScreen('s-appendix')">📚 부록</button>
     </div>
   </div>
   <div class="bible-wrap">
