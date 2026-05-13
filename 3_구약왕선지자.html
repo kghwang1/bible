@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=0.5,maximum-scale=3.0,user-scalable=yes">
+<meta name="viewport" content="width=device-width,initial-scale=0.45,maximum-scale=4.0,user-scalable=yes">
 <meta charset="UTF-8">
 <title>구약성경 왕·선지자 연대 타임라인</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
   --p-return:#1a6a30;
 
   /* 1년 = 몇 px */
-  --px-per-yr: 1.8px;
+  --px-per-yr: 2.0px;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -47,7 +47,7 @@ body{
 
 /* ══ 상단 60%: 연대기 스크롤 영역 ══ */
 #tl-wrap{
-  height:50vh;
+  height:48vh;
   overflow-x:auto;
   overflow-y:hidden;
   flex-shrink:0;
@@ -71,12 +71,12 @@ body{
 
 /* ══ 하단 40%: 인물정보 + 지도 ══ */
 #bottom-panel{
-  height:40vh;
+  height:52vh;
   flex-shrink:0;
   background:#12122a;
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  overflow:auto;
 }
 
 /* 탭 버튼 */
@@ -542,42 +542,70 @@ h1{
 .ld.round{ border-radius:8px; }
 </style>
 
-<style>
-/* ── 모바일 최적화 ── */
-@media (max-width: 768px) {
-  :root { --px-per-yr: 1.8px; }
-  
-  /* 상단 타이틀 숨김 */
-  h1 { display:none; }
-  
-  /* 툴바 작게 */
-  #toolbar, .toolbar {
-    flex-wrap:wrap; gap:2px; padding:3px 4px;
-    font-size:9px;
-  }
-  #toolbar button, #toolbar select,
-  .toolbar button, .toolbar select {
-    font-size:8px !important; padding:2px 5px !important;
-    height:22px !important;
-  }
-  
-  /* 타임라인 텍스트 */
-  .tl-year-label { font-size:8px !important; }
-  .era-label { font-size:7px !important; }
-  .king-block, .prophet-block, [class*="block"] {
-    font-size:6px !important;
-    line-height:1.1 !important;
-    padding:0 1px !important;
-  }
-  .row-label { font-size:7px !important; width:28px !important; }
-  
-  /* 하단 패널 */
-  #bottom-panel { flex:1; overflow:auto; }
-  #tab-bar { font-size:9px; padding:4px 6px; flex-wrap:wrap; gap:4px; }
-  #tab-bar .tab-btn { font-size:9px !important; padding:3px 8px !important; }
-  #selected-name { font-size:10px !important; }
-  #tab-content { font-size:10px; padding:8px; overflow:auto; }
+<style id="mobile-override">
+/* ══ 모바일 최적화 override ══ */
+
+/* 연대 숫자 50% 축소: yearbar .kyear */
+.yearbar { height:22px !important; }
+.kyear { font-size:7px !important; }
+
+/* 연대 큰 숫자 (era-seg) 50% 축소 */
+.era-seg { font-size:11px !important; }
+.era-bar { height:14px !important; }
+
+/* 좌측 항목 row-label 균일하게 */
+.row-label {
+  width:36px !important;
+  min-width:36px !important;
+  font-size:7px !important;
+  letter-spacing:1px !important;
 }
+
+/* 왕 블록 king-seg 이름 보이게 */
+.king-seg {
+  font-size:6px !important;
+  overflow:visible !important;
+}
+.king-seg .kname { font-size:5.5px !important; }
+.kyear { font-size:5.5px !important; }
+
+/* 선지자 블록 */
+.prophet-card {
+  font-size:6px !important;
+  padding:0 4px !important;
+  border-radius:8px !important;
+}
+
+/* 인물 이름 (#selected-name): 1행 아래, 50% 확대 */
+#selected-name {
+  font-size:14px !important;
+  padding:8px 10px 4px !important;
+  min-width:unset !important;
+  border-right:none !important;
+  width:100% !important;
+  border-bottom:1px solid #2a2a5a !important;
+}
+
+/* 탭바 */
+#tab-bar {
+  flex-wrap:wrap !important;
+  padding:4px 6px !important;
+  gap:4px !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+}
+.tab-btn { font-size:9px !important; padding:3px 8px !important; }
+
+/* 인물 세부정보 70% 축소 */
+#info-name    { font-size:13px !important; }
+#info-period  { font-size:7px !important; }
+#info-type-badge { font-size:7px !important; padding:2px 6px !important; }
+#info-verses  { font-size:9px !important; line-height:1.4 !important; }
+#info-deeds   { font-size:10px !important; line-height:1.4 !important; }
+
+/* info 패널 */
+#info-left, #info-right { padding:6px 8px !important; }
+#tab-content  { overflow:auto !important; }
 </style>
 </head>
 <body>
