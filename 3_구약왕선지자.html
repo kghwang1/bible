@@ -47,7 +47,7 @@ body{
 
 /* ══ 상단 60%: 연대기 스크롤 영역 ══ */
 #tl-wrap{
-  height:48vh;
+  height:50vh;
   overflow-x:auto;
   overflow-y:hidden;
   flex-shrink:0;
@@ -71,7 +71,7 @@ body{
 
 /* ══ 하단 40%: 인물정보 + 지도 ══ */
 #bottom-panel{
-  height:52vh;
+  height:50vh;
   flex-shrink:0;
   background:#12122a;
   display:flex;
@@ -83,14 +83,14 @@ body{
 #tab-bar{
   display:flex;
   align-items:stretch;
-  height:52px;
+  height:34px;
   background:#0d0d1a;
   border-bottom:2px solid var(--gold);
   flex-shrink:0;
 }
 .tab-btn{
-  padding:0 24px;
-  font-size:22.5px;
+  padding:0 10px;
+  font-size:12px;
   font-weight:700;
   color:#6060a0;
   background:transparent;
@@ -109,15 +109,16 @@ body{
 .tab-btn:hover:not(.active){ color:#aac0ff; }
 
 #selected-name{
-  padding:0 16px;
+  padding:0 8px;
   display:flex;
   align-items:center;
-  font-size:27px;
+  font-size:14px;
   font-weight:900;
   color:#ffe080;
   font-family:'Noto Serif KR',serif;
   border-right:2px solid #2a2a5a;
-  min-width:200px;
+  min-width:80px;
+  max-width:120px;
 }
 
 /* 탭 콘텐츠 */
@@ -133,8 +134,8 @@ body{
   height:100%;
 }
 #info-left{
-  width:240px;
-  min-width:220px;
+  width:120px;
+  min-width:100px;
   background:#0d0d22;
   display:flex;
   flex-direction:column;
@@ -147,20 +148,20 @@ body{
 }
 #info-name{
   font-family:'Noto Serif KR',serif;
-  font-size:42px;
+  font-size:22px;
   font-weight:900;
   color:#ffe080;
   text-align:center;
   line-height:1.2;
 }
 #info-period{
-  font-size:21px;
+  font-size:11px;
   color:#aac0ff;
   font-weight:700;
   text-align:center;
 }
 #info-type-badge{
-  font-size:18px;
+  font-size:10px;
   padding:3px 12px;
   border-radius:20px;
   font-weight:700;
@@ -177,12 +178,12 @@ body{
   gap:7px;
 }
 #info-deeds{
-  font-size:34px;
+  font-size:14px;
   line-height:1.85;
   color:#e0e8ff;
 }
 #info-verses{
-  font-size:29px;
+  font-size:13px;
   color:#80d0a0;
   line-height:1.7;
   border-top:1px solid #2a2a5a;
@@ -265,15 +266,15 @@ h1{
 }
 
 .row-label{
-  width:72px;
-  min-width:72px;
+  width:28px;
+  min-width:28px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
+  font-size:8px;
   font-weight:700;
   writing-mode:vertical-rl;
-  letter-spacing:2px;
+  letter-spacing:1px;
   color:#fff;
   border-radius:3px 0 0 3px;
   flex-shrink:0;
@@ -359,7 +360,7 @@ h1{
 }
 .king-seg:hover{ filter:brightness(1.15); }
 .king-seg .kname{
-  font-size:19px;
+  font-size:26px;
   font-weight:700;
   color:#fff;
   text-shadow:0 1px 2px rgba(0,0,0,0.5);
@@ -443,14 +444,14 @@ h1{
 /* ══ 선지자 카드 ══ */
 .prophet-card{
   position:absolute;
-  border-radius:20px;
-  padding:0 10px;
-  font-size:15px;
+  border-radius:10px;
+  padding:0 6px;
+  font-size:20px;
   font-weight:700;
   color:#fff;
   display:flex;
   align-items:center;
-  gap:5px;
+  gap:3px;
   overflow:hidden;
   white-space:nowrap;
   box-shadow:0 2px 8px rgba(0,0,0,0.3);
@@ -540,72 +541,6 @@ h1{
 .li{ display:flex;align-items:center;gap:5px; }
 .ld{ width:14px;height:14px;border-radius:3px; }
 .ld.round{ border-radius:8px; }
-</style>
-
-<style id="mobile-override">
-/* ══ 모바일 최적화 override ══ */
-
-/* 연대 숫자 50% 축소: yearbar .kyear */
-.yearbar { height:22px !important; }
-.kyear { font-size:7px !important; }
-
-/* 연대 큰 숫자 (era-seg) 50% 축소 */
-.era-seg { font-size:11px !important; }
-.era-bar { height:14px !important; }
-
-/* 좌측 항목 row-label 균일하게 */
-.row-label {
-  width:36px !important;
-  min-width:36px !important;
-  font-size:7px !important;
-  letter-spacing:1px !important;
-}
-
-/* 왕 블록 king-seg 이름 보이게 */
-.king-seg {
-  font-size:6px !important;
-  overflow:visible !important;
-}
-.king-seg .kname { font-size:5.5px !important; }
-.kyear { font-size:5.5px !important; }
-
-/* 선지자 블록 */
-.prophet-card {
-  font-size:6px !important;
-  padding:0 4px !important;
-  border-radius:8px !important;
-}
-
-/* 인물 이름 (#selected-name): 1행 아래, 50% 확대 */
-#selected-name {
-  font-size:14px !important;
-  padding:8px 10px 4px !important;
-  min-width:unset !important;
-  border-right:none !important;
-  width:100% !important;
-  border-bottom:1px solid #2a2a5a !important;
-}
-
-/* 탭바 */
-#tab-bar {
-  flex-wrap:wrap !important;
-  padding:4px 6px !important;
-  gap:4px !important;
-  flex-direction:column !important;
-  align-items:flex-start !important;
-}
-.tab-btn { font-size:9px !important; padding:3px 8px !important; }
-
-/* 인물 세부정보 70% 축소 */
-#info-name    { font-size:13px !important; }
-#info-period  { font-size:7px !important; }
-#info-type-badge { font-size:7px !important; padding:2px 6px !important; }
-#info-verses  { font-size:9px !important; line-height:1.4 !important; }
-#info-deeds   { font-size:10px !important; line-height:1.4 !important; }
-
-/* info 패널 */
-#info-left, #info-right { padding:6px 8px !important; }
-#tab-content  { overflow:auto !important; }
 </style>
 </head>
 <body>
