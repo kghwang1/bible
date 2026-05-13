@@ -269,6 +269,30 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   border-color:#c9a84c;margin-bottom:10px;
 }
 .map-list-icon{font-size:1.1rem;flex-shrink:0}
+
+.appendix-quick-btn{
+  margin-left:auto;
+  padding:3px 10px;border-radius:14px;
+  border:1.5px solid #c9a84c;background:rgba(201,168,76,.15);
+  color:#c9a84c;font-size:.68rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:all .18s;
+}
+.appendix-quick-btn:hover{background:rgba(201,168,76,.3)}
+
+/* 부록 버튼 행 */
+.read-hdr-row-appendix{
+  display:flex;justify-content:flex-end;
+  margin-bottom:2px;
+}
+.appendix-quick-btn{
+  padding:3px 12px;border-radius:14px;
+  border:1.5px solid #c9a84c;
+  background:rgba(201,168,76,.15);
+  color:#c9a84c;font-size:.68rem;font-weight:700;
+  cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+  transition:all .18s;
+}
+.appendix-quick-btn:hover{background:rgba(201,168,76,.3)}
 </style>
 </head>
 <body>
@@ -352,10 +376,15 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <span id="cmpTxt">모두<br>읽음</span>
       </button>
     </div>
+    <!-- 부록 버튼: 읽음 버튼 바로 아래 -->
+    <div class="read-hdr-row-appendix">
+      <button class="appendix-quick-btn" onclick="showScreen('s-appendix')">📚 부록</button>
+    </div>
     <div class="read-hdr-row2">
       <button class="font-btn" onclick="changeFont(1)">A+</button>
       <span class="font-label" id="fontLabel">기본</span>
       <button class="font-btn" onclick="changeFont(-1)">A-</button>
+      <button class="appendix-quick-btn" onclick="showScreen('s-appendix')">📚 부록</button>
     </div>
   </div>
   <div class="bible-wrap">
