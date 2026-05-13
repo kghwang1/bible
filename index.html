@@ -24,10 +24,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 /* 계획 선택 */
 .plan-select-row{display:flex;gap:10px;width:100%}
 .plan-sel-btn{
-  flex:1;padding:10px 8px;border-radius:14px;
+  flex:1;padding:9px 6px;border-radius:14px;
   border:2px solid rgba(201,168,76,.3);background:rgba(255,255,255,.05);
   color:rgba(245,232,200,.65);font-family:'Noto Sans KR',sans-serif;
-  cursor:pointer;transition:all .25s;font-weight:700;font-size:.88rem;text-align:center;
+  cursor:pointer;transition:all .25s;font-weight:700;font-size:.8rem;text-align:center;
 }
 .plan-sel-btn.on{
   background:linear-gradient(135deg,rgba(201,168,76,.3),rgba(201,168,76,.12));
@@ -167,29 +167,64 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .s4{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow4 2s ease-in-out infinite;animation-delay:.9s,.9s,.9s}
 .s5{animation:starPop 1.8s ease-in-out infinite, starFloat 2.2s ease-in-out infinite, rainbow5 2s ease-in-out infinite;animation-delay:1.2s,1.2s,1.2s}
 
-/* ═══ 지도 화면 ═══ */
-#s-map{background:#1a0e05}
-.map-hdr{
+/* ═══ 부록 화면 ═══ */
+#s-appendix{background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);overflow-y:auto}
+.appendix-hdr{
   background:linear-gradient(135deg,#221508,#3a2510,#221508);
   border-bottom:2px solid #c9a84c;
-  padding:10px 12px 8px;flex-shrink:0;
+  padding:11px 14px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
 }
-.map-hdr-title{
+.appendix-title{
+  flex:1;text-align:center;
+  font-family:'Noto Serif KR',serif;font-size:1rem;
+  color:#e8c97a;font-weight:700;
+}
+.appendix-body{
+  padding:20px 18px 40px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.appendix-intro{
+  text-align:center;font-size:.78rem;
+  color:rgba(245,232,200,.6);
+  font-style:italic;margin-bottom:4px;
+}
+.appendix-section{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:16px;padding:18px 16px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.appendix-section-title{
   font-family:'Noto Serif KR',serif;
-  font-size:1rem;color:#e8c97a;font-weight:700;
-  text-align:center;margin:6px 0 8px;
+  font-size:1rem;font-weight:700;color:#e8c97a;
 }
-.map-tab-row{display:flex;gap:6px;justify-content:center}
-.map-tab{
-  padding:5px 18px;border-radius:20px;
+.appendix-section-desc{
+  font-size:.72rem;color:rgba(245,232,200,.6);
+  line-height:1.5;
+}
+.map-link-list{display:flex;flex-direction:column;gap:8px}
+.map-link-btn{
+  display:block;padding:11px 14px;
+  border-radius:12px;
   border:1.5px solid rgba(201,168,76,.4);
-  background:transparent;color:rgba(245,232,200,.6);
-  font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;
+  background:rgba(201,168,76,.1);
+  color:#f5e8c8;font-size:.8rem;
+  text-decoration:none;font-weight:600;
+  transition:all .2s;
   font-family:'Noto Sans KR',sans-serif;
 }
-.map-tab.on{background:#c9a84c;color:#fff;border-color:#c9a84c}
-.map-body{flex:1;display:flex;flex-direction:column;min-height:0;background:#fff}
-.map-frame{width:100%;flex:1;border:none;min-height:0}
+.map-link-btn:hover{background:rgba(201,168,76,.25)}
+.appendix-open-btn{
+  padding:13px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#c9a84c,#a07020);
+  color:#fff;font-size:.88rem;font-weight:700;
+  font-family:'Noto Serif KR',serif;cursor:pointer;
+  letter-spacing:.04em;
+  box-shadow:0 3px 12px rgba(201,168,76,.4);
+  transition:all .2s;text-align:center;
+}
+.appendix-open-btn:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -201,6 +236,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="plan-select-row">
       <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
       <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
+      <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
     </div>
     <div class="input-card">
       <div style="width:100%">
@@ -244,7 +280,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
       <div class="hdr-btn-row">
         <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
-        <button class="hdr-btn" onclick="showScreen('s-map')">🗺 지도</button>
       </div>
     </div>
   </div>
@@ -264,7 +299,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="read-hdr-left">
         <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
         <button class="nav-btn" onclick="showScreen('s-list')">목록</button>
-        <button class="nav-btn" onclick="showScreen('s-map')">🗺</button>
       </div>
       <div class="read-hdr-center">
         <div class="day-tag" id="dayTag"></div>
@@ -285,21 +319,58 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
 </div>
 
-<!-- 지도 -->
-<div class="screen" id="s-map">
-  <div class="map-hdr">
-    <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
-    <button class="nav-btn" onclick="showScreen('s-list')">목록</button>
-    <div class="map-hdr-title">✝ 성경 지도</div>
-    <div class="map-tab-row">
-      <button class="map-tab on" onclick="switchMap('geo',this)">지명 지도</button>
-      <button class="map-tab" onclick="switchMap('search',this)">지명 검색</button>
+<!-- 부록 -->
+<div class="screen" id="s-appendix">
+  <div class="appendix-hdr">
+    <button class="nav-btn" onclick="showScreen('s-cover')">✕ 닫기</button>
+    <div class="appendix-title">✝ 부록</div>
+  </div>
+  <div class="appendix-body">
+    <div class="appendix-intro">성경 이해를 돕는 자료들입니다</div>
+
+    <!-- 성경 지도 -->
+    <div class="appendix-section">
+      <div class="appendix-section-title">🗺 성경 지도</div>
+      <div class="appendix-section-desc">구약·신약 시대의 주요 지명과 경로</div>
+      <div class="map-link-list">
+        <a class="map-link-btn" href="https://www.culturalbible.com/?attachment_id=1841" target="_blank">
+          📍 족장 시대의 고대 세계 (아브라함 여정)
+        </a>
+        <a class="map-link-btn" href="https://www.openbible.info/geo/" target="_blank">
+          🗺 성경 지명 전체 지도 (OpenBible)
+        </a>
+      </div>
+    </div>
+
+    <!-- 성경 연대기 -->
+    <div class="appendix-section">
+      <div class="appendix-section-title">📅 성경 연대기</div>
+      <div class="appendix-section-desc">성경과 세계 역사의 시대별 비교</div>
+      <button class="appendix-open-btn" onclick="openAppendixPage('chronology')">
+        📖 성경 연대기 · 세계 비교표 열기
+      </button>
+    </div>
+
+    <!-- 왕과 선지자 -->
+    <div class="appendix-section">
+      <div class="appendix-section-title">👑 연대별 왕과 선지자</div>
+      <div class="appendix-section-desc">구약 왕국 시대의 왕과 선지자 타임라인</div>
+      <button class="appendix-open-btn" onclick="openAppendixPage('kings')">
+        📖 구약 왕·선지자 연대 지도 열기
+      </button>
     </div>
   </div>
-  <div class="map-body" id="mapBody">
-    <iframe class="map-frame" id="mapFrame"
-      src="https://www.openbible.info/geo/"
-      allowfullscreen></iframe>
+</div>
+
+<!-- 부록 내용 화면 -->
+<div class="screen" id="s-appendix-content">
+  <div class="appendix-hdr">
+    <button class="nav-btn" onclick="showScreen('s-appendix')">← 부록</button>
+    <div class="appendix-title" id="appendixContentTitle">—</div>
+    <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
+  </div>
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;background:#fff">
+    <iframe id="appendixFrame" style="width:100%;flex:1;border:none;background:#fff" src=""></iframe>
   </div>
 </div>
 
@@ -941,17 +1012,17 @@ function todayIdx(start){
   return Math.max(0,Math.min(diff,364));
 }
 
-// 지도 탭 전환
-function switchMap(type, btn){
-  document.querySelectorAll('.map-tab').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  const frame = document.getElementById('mapFrame');
-  if(type === 'geo'){
-    frame.src = 'https://www.openbible.info/geo/';
-  } else {
-    frame.src = 'https://www.openbible.info/geo/';
-    // 검색 탭: 같은 페이지에서 검색창 사용
+function openAppendixPage(type){
+  const frame = document.getElementById('appendixFrame');
+  const title = document.getElementById('appendixContentTitle');
+  if(type === 'chronology'){
+    title.textContent = '성경 연대기 · 세계 비교';
+    frame.src = '2_성경연대기.html';
+  } else if(type === 'kings'){
+    title.textContent = '구약 왕 · 선지자 연대';
+    frame.src = '3_구약왕선지자.html';
   }
+  showScreen('s-appendix-content');
 }
 
 function showScreen(id){
@@ -959,11 +1030,6 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
   if(id==='s-cover') initCover();
   if(id==='s-list')  renderList();
-  if(id==='s-map'){
-    // 지도 화면 진입 시 iframe 로드
-    const f=document.getElementById('mapFrame');
-    if(f && !f.src) f.src='https://www.openbible.info/geo/';
-  }
 }
 
 function initCover(){

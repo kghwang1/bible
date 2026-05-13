@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>구약성경 왕·선지자 연대 타임라인</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#16100a;
+  --parch:#fdf6e3;
+  --parch2:#f4e8c1;
+  --gold:#c8960c;
+  --gold2:#f0b429;
+  --ink:#1a0f00;
+
+  /* 시대색 */
+  --c-pre:#3d5a9a;      /* 족장/출애굽/사사 */
+  --c-unified:#1e3a6e;  /* 통일왕국 */
+  --c-north:#0e6b6b;    /* 북이스라엘 */
+  --c-south:#8b1a1a;    /* 남유다 */
+  --c-exile:#3a3a60;    /* 포로기 */
+  --c-return:#1a5c2a;   /* 귀환 */
+
+  /* 선지자색 */
+  --p-early:#4a6aaa;
+  --p-north:#0a7a7a;
+  --p-south:#7a1080;
+  --p-exile:#3a2a80;
+  --p-return:#1a6a30;
+
+  /* 1년 = 몇 px */
+  --px-per-yr: 4.2px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ══ 상단 60%: 연대기 스크롤 영역 ══ */
+#tl-wrap{
+  height:60vh;
+  overflow-x:auto;
+  overflow-y:hidden;
+  flex-shrink:0;
+  background:var(--parch);
+  border-bottom:3px solid var(--gold);
+}
+#tl-wrap::-webkit-scrollbar{ height:6px; }
+#tl-wrap::-webkit-scrollbar-track{ background:#2a1a08; }
+#tl-wrap::-webkit-scrollbar-thumb{ background:var(--gold); border-radius:3px; }
+
+.page{
+  width: 7800px;
+  height:100%;          /* tl-wrap 높이에 맞춤 */
+  background:var(--parch);
+  padding:0;            /* 패딩 제거 - 빈 공백 없애기 */
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ══ 하단 40%: 인물정보 + 지도 ══ */
+#bottom-panel{
+  height:40vh;
+  flex-shrink:0;
+  background:#12122a;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* 탭 버튼 */
+#tab-bar{
+  display:flex;
+  align-items:stretch;
+  height:52px;
+  background:#0d0d1a;
+  border-bottom:2px solid var(--gold);
+  flex-shrink:0;
+}
+.tab-btn{
+  padding:0 24px;
+  font-size:22.5px;
+  font-weight:700;
+  color:#6060a0;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:all .15s;
+  letter-spacing:1px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.tab-btn.active{
+  color:#ffe080;
+  border-bottom-color:var(--gold);
+  background:#1a1a3a;
+}
+.tab-btn:hover:not(.active){ color:#aac0ff; }
+
+#selected-name{
+  padding:0 16px;
+  display:flex;
+  align-items:center;
+  font-size:27px;
+  font-weight:900;
+  color:#ffe080;
+  font-family:'Noto Serif KR',serif;
+  border-right:2px solid #2a2a5a;
+  min-width:200px;
+}
+
+/* 탭 콘텐츠 */
+#tab-content{
+  flex:1;
+  overflow:hidden;
+  position:relative;
+}
+
+/* 인물 탭 */
+#tab-person{
+  display:flex;
+  height:100%;
+}
+#info-left{
+  width:240px;
+  min-width:220px;
+  background:#0d0d22;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  border-right:2px solid #3a3a6a;
+  gap:6px;
+  flex-shrink:0;
+}
+#info-name{
+  font-family:'Noto Serif KR',serif;
+  font-size:42px;
+  font-weight:900;
+  color:#ffe080;
+  text-align:center;
+  line-height:1.2;
+}
+#info-period{
+  font-size:21px;
+  color:#aac0ff;
+  font-weight:700;
+  text-align:center;
+}
+#info-type-badge{
+  font-size:18px;
+  padding:3px 12px;
+  border-radius:20px;
+  font-weight:700;
+  color:#fff;
+  background:#3a3a70;
+  text-align:center;
+}
+#info-right{
+  flex:1;
+  padding:12px 18px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+#info-deeds{
+  font-size:34px;
+  line-height:1.85;
+  color:#e0e8ff;
+}
+#info-verses{
+  font-size:29px;
+  color:#80d0a0;
+  line-height:1.7;
+  border-top:1px solid #2a2a5a;
+  padding-top:6px;
+}
+
+/* 지도 탭 */
+#tab-map{
+  display:none;
+  height:100%;
+  position:relative;
+}
+#map-container{
+  width:100%;
+  height:100%;
+  background:#1a2a1a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:10px;
+}
+#map-title{
+  position:absolute;
+  top:10px;left:16px;
+  font-size:22.5px;
+  font-weight:700;
+  color:#ffe080;
+  font-family:'Noto Serif KR',serif;
+  z-index:5;
+}
+#map-svg-wrap{
+  width:100%;
+  height:100%;
+  position:relative;
+}
+#map-svg-wrap svg{
+  width:100%;
+  height:100%;
+}
+
+/* 빈 상태 */
+#bottom-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  font-size:24px;
+  color:#4a4a8a;
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+/* ══ 클릭된 인물 하이라이트 ══ */
+.king-seg.selected{ outline:3px solid #ffe080 !important; filter:brightness(1.3); z-index:9; }
+.prophet-card.selected{ box-shadow:0 0 0 3px #ffe080 !important; filter:brightness(1.2); z-index:9; }
+
+/* ══ 제목 ══ */
+h1{
+  text-align:center;
+  font-family:'Noto Serif KR',serif;
+  font-size:39px;
+  font-weight:900;
+  color:var(--c-unified);
+  letter-spacing:5px;
+  border-bottom:2.5px solid var(--gold);
+  padding-bottom:10px;
+  margin-bottom:12px;
+}
+
+/* ══ 공통: 행 래퍼 ══ */
+.row-wrap{
+  display:flex;
+  align-items:stretch;
+  /* margin 제거 - 빈 공백 없애기 */
+}
+.row-wrap.fill-row{
+  flex:1;
+  min-height:0;
+}
+
+.row-label{
+  width:72px;
+  min-width:72px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  font-weight:700;
+  writing-mode:vertical-rl;
+  letter-spacing:2px;
+  color:#fff;
+  border-radius:3px 0 0 3px;
+  flex-shrink:0;
+}
+
+.row-body{
+  flex:1;
+  position:relative;
+  display:flex;
+  align-items:stretch;
+}
+
+/* ══ 연도 눈금 배경 (세로줄) ══ */
+.tick-bg{
+  position:absolute;
+  top:0;bottom:0;
+  width:1px;
+  background:rgba(0,0,0,0.08);
+  pointer-events:none;
+  z-index:0;
+}
+.tick-bg.major{
+  background:rgba(0,0,0,0.18);
+  width:1.5px;
+}
+
+/* ══ 연도 눈금 행 ══ */
+.yearbar{
+  height:42px;
+  background:var(--parch2);
+  border-top:2px solid var(--gold);
+  border-bottom:2px solid var(--gold);
+  position:relative;
+  margin-bottom:4px;
+}
+.ytick{
+  position:absolute;
+  top:0;bottom:0;
+  display:flex;
+  align-items:center;
+  padding-left:3px;
+  font-size:21px;
+  font-weight:700;
+  font-family:'Noto Serif KR',serif;
+  color:#1a2e6a;
+  border-left:1.5px solid #c8a040;
+  white-space:nowrap;
+}
+
+/* ══ 시대 헤더 배너 ══ */
+.era-bar{
+  height:28px;
+  position:relative;
+  margin-bottom:3px;
+}
+.era-seg{
+  position:absolute;
+  top:0;bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:700;
+  color:#fff;
+  border-right:1px solid rgba(255,255,255,0.3);
+  overflow:hidden;
+  white-space:nowrap;
+  letter-spacing:0.5px;
+}
+
+/* ══ 왕/지도자 칸 ══ */
+.king-seg{
+  position:absolute;
+  top:0;bottom:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid rgba(255,255,255,0.35);
+  overflow:hidden;
+  cursor:pointer;
+  transition:filter 0.15s;
+}
+.king-seg:hover{ filter:brightness(1.15); }
+.king-seg .kname{
+  font-size:19px;
+  font-weight:700;
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,0.5);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:96%;
+  text-align:center;
+  line-height:1.3;
+}
+.king-seg .kyear{
+  font-size:14.4px;
+  color:rgba(255,255,255,0.75);
+  white-space:nowrap;
+  margin-top:1px;
+}
+
+/* 선한/악한 구분 표시 */
+.king-seg.good{ outline:2px solid rgba(120,255,120,0.45); }
+.king-seg.evil{ outline:2px solid rgba(255,80,80,0.30); }
+
+/* ══ 분열 마커 ══ */
+.split-line{
+  position:absolute;
+  top:0;bottom:0;
+  width:3px;
+  background:#ff4020;
+  z-index:20;
+  box-shadow:0 0 8px #ff4020;
+}
+.split-label{
+  position:absolute;
+  top:2px;
+  background:#ff4020;
+  color:#fff;
+  font-size:12.8px;
+  font-weight:700;
+  padding:1px 4px;
+  border-radius:2px;
+  white-space:nowrap;
+  z-index:21;
+}
+
+/* ══ 화살표 타임라인 행 ══ */
+.arrow-row{
+  height:32px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  margin-bottom:4px;
+}
+.arrow-seg{
+  position:absolute;
+  top:3px;bottom:3px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  font-weight:700;
+  color:#fff;
+  border-radius:2px;
+  overflow:hidden;
+  white-space:nowrap;
+}
+.arrow-seg::after{
+  content:'';
+  position:absolute;
+  right:-12px;top:50%;
+  transform:translateY(-50%);
+  border-top:13px solid transparent;
+  border-bottom:13px solid transparent;
+  border-left:12px solid currentColor;
+  z-index:5;
+}
+/* 마지막 화살표는 뾰족하게 */
+.arrow-seg.final::after{
+  right:-14px;
+  border-left-color:inherit;
+}
+
+/* ══ 선지자 카드 ══ */
+.prophet-card{
+  position:absolute;
+  border-radius:20px;
+  padding:0 10px;
+  font-size:15px;
+  font-weight:700;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  overflow:hidden;
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  cursor:default;
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.prophet-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 5px 14px rgba(0,0,0,0.4);
+  z-index:10 !important;
+}
+.prophet-card .pname{
+  font-family:'Noto Serif KR',serif;
+  font-size:17.2px;
+  font-weight:900;
+}
+.prophet-card .pbook{
+  font-size:12.8px;
+  opacity:0.85;
+}
+/* 좁을 때 책이름 숨김 */
+.prophet-card.narrow .pbook{ display:none; }
+.prophet-card.narrow .pname{ font-size:15px; }
+
+/* ══ 섹션 타이틀 ══ */
+.section-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:22.5px;
+  font-weight:900;
+  padding:6px 12px 6px 84px;  /* 왼쪽 패딩으로 lane-label 영역 확보 */
+  color:#fff;
+  letter-spacing:2px;
+  border-radius:3px 3px 0 0;
+  margin-top:10px;
+  margin-bottom:0;
+}
+
+/* ══ 선지자 섹션 배경 ══ */
+.prophet-section{
+  border:2px solid #7c50c0;
+  border-radius:4px;
+  overflow:visible;
+  margin-top:10px;
+  margin-left:0;   /* lane-label(72px)이 내부에 포함됨 */
+}
+.prophet-section-body{
+  background:#faf5ff;
+  position:relative;
+}
+
+/* 선지자 레인 */
+.prophet-lane{
+  position:relative;
+  height:46px;
+  border-bottom:1px solid #ddd0f0;
+}
+.prophet-lane:last-child{ border-bottom:none; }
+.lane-label{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:72px;
+  background:rgba(255,255,255,0.9);
+  border-right:2px solid #9060c0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12.8px;
+  font-weight:700;
+  color:#5c2d91;
+  writing-mode:vertical-rl;
+  letter-spacing:1px;
+  z-index:5;
+}
+
+/* ══ 범례 ══ */
+.legend{
+  margin-top:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:8px 14px;
+  background:var(--parch2);
+  border:1px solid var(--gold);
+  border-radius:4px;
+  font-size:14.2px;
+}
+.li{ display:flex;align-items:center;gap:5px; }
+.ld{ width:14px;height:14px;border-radius:3px; }
+.ld.round{ border-radius:8px; }
+</style>
+</head>
+<body>
+<!-- 상단 60%: 연대기 -->
+<div id="tl-wrap">
+  <div class="page" id="tl-page"></div>
+</div>
+
+<!-- 하단 40%: 탭 패널 -->
+<div id="bottom-panel">
+  <div id="tab-bar">
+    <div id="selected-name">인물을 선택하세요</div>
+    <button class="tab-btn active" onclick="switchTab('person')">👤 인물 정보</button>
+    <button class="tab-btn" onclick="switchTab('map')">🗺️ 당시 지도</button>
+  </div>
+  <div id="tab-content">
+    <!-- 인물 탭 -->
+    <div id="tab-person">
+      <div id="bottom-empty">연대기에서 인물을 클릭하면 정보가 표시됩니다</div>
+    </div>
+    <!-- 지도 탭 -->
+    <div id="tab-map">
+      <div id="map-container">
+        <div id="map-title"></div>
+        <div id="map-svg-wrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<h1>구약성경 왕 · 선지자 연대 타임라인</h1>
+
+<!--
+  기준: BC2000 ~ BC400
+  총 1600년, 1년 = 4.2px
+  left 기준: (2000 - |BC연도|) × 4.2
+  ex) BC931 → (2000-931)×4.2 = 1069×4.2 = 4489.8px
+-->
+
+<script>
+// ── 헬퍼 ──────────────────────────────
+const PX = 4.2;
+const BASE = 2200;     // BC 2200 = left 0 (아브라함 BC2166 수용)
+
+function x(bc){ return (BASE - bc) * PX; }   // left px
+function w(start, end){ return Math.max((start - end) * PX, 22); } // width px (start > end, bc기준)
+
+// ── 데이터 ────────────────────────────
+
+// 시대 배너
+const eras = [
+  { label:'창조·원역사·족장', start:2000, end:1526, bg:'#2d4a8a' },
+  { label:'출애굽·광야', start:1526, end:1406, bg:'#1e5a8a' },
+  { label:'사사시대', start:1406, end:1050, bg:'#1a4a7a' },
+  { label:'통일왕국 (사울·다윗·솔로몬)', start:1050, end:931, bg:'#1e3a6e' },
+  // 분열 후는 두 행으로 표현
+];
+
+// 분열 전 지도자
+const preLeaders = [
+  // 족장 — 겹치는 인물은 위에 표시될 인물을 나중에 배치
+  { name:'야곱',     start:2006, end:1859, bc:'2006~1859', type:'pre', note:'good' },  // 먼저 (아래)
+  { name:'아브라함', start:2166, end:1991, bc:'2166~1991', type:'pre', note:'good' },  // 나중 (위)
+  { name:'이삭',     start:2066, end:1886, bc:'2066~1886', type:'pre', note:'good' },  // 맨 위
+  { name:'요셉',     start:1915, end:1805, bc:'1915~1805', type:'pre', note:'good' },
+  // 공백 구간: BC1805~BC1526 (요셉 사망 후 모세 출생 전)
+  // 출애굽
+  { name:'모세',     start:1526, end:1406, bc:'1526~1406', type:'pre', note:'good' },
+  { name:'여호수아', start:1406, end:1380, bc:'1406~1380', type:'pre', note:'good' },
+  // 사사
+  { name:'옷니엘', start:1374, end:1334, bc:'~1334', type:'pre', note:'good' },
+  { name:'에훗', start:1316, end:1236, bc:'~1236', type:'pre', note:'good' },
+  { name:'드보라', start:1216, end:1176, bc:'~1176', type:'pre', note:'good' },
+  { name:'기드온', start:1169, end:1129, bc:'~1129', type:'pre', note:'good' },
+  { name:'아비멜렉', start:1129, end:1126, bc:'3년', type:'pre', note:'evil' },
+  { name:'입다', start:1100, end:1094, bc:'6년', type:'pre', note:'good' },
+  { name:'삼손', start:1075, end:1055, bc:'20년', type:'pre', note:'good' },
+  { name:'엘리', start:1107, end:1067, bc:'40년', type:'pre', note:'good' },
+  { name:'사무엘', start:1067, end:1010, bc:'~1010', type:'pre', note:'good' },
+  // 통일왕국
+  { name:'사   울', start:1050, end:1010, bc:'1050~1010', type:'unified', note:'mixed' },
+  { name:'다   윗', start:1010, end:970,  bc:'1010~970', type:'unified', note:'good' },
+  { name:'솔로몬', start:970,  end:931,  bc:'970~931',  type:'unified', note:'good' },
+];
+
+// 북이스라엘 왕 (BC931~722)
+const northKings = [
+  { name:'여로보암1', start:931, end:910, bc:'931~910', note:'evil' },
+  { name:'나  답', start:910, end:909, bc:'910~909', note:'evil' },
+  { name:'바아사', start:909, end:886, bc:'909~886', note:'evil' },
+  { name:'엘  라', start:886, end:885, bc:'886~885', note:'evil' },
+  { name:'오므리', start:885, end:874, bc:'885~874', note:'evil' },
+  { name:'아  합', start:874, end:853, bc:'874~853', note:'evil' },
+  { name:'아하시야', start:853, end:852, bc:'853~852', note:'evil' },
+  { name:'요  람', start:852, end:841, bc:'852~841', note:'evil' },
+  { name:'예  후', start:841, end:814, bc:'841~814', note:'evil' },
+  { name:'여호아하스', start:814, end:798, bc:'814~798', note:'evil' },
+  { name:'요아스', start:798, end:782, bc:'798~782', note:'evil' },
+  { name:'여로보암2', start:793, end:753, bc:'793~753', note:'evil' },
+  { name:'스가랴', start:753, end:752, bc:'6개월', note:'evil' },
+  { name:'살  룸', start:752, end:752, bc:'1개월', note:'evil' },
+  { name:'므나헴', start:752, end:742, bc:'752~742', note:'evil' },
+  { name:'브가히야', start:742, end:740, bc:'742~740', note:'evil' },
+  { name:'베  가', start:752, end:732, bc:'752~732', note:'evil' },
+  { name:'호세아왕', start:732, end:722, bc:'732~722', note:'evil' },
+];
+
+// 남유다 왕 (BC931~586)
+const southKings = [
+  { name:'르호보암', start:931, end:913, bc:'931~913', note:'evil' },
+  { name:'아비얌', start:913, end:911, bc:'913~911', note:'evil' },
+  { name:'아  사', start:911, end:870, bc:'911~870', note:'good' },
+  { name:'여호사밧', start:873, end:848, bc:'873~848', note:'good' },
+  { name:'여호람', start:848, end:841, bc:'848~841', note:'evil' },
+  { name:'아하시야', start:841, end:841, bc:'841', note:'evil' },
+  { name:'아달랴', start:841, end:835, bc:'841~835', note:'evil' },
+  { name:'요아스', start:835, end:796, bc:'835~796', note:'good' },
+  { name:'아마샤', start:796, end:767, bc:'796~767', note:'good' },
+  { name:'웃시야', start:792, end:740, bc:'792~740', note:'good' },
+  { name:'요  담', start:750, end:732, bc:'750~732', note:'good' },
+  { name:'아하스', start:735, end:715, bc:'735~715', note:'evil' },
+  { name:'히스기야', start:729, end:686, bc:'729~686', note:'good' },
+  { name:'므낫세', start:697, end:642, bc:'697~642', note:'evil' },
+  { name:'아  몬', start:642, end:640, bc:'642~640', note:'evil' },
+  { name:'요시야', start:640, end:609, bc:'640~609', note:'good' },
+  { name:'여호아하스', start:609, end:609, bc:'3개월', note:'evil' },
+  { name:'여호야김', start:609, end:598, bc:'609~598', note:'evil' },
+  { name:'여호야긴', start:598, end:597, bc:'3개월', note:'evil' },
+  { name:'시드기야', start:597, end:586, bc:'597~586', note:'evil' },
+];
+
+// 포로기/귀환 — preLeaders 맨 뒤에 이어 붙임 (별도 행 없음)
+const exileLeaders = [
+  { name:'느부갓네살', start:605, end:562, bc:'605~562', type:'exile' },
+  { name:'고레스(페르)', start:539, end:530, bc:'539~530', type:'exile' },
+  { name:'스룹바벨', start:538, end:515, bc:'536귀환', type:'return' },
+  { name:'에스라', start:458, end:440, bc:'458귀환', type:'return' },
+  { name:'느헤미야', start:445, end:420, bc:'445~420', type:'return' },
+];
+// preLeaders에 포로·귀환 인물 추가 (한 줄로 이어지게)
+preLeaders.push(...exileLeaders);
+
+// 선지자 데이터 — 레인 재편:
+// 레인0: 초기·족장 + 사사·통일왕국 + 포로기 + 귀환기 (모두 윗줄)
+// 레인1: 남유다 초기 선지자
+// 레인2: 북이스라엘 선지자
+// 레인3: 남유다 8~7세기 대선지자
+// 레인4: 예레미야
+const prophets = [
+  // 레인0: 초기·족장
+  { lane:0, name:'에녹', start:2000, end:1960, color:'#3d5a9a', book:'창5장' },
+  { lane:0, name:'아브라함', start:2166, end:1991, color:'#2d4a8a', book:'창12~25장' },
+  { lane:0, name:'모세', start:1526, end:1406, color:'#1e3a8a', book:'출~신 전체' },
+  { lane:0, name:'미리암', start:1480, end:1410, color:'#3a5a9a', book:'출15장' },
+  // 레인0(계속): 사사·통일왕국 선지자 → 윗줄로 올림
+  { lane:0, name:'드보라', start:1216, end:1176, color:'#4a6aaa', book:'삿4~5장' },
+  { lane:0, name:'사무엘', start:1067, end:1010, color:'#2a5a9a', book:'삼상1~12장' },
+  { lane:0, name:'나  단', start:1010, end:970,  color:'#3a5a9a', book:'삼하7·12장' },
+  { lane:0, name:'  갓  ', start:1020, end:970,  color:'#4a6aaa', book:'삼하24장' },
+  { lane:0, name:'아히야', start:970, end:931, color:'#3a5aaa', book:'왕상11~14장' },
+  // 레인0(계속): 포로기 선지자 → 윗줄로 올림
+  { lane:0, name:'에스겔', start:593, end:571, color:'#3a2a80', book:'겔1~48장' },
+  { lane:0, name:'다니엘', start:605, end:536, color:'#4a3a90', book:'단1~12장' },
+  // 레인0(계속): 귀환기 선지자 → 윗줄로 올림
+  { lane:0, name:'학  개', start:520, end:516, color:'#1a6a30', book:'학1~2장' },
+  { lane:0, name:'스가랴', start:520, end:480, color:'#2a7a40', book:'슥1~14장' },
+  { lane:0, name:'말라기', start:433, end:420, color:'#3a8a50', book:'말1~4장' },
+
+  // 레인1: 북이스라엘 선지자
+  { lane:1, name:'엘리야', start:874, end:849, color:'#0a6a6a', book:'왕상17~왕하2장' },
+  { lane:1, name:'엘리사', start:850, end:798, color:'#0d7a7a', book:'왕하2~13장' },
+  { lane:1, name:'요  나', start:793, end:760, color:'#1a8080', book:'요나1~4장' },
+  { lane:1, name:'아모스', start:760, end:750, color:'#0d6868', book:'암1~9장' },
+  { lane:1, name:'호세아', start:760, end:722, color:'#0e6b6b', book:'호1~14장' },
+
+  // 레인2: 남유다 초기 + 예레미야
+  { lane:2, name:'스마야', start:931, end:913, color:'#7a1080', book:'왕상12장' },
+  { lane:2, name:'아사랴', start:911, end:870, color:'#7a1080', book:'대하15장' },
+  { lane:2, name:'하나니', start:895, end:860, color:'#8a2090', book:'대하16장' },
+  { lane:2, name:'예  후', start:873, end:848, color:'#7a1080', book:'대하19장' },
+  { lane:2, name:'요  엘', start:835, end:810, color:'#8a1090', book:'욜1~3장' },
+  { lane:2, name:'스가랴(제사장)', start:835, end:796, color:'#6a0a7a', book:'대하24장' },
+  { lane:2, name:'예레미야', start:627, end:580, color:'#8b1a1a', book:'렘1~52장 / 애1~5장' },
+
+  // 레인3: 남유다 8~7세기 대선지자
+  { lane:3, name:'이사야', start:740, end:700, color:'#6a0a8a', book:'사1~66장' },
+  { lane:3, name:'미  가', start:735, end:700, color:'#7a108a', book:'미1~7장' },
+  { lane:3, name:'나  훔', start:663, end:612, color:'#8a1090', book:'나1~3장' },
+  { lane:3, name:'스바냐', start:640, end:609, color:'#7a0880', book:'습1~3장' },
+  { lane:3, name:'하박국', start:625, end:605, color:'#8a1090', book:'합1~3장' },
+  { lane:3, name:'오바댜', start:586, end:580, color:'#7a1080', book:'옵1장' },
+];
+
+const LANE_LABELS = [
+  '초기 ~ 포로기',
+  '이스라엘',
+  '유',
+  '다',
+];
+const LANE_COLORS = [
+  '#2d4a8a','#0d5c6c','#7a1080','#6a0a8a'
+];
+
+// ── 렌더 ──────────────────────────────────────
+
+// 연도 눈금 행
+const yearbarEl = document.createElement('div');
+yearbarEl.className = 'yearbar';
+// margin-left 제거 — DOMContentLoaded에서 row-wrap 구조로 처리
+
+for(let yr = 2200; yr >= 400; yr -= 50){
+  const tick = document.createElement('div');
+  tick.className = 'ytick';
+  tick.style.left = x(yr) + 'px';
+  tick.textContent = yr;
+  yearbarEl.appendChild(tick);
+}
+
+// ── 시대 배너 ──
+const eraBar = document.createElement('div');
+eraBar.className = 'era-bar';
+eraBar.style.cssText = 'flex:1;position:relative;height:28px;';
+// margin-left 제거 — DOMContentLoaded에서 row-wrap 구조로 처리
+
+function addEraSeg(el, label, startBc, endBc, bg){
+  const s = document.createElement('div');
+  s.className='era-seg';
+  s.style.left = x(startBc)+'px';
+  s.style.width = w(startBc, endBc)+'px';
+  s.style.background = bg;
+  s.textContent = label;
+  el.appendChild(s);
+}
+
+addEraSeg(eraBar,'창조·족장시대 BC2200~1526',2200,1526,'#2d4a8a');
+addEraSeg(eraBar,'출애굽·광야',1526,1406,'#1e5a8a');
+addEraSeg(eraBar,'사사시대 BC1406~1050',1406,1050,'#1a4a7a');
+addEraSeg(eraBar,'통일왕국 (사울·다윗·솔로몬) BC1050~931',1050,931,'#1e3a6e');
+addEraSeg(eraBar,'북이스라엘 BC931~722',931,722,'#0e6b6b');
+addEraSeg(eraBar,'남유다 BC931~586',931,586,'#6b1a1a');
+addEraSeg(eraBar,'포로기 BC586~538',586,538,'#3a3a60');
+addEraSeg(eraBar,'귀환기 BC538~400',538,400,'#1a5c2a');
+
+// ── 화살표 타임라인 ──
+function buildArrowRow(){
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:relative;margin-bottom:3px;';
+
+  // 화살표 body — yearbar/eraBar와 동일하게 margin-left:72px
+  const body = document.createElement('div');
+  body.style.cssText = 'position:relative;height:32px;margin-left:72px;';
+
+  // BC2000~BC931 구간 배경 (왕 행과 시각적 정렬)
+  const pre = document.createElement('div');
+  const preW = w(2000, 931);
+  pre.style.cssText = `position:absolute;left:0;width:${preW}px;top:2px;bottom:2px;background:linear-gradient(90deg,#1e3a6e22,#1e3a6e44);border-bottom:1.5px solid #4a6ab055;`;
+  body.appendChild(pre);
+
+  // BC2000 라벨
+  const startLabel = document.createElement('div');
+  startLabel.style.cssText = `position:absolute;left:4px;top:50%;transform:translateY(-50%);color:#1e3a6e;font-size:13.5px;font-weight:900;font-family:'Noto Serif KR',serif;`;
+  startLabel.textContent = 'B.C. 2000';
+  body.appendChild(startLabel);
+
+  // (분열전 파란 unified 라인 제거됨)
+
+  // 분열 마커
+  const spl = document.createElement('div');
+  spl.style.cssText = `position:absolute;left:${x(931)}px;top:0;bottom:0;width:3px;background:#ff4020;box-shadow:0 0 8px #ff4020;z-index:20;`;
+  body.appendChild(spl);
+
+  // 북 화살표
+  const north = document.createElement('div');
+  const nLeft = x(931), nWidth = w(931,722);
+  north.style.cssText = `position:absolute;left:${nLeft}px;width:${nWidth}px;top:1px;height:14px;background:linear-gradient(90deg,#0e6b6b,#1a9090);display:flex;align-items:center;padding:0 6px;border-top:1.5px solid #2aacac;`;
+  north.innerHTML = `<span style="color:#80ffff;font-size:13.5px;font-weight:700;">▶ 북 이스라엘 BC931~722 앗수르멸망</span>`;
+  body.appendChild(north);
+
+  // 남 화살표
+  const south = document.createElement('div');
+  const sLeft = x(931), sWidth = w(931,586);
+  south.style.cssText = `position:absolute;left:${sLeft}px;width:${sWidth}px;bottom:1px;height:14px;background:linear-gradient(90deg,#8b1a1a,#b02020);display:flex;align-items:center;padding:0 6px;border-bottom:1.5px solid #c84040;`;
+  south.innerHTML = `<span style="color:#ffb0b0;font-size:13.5px;font-weight:700;">▶ 남 유다 BC931~586 바벨론멸망</span>`;
+  body.appendChild(south);
+
+  // 포로기
+  const exile = document.createElement('div');
+  const eLeft = x(586), eWidth = w(586,538);
+  exile.style.cssText = `position:absolute;left:${eLeft}px;width:${eWidth}px;top:2px;bottom:2px;background:linear-gradient(90deg,#3a3a60,#5a5a80);display:flex;align-items:center;justify-content:center;border:1.5px solid #7070a0;`;
+  exile.innerHTML = `<span style="color:#c0c0ff;font-size:13.5px;font-weight:700;">포로기</span>`;
+  body.appendChild(exile);
+
+  // 귀환
+  const ret = document.createElement('div');
+  const rLeft = x(538);
+  ret.style.cssText = `position:absolute;left:${rLeft}px;right:0;top:2px;bottom:2px;background:linear-gradient(90deg,#1a5c2a,#2a8a3a);display:flex;align-items:center;justify-content:space-between;padding:0 10px;border:1.5px solid #50a060;`;
+  ret.innerHTML = `<span style="color:#80ff80;font-size:13.5px;font-weight:700;">귀환기 BC538~</span><span style="color:#80ff80;font-size:13.5px;font-weight:700;">BC400 ▶</span>`;
+  body.appendChild(ret);
+
+  wrap.appendChild(body);
+  return wrap;
+}
+
+// ── 왕/지도자 행 빌더 ──
+function buildKingRow(label, bgLabel, kings, bgCell, colorFn){
+  const wrap = document.createElement('div');
+  wrap.className = 'row-wrap';
+  wrap.style.minHeight = '50px';
+
+  // 라벨
+  const lbl = document.createElement('div');
+  lbl.className = 'row-label';
+  lbl.style.background = bgLabel;
+  lbl.textContent = label;
+  wrap.appendChild(lbl);
+
+  // body — margin-left 없이 flex:1 (row-label이 72px 차지)
+  const body = document.createElement('div');
+  body.style.cssText = `flex:1;position:relative;background:${bgCell};border:1px solid #c8a040;height:100%;overflow:hidden;`;
+
+  kings.forEach(k => {
+    const seg = document.createElement('div');
+    seg.className = 'king-seg ' + (k.note||'');
+    const left = x(k.start||k.startBc||2000);
+    const width = w(k.start||k.startBc||2000, k.end||k.endBc||2000);
+    seg.style.cssText = `left:${left}px;width:${width}px;background:${colorFn(k)};`;
+    seg.innerHTML = `<span class="kname">${k.name}</span><span class="kyear">${k.bc}</span>`;
+    seg.title = `${k.name} (BC${k.bc})`;
+    seg.addEventListener('click', () => selectPerson(k.name, seg));
+    body.appendChild(seg);
+  });
+
+  wrap.appendChild(body);
+  return wrap;
+}
+
+function preColor(k){
+  if(k.type==='exile')  return '#3a3a60';
+  if(k.type==='return') return '#1a5c2a';
+  if(k.type==='unified'){
+    if(k.note==='good') return '#1e3a6e';
+    return '#2a3a7a';
+  }
+  if(k.note==='good') return '#2d4a8a';
+  if(k.note==='evil') return '#5a2a2a';
+  return '#3d5a9a';
+}
+
+function northColor(k){
+  // 모두 악
+  const tones = ['#0a5060','#0a4858','#0a4050','#083848','#0a4a58'];
+  return tones[Math.floor(Math.random()*tones.length)];
+}
+
+function southColor(k){
+  if(k.note==='good') return '#5a1010';
+  return '#8b1a1a';
+}
+
+// ── 선지자 섹션 빌더 ──
+function buildProphetSection(){
+  const sec = document.createElement('div');
+  sec.className = 'prophet-section';
+
+  // 제목 라인 제거됨
+
+  const numLanes = LANE_LABELS.length;
+  const body = document.createElement('div');
+  body.className = 'prophet-section-body';
+  body.style.cssText = 'flex:1;min-height:0;position:relative;background:#faf5ff;overflow:hidden;';
+
+  // 배경 세로 구분선 (시대별)
+  const dividers = [
+    { bc:1526, label:'출애굽' },
+    { bc:1406, label:'사사' },
+    { bc:1050, label:'통일왕국' },
+    { bc:931,  label:'분열', color:'#ff4020' },
+    { bc:722,  label:'북멸망', color:'#aa2020' },
+    { bc:586,  label:'남멸망', color:'#aa2020' },
+    { bc:538,  label:'귀환' },
+  ];
+
+  dividers.forEach(d => {
+    const line = document.createElement('div');
+    const lx = x(d.bc) + 72;
+    line.style.cssText = `position:absolute;left:${lx}px;top:0;bottom:0;width:${d.color?'2':'1'}px;background:${d.color||'rgba(0,0,0,0.12)'};z-index:1;pointer-events:none;`;
+    body.appendChild(line);
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText = `position:absolute;left:${lx+3}px;top:2px;font-size:12px;color:${d.color||'#888'};font-weight:700;z-index:2;`;
+    lbl.textContent = `BC${d.bc} ${d.label}`;
+    body.appendChild(lbl);
+  });
+
+  // 레인별 배경
+  LANE_LABELS.forEach((lbl, i) => {
+    const lane = document.createElement('div');
+    lane.className = 'prophet-lane';
+    lane.style.background = i % 2 === 0 ? '#faf5ff' : '#f2ecff';
+
+    const laneLbl = document.createElement('div');
+    laneLbl.className = 'lane-label';
+    laneLbl.style.background = LANE_COLORS[i] + '22';
+    laneLbl.style.borderRightColor = LANE_COLORS[i];
+    laneLbl.style.color = LANE_COLORS[i];
+    laneLbl.textContent = lbl;
+    lane.appendChild(laneLbl);
+    body.appendChild(lane);
+  });
+
+  // 선지자 카드
+  prophets.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'prophet-card';
+    const left = x(p.start) + 72;   // lane-label(72px) 이후부터
+    const width = w(p.start, p.end);
+    const laneTop = p.lane * 52;
+    const narrow = width < 100;
+    if(narrow) card.classList.add('narrow');
+
+    card.style.cssText = `left:${left}px;width:${Math.max(width,80)}px;top:${laneTop+9}px;height:34px;background:${p.color};z-index:3;`;
+    card.innerHTML = `<span class="pname">${p.name}</span>${!narrow?`<span class="pbook">${p.book}</span>`:''}`;
+    card.title = `${p.name} — ${p.book} (BC${p.start}~${p.end})`;
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => selectPerson(p.name, card));
+    body.appendChild(card);
+  });
+
+  sec.appendChild(body);
+  return sec;
+}
+
+// ══════════════════════════════════════
+// 탭 전환
+// ══════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-person').style.display = tab === 'person' ? 'flex' : 'none';
+  document.getElementById('tab-map').style.display    = tab === 'map'    ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════
+// 인물 정보 데이터 (키 = name 그대로)
+// ══════════════════════════════════════
+const INFO = {
+  // 족장
+  '아브라함':{ period:'BC2166~1991', type:'족장', deeds:'믿음의 조상. 갈대아 우르에서 부르심 받아 가나안 이주. 이삭 번제 시험. 하나님과 언약 체결(창15·17장). 이방인에게도 복의 근원.', verses:'창 12~25장 / "아브람이 여호와를 믿으니 여호와께서 이를 그의 의로 여기시고"(창15:6)', mapEra:'patriarch' },
+  '이삭':{ period:'BC2066~1886', type:'족장', deeds:'아브라함의 아들, 약속의 자녀. 모리아산 번제 제물이 됨. 리브가와 결혼. 야곱·에서를 낳음.', verses:'창 21~35장', mapEra:'patriarch' },
+  '야곱':{ period:'BC2006~1859', type:'족장', deeds:'12지파의 조상. 브니엘에서 하나님과 씨름 후 이스라엘 이름 받음. 요셉을 가장 사랑함.', verses:'창 25~49장 / "네 이름을 야곱이라 부를 것이 아니요 이스라엘이라"(창32:28)', mapEra:'patriarch' },
+  '요셉':{ period:'BC1915~1805', type:'족장', deeds:'형들에게 팔려 이집트로. 파라오의 꿈 해석 후 총리. 이스라엘 가족을 이집트로 이주.', verses:'창 37~50장', mapEra:'egypt' },
+  // 출애굽
+  '모세':{ period:'BC1526~1406', type:'지도자·선지자', deeds:'출애굽 주도. 10가지 재앙. 홍해 도하. 시내산 십계명. 40년 광야 인도. 모세오경 저자.', verses:'출~신명기 / "모세는 온 땅에서 가장 온유한 자라"(민12:3)', mapEra:'exodus' },
+  '여호수아':{ period:'BC1406~1380', type:'지도자', deeds:'모세의 후계자. 요단강 건넘. 여리고 성 함락. 가나안 정복. 12지파 땅 분배.', verses:'수 1~24장 / "오직 나와 내 집은 여호와를 섬기겠노라"(수24:15)', mapEra:'canaan' },
+  // 사사
+  '사사시대':{ period:'BC1380~1050', type:'시대', deeds:'옷니엘·에훗·드보라·기드온·입다·삼손 등 13명의 사사. 반복적 타락-징벌-회개-구원 패턴.', verses:'삿 1~21장, 룻 1~4장', mapEra:'canaan' },
+  '옷니엘':{ period:'BC1374~1334', type:'사사(1대)', deeds:'이스라엘 최초의 사사. 갈렙의 조카. 구산 리사다임 왕의 압제에서 이스라엘을 해방. 40년 평화.', verses:'삿 3:7-11', mapEra:'canaan' },
+  '에훗':{ period:'BC~1236', type:'사사(2대)', deeds:'베냐민 지파. 왼손잡이. 모압 왕 에글론을 단검으로 처치. 80년 평화.', verses:'삿 3:12-30', mapEra:'canaan' },
+  '드보라':{ period:'BC1216~1176', type:'사사·여선지자', deeds:'이스라엘 유일한 여성 사사. 바락 장군과 함께 가나안 왕 야빈·시스라 격멸. 드보라의 노래.', verses:'삿 4~5장', mapEra:'canaan' },
+  '기드온':{ period:'BC1169~1129', type:'사사(6대)', deeds:'300명의 용사로 미디안 대군 격파. 양털 시험. 아비에셀 사람. 이스라엘이 왕 삼으려 했으나 거절.', verses:'삿 6~8장', mapEra:'canaan' },
+  '아비멜렉':{ period:'BC1129~1126', type:'사사(7대)', deeds:'기드온의 아들. 형제 70명을 살해하고 왕이 됨. 3년 통치 후 여인이 던진 맷돌에 맞아 죽음.', verses:'삿 9장', mapEra:'canaan' },
+  '입다':{ period:'BC1100~1094', type:'사사(11대)', deeds:'길르앗의 기생 아들. 암몬 자손 격퇴. 경솔한 서원으로 딸을 잃음. 길르앗 지파와 에브라임 내전.', verses:'삿 11~12장', mapEra:'canaan' },
+  '삼손':{ period:'BC1075~1055', type:'사사(13대)', deeds:'단 지파. 나실인. 블레셋과 20년 싸움. 들릴라에게 비밀 누설 후 눈 뽑힘. 다곤 신전 기둥 무너뜨려 최후.', verses:'삿 13~16장', mapEra:'canaan' },
+  '엘리':{ period:'BC1107~1067', type:'제사장·사사', deeds:'실로 성전 제사장. 사무엘을 양육. 아들 홉니·비느하스의 타락 방치. 블레셋에게 언약궤 빼앗긴 날 충격으로 사망.', verses:'삼상 1~4장', mapEra:'canaan' },
+  '사무엘':{ period:'BC1067~1010', type:'마지막 사사·선지자', deeds:'한나의 기도로 태어남. 실로 성전에서 하나님의 음성 들음. 사울·다윗에게 기름 부음. 전국 순회 재판.', verses:'삼상 1~16장', mapEra:'canaan' },
+  // 통일왕국
+  '사   울':{ period:'BC1050~1010', type:'이스라엘 1대 왕', deeds:'이스라엘 첫 번째 왕. 초기 겸손했으나 불법 제사(삼상13장)·아말렉 불완전 진멸(삼상15장). 다윗 살해 시도. 길보아 전투 전사.', verses:'삼상 9~31장', mapEra:'united' },
+  '다   윗':{ period:'BC1010~970', type:'이스라엘 2대 왕', deeds:'하나님의 마음에 합한 자. 골리앗 격파. 예루살렘 수도 확정. 시편 다수 저자. 다윗 언약 체결. 밧세바 사건 회개.', verses:'삼상16~삼하24장 / "내 마음에 합한 사람"(행13:22)', mapEra:'united' },
+  '솔로몬':{ period:'BC970~931', type:'이스라엘 3대 왕', deeds:'하나님께 지혜 구함. 예루살렘 성전 건축(BC967~960). 잠언·전도서·아가 저자. 스바 여왕 방문. 말년 우상숭배.', verses:'왕상 1~11장', mapEra:'united' },
+  // 북이스라엘 왕
+  '여로보암1':{ period:'BC931~910', type:'북이스라엘 1대 왕', deeds:'솔로몬의 신하. 왕국 분열 후 북왕국 초대 왕. 벧엘과 단에 금송아지 세워 우상숭배 제도화. 이후 모든 북왕의 죄의 원형.', verses:'왕상 11~14장', mapEra:'divided' },
+  '나  답':{ period:'BC910~909', type:'북이스라엘 2대 왕', deeds:'여로보암의 아들. 아버지의 죄 반복. 블레셋과 전쟁 중 바아사에게 암살.', verses:'왕상 15:25-32', mapEra:'divided' },
+  '바아사':{ period:'BC909~886', type:'북이스라엘 3대 왕', deeds:'나답을 암살하고 왕이 됨. 유다 왕 아사와 지속 전쟁. 우상숭배 계속.', verses:'왕상 15:33~16:7', mapEra:'divided' },
+  '엘  라':{ period:'BC886~885', type:'북이스라엘 4대 왕', deeds:'바아사의 아들. 술에 취해 신하 시므리에게 암살.', verses:'왕상 16:8-14', mapEra:'divided' },
+  '오므리':{ period:'BC885~874', type:'북이스라엘 6대 왕', deeds:'군사령관 출신. 내전 승리 후 왕. 사마리아 건축 수도 삼음. 우상숭배 심화. 아합의 아버지.', verses:'왕상 16:21-28', mapEra:'divided' },
+  '아  합':{ period:'BC874~853', type:'북이스라엘 7대 왕', deeds:'이세벨과 결혼. 바알 신전 건축. 나봇의 포도원 강탈. 엘리야와 갈멜산 대결. 아람 전쟁 전사.', verses:'왕상 16:29~22:40 / "여호와 보시기에 악을 행하되 더욱 심히"(왕상16:30)', mapEra:'divided' },
+  '아하시야':{ period:'BC853~852', type:'북이스라엘 8대 왕', deeds:'아합의 아들. 바알세붑에게 문의. 엘리야의 심판 선언. 낙상 후 병사.', verses:'왕상22:51~왕하1장', mapEra:'divided' },
+  '요  람':{ period:'BC852~841', type:'북이스라엘 9대 왕', deeds:'아합의 아들. 바알 신상 제거했으나 여로보암의 죄는 유지. 예후에게 피살.', verses:'왕하 3~9장', mapEra:'divided' },
+  '예  후':{ period:'BC841~814', type:'북이스라엘 10대 왕', deeds:'엘리사의 지시로 기름 부음. 아합 가문 전멸. 이세벨 처단. 바알 선지자 처형. 금송아지는 유지.', verses:'왕하 9~10장', mapEra:'divided' },
+  '여호아하스':{ period:'BC814~798', type:'북이스라엘 11대 왕', deeds:'예후의 아들. 아람 하사엘에게 심한 압박. 주님께 간구하자 구원자 주심.', verses:'왕하 13:1-9', mapEra:'divided' },
+  '요아스':{ period:'BC798~782', type:'북이스라엘 12대 왕', deeds:'엘리사 임종 방문. 아람과 전쟁 세 번 승리. 유다 왕 아마샤와 전쟁 승리.', verses:'왕하 13:10~14:16', mapEra:'divided' },
+  '여로보암2':{ period:'BC793~753', type:'북이스라엘 13대 왕', deeds:'최장기 재위(41년). 영토 최대 회복. 경제 번영이나 극심한 빈부격차. 아모스·호세아·요나 활동 시대.', verses:'왕하 14:23-29', mapEra:'divided' },
+  '스가랴':{ period:'BC753~752', type:'북이스라엘 14대 왕', deeds:'여로보암2세 아들. 6개월 만에 살룸에게 암살. 예후 왕조의 마지막.', verses:'왕하 15:8-12', mapEra:'divided' },
+  '살  룸':{ period:'BC752 (1개월)', type:'북이스라엘 15대 왕', deeds:'스가랴 암살 후 왕. 한 달 만에 므나헴에게 피살.', verses:'왕하 15:13-15', mapEra:'divided' },
+  '므나헴':{ period:'BC752~742', type:'북이스라엘 16대 왕', deeds:'앗수르 왕 디글랏빌레셋에게 은 천 달란트 조공. 잔혹한 통치.', verses:'왕하 15:16-22', mapEra:'divided' },
+  '브가히야':{ period:'BC742~740', type:'북이스라엘 17대 왕', deeds:'므나헴의 아들. 베가에게 암살.', verses:'왕하 15:23-26', mapEra:'divided' },
+  '베  가':{ period:'BC752~732', type:'북이스라엘 18대 왕', deeds:'아람 왕 르신과 동맹해 유다 공격. 앗수르에 갈릴리 점령. 호세아에게 암살.', verses:'왕하 15:27-31', mapEra:'divided' },
+  '호세아왕':{ period:'BC732~722', type:'북이스라엘 19대(마지막) 왕', deeds:'앗수르에 조공 바치다 이집트와 내통. BC722 사마리아 함락. 북이스라엘 멸망. 백성 앗수르로 끌려감.', verses:'왕하 17장', mapEra:'divided' },
+  // 남유다 왕
+  '르호보암':{ period:'BC931~913', type:'남유다 1대 왕', deeds:'솔로몬의 아들. 백성의 세금 경감 청원 무시 → 왕국 분열 초래. 시삭 침입으로 성전 보물 약탈.', verses:'왕상 12~14장', mapEra:'divided' },
+  '아비얌':{ period:'BC913~911', type:'남유다 2대 왕', deeds:'르호보암의 아들. 아버지의 죄 반복. 북이스라엘과 전쟁 승리.', verses:'왕상 15:1-8', mapEra:'divided' },
+  '아  사':{ period:'BC911~870', type:'남유다 3대 왕(선)', deeds:'선한 왕. 산당·남창 추방. 에티오피아 군대 격파. 어머니 마아가를 태후에서 폐위. 말년에 아람 의존.', verses:'왕상 15:9-24, 대하 14~16장', mapEra:'divided' },
+  '여호사밧':{ period:'BC873~848', type:'남유다 4대 왕(선)', deeds:'선한 왕. 레위인으로 율법 교육. 모압-암몬 연합군을 찬양대로 격파. 북이스라엘 아합과 동맹은 실책.', verses:'대하 17~20장', mapEra:'divided' },
+  '여호람':{ period:'BC848~841', type:'남유다 5대 왕', deeds:'아합 딸 아달랴와 결혼. 형제들 살해. 엘리야에게 심판 편지. 장질환으로 고통스럽게 사망.', verses:'왕하 8:16-24, 대하 21장', mapEra:'divided' },
+  '아하시야':{ period:'BC841 (1년)', type:'남유다 6대 왕', deeds:'여호람의 아들. 어머니 아달랴 영향으로 악을 행함. 예후에게 피살.', verses:'왕하 8:25~9:29', mapEra:'divided' },
+  '아달랴':{ period:'BC841~835', type:'남유다 여왕', deeds:'아합과 이세벨의 딸. 아들 사망 후 왕손 학살하고 왕위 찬탈. 바알 숭배 강요. 제사장 여호야다에 의해 처형.', verses:'왕하 11장, 대하 22~23장', mapEra:'divided' },
+  '요아스':{ period:'BC835~796', type:'남유다 8대 왕(선)', deeds:'7세 즉위. 여호야다 제사장의 보호로 성전에서 성장. 성전 보수. 여호야다 사망 후 우상숭배. 스가랴 선지자 처형. 암살됨.', verses:'왕하 12장, 대하 24장', mapEra:'divided' },
+  '아마샤':{ period:'BC796~767', type:'남유다 9대 왕(선)', deeds:'선한 왕이나 온전치 않음. 에돔 정복 후 에돔 신 섬김. 이스라엘에 도전하다 패배. 라기스로 도주 후 암살.', verses:'왕하 14:1-20, 대하 25장', mapEra:'divided' },
+  '웃시야':{ period:'BC792~740', type:'남유다 10대 왕(선)', deeds:'최장기 재위(52년) 선한 왕. 블레셋·아라비아 정복. 군사·농업 강화. 말년에 교만하여 성전에서 직접 분향하다 문둥병 걸림. 이사야 소명 시점.', verses:'왕하 15:1-7, 대하 26장 / 사6:1 "웃시야 왕이 죽던 해에 내가 주를 보았다"', mapEra:'divided' },
+  '요  담':{ period:'BC750~732', type:'남유다 11대 왕(선)', deeds:'선한 왕. 성전 윗문 건축. 암몬 정복. 이사야·미가 활동 시대.', verses:'왕하 15:32-38, 대하 27장', mapEra:'divided' },
+  '아하스':{ period:'BC735~715', type:'남유다 12대 왕(악)', deeds:'심히 악한 왕. 자녀를 불에 태움. 아람-이스라엘 침공 시 앗수르에 의존(이사야는 하나님께 의탁 권고). 다메섹 제단 모방해 성전에 설치.', verses:'왕하 16장, 대하 28장, 사 7장', mapEra:'divided' },
+  '히스기야':{ period:'BC729~686', type:'남유다 13대 왕(선)', deeds:'남유다 최고의 선한 왕. 산당·바알 제단 철거. 앗수르 산헤립의 침공 때 이사야와 함께 기도 → 천사가 18만5천 격멸. 죽을병에서 15년 연장. 히스기야 터널 건설.', verses:'왕하 18~20장, 대하 29~32장 / "다윗의 모든 행위와 같이 정직하게 행하였더라"(왕하18:3)', mapEra:'divided' },
+  '므낫세':{ period:'BC697~642', type:'남유다 14대 왕(악)', deeds:'유다 최장기 재위(55년) 악한 왕. 히스기야가 제거한 모든 우상 재설치. 아들 불에 태움. 무고한 피. 앗수르에 포로로 끌려갔다 회개 후 귀환.', verses:'왕하 21:1-18, 대하 33장', mapEra:'divided' },
+  '아  몬':{ period:'BC642~640', type:'남유다 15대 왕(악)', deeds:'므낫세의 아들. 아버지의 악을 그대로 행함. 신하들에게 암살.', verses:'왕하 21:19-26, 대하 33:21-25', mapEra:'divided' },
+  '요시야':{ period:'BC640~609', type:'남유다 16대 왕(선)', deeds:'남유다 최선한 왕. 8세 즉위. 성전 수리 중 율법책 발견. 대대적 종교개혁. 힌놈 골짜기·산당 파괴. 유월절 성대히 거행. 므깃도에서 이집트 군대에 전사.', verses:'왕하 22~23장 / "마음을 다하며 뜻을 다하며 힘을 다하여...요시야와 같은 왕은 없었더라"(왕하23:25)', mapEra:'divided' },
+  '여호아하스':{ period:'BC609 (3개월)', type:'남유다 17대 왕', deeds:'요시야의 아들. 이집트 느고 왕에게 폐위. 이집트로 끌려가 그곳에서 사망.', verses:'왕하 23:30-34', mapEra:'exile' },
+  '여호야김':{ period:'BC609~598', type:'남유다 18대 왕(악)', deeds:'이집트가 세운 왕. 예레미야 두루마리 칼로 잘라 불태움. 바벨론 느부갓네살 1차 침공(다니엘 등 1차 포로).', verses:'왕하 23:36~24:7, 렘 22·26·36장', mapEra:'exile' },
+  '여호야긴':{ period:'BC598~597 (3개월)', type:'남유다 19대 왕(악)', deeds:'바벨론 느부갓네살 2차 침공. 항복 후 바벨론으로. 에스겔 등 2차 포로. 37년 후 바벨론 왕에게 특별 대우.', verses:'왕하 24:8-17', mapEra:'exile' },
+  '시드기야':{ period:'BC597~586', type:'남유다 20대(마지막) 왕(악)', deeds:'느부갓네살이 세운 마지막 왕. 예레미야 경고 무시. 이집트 의존해 반란. BC586 예루살렘 성벽 파괴·성전 소각. 아들들 눈앞에서 처형 후 두 눈을 뽑힌 채 바벨론으로.', verses:'왕하 24:18~25:21, 렘 37~39장', mapEra:'exile' },
+  // 포로기
+  '느부갓네살':{ period:'BC605~562', type:'바벨론 왕', deeds:'신바빌로니아 제국 최전성기 왕. BC605 1차, BC597 2차, BC586 3차 유다 침공. 예루살렘 성전 파괴. 다니엘을 인정한 후 하나님을 찬양. 7년 광증 후 "가장 높으신 이가 사람의 나라를 다스리신다" 고백.', verses:'왕하 24~25장, 단 1~4장', mapEra:'exile' },
+  '고레스(페르)':{ period:'BC539~530', type:'페르시아 왕(해방자)', deeds:'페르시아 제국 창건자. BC539 바벨론 정복. 이사야에서 150년 전 이름까지 예언됨. BC538 칙령으로 이스라엘 포로 귀환 허용.', verses:'스 1장, 사 44:28~45:1', mapEra:'return' },
+  // 귀환
+  '스룹바벨':{ period:'BC538~515', type:'귀환 총독', deeds:'1차 포로 귀환 인솔(약 5만명). 제2성전 건축 주도(BC515 완공). 학개·스가랴와 함께 사역.', verses:'스 1~6장, 학 1~2장', mapEra:'return' },
+  '에스라':{ period:'BC458~440', type:'귀환 서기관·제사장', deeds:'2차 귀환 인솔. 율법 전문가. 이방인 혼인 처리. 율법 공개 낭독. 신앙 개혁 주도.', verses:'스 7~10장, 느 8장', mapEra:'return' },
+  '느헤미야':{ period:'BC445~420', type:'귀환 총독', deeds:'아닥사스다 왕의 술 관원. BC445 귀환. 52일 만에 예루살렘 성벽 재건. 에스라와 율법 낭독·개혁. 안식일·십일조 회복.', verses:'느 1~13장 / "내 하나님이 이 일도 기억하시옵소서"(느13:31)', mapEra:'return' },
+  // 선지자
+  '에녹':{ period:'BC2000년경', type:'초기 선지자', deeds:'아담 7대손. 하나님과 동행. 죽지 않고 하늘로 옮겨짐. 유다서에서 심판 예언자로 언급.', verses:'창 5:21-24, 유 1:14-15', mapEra:'patriarch' },
+  '나  단':{ period:'BC1010~970', type:'궁정 선지자', deeds:'다윗 왕의 선지자. 하나님의 집(성전)에 대한 약속 전달(삼하7장, 다윗 언약). 다윗의 밧세바 사건을 "부자와 가난한 자의 양" 비유로 책망.', verses:'삼하 7장, 12:1-15', mapEra:'united' },
+  '  갓  ':{ period:'BC1020~970', type:'선지자·선견자', deeds:'다윗의 선견자. 다윗이 블레셋 피신 대신 이스라엘로 돌아갈 것을 명함. 다윗의 인구조사 후 세 가지 징벌 중 선택 전달.', verses:'삼하 24장', mapEra:'united' },
+  '아히야':{ period:'BC970~931', type:'선지자', deeds:'실로 출신 선지자. 솔로몬의 신하 여로보암을 만나 겉옷을 12조각으로 찢어 10지파가 그에게 속할 것을 예언. 후에 여로보암의 아들이 죽을 것도 예언.', verses:'왕상 11:29-39, 14:1-18', mapEra:'divided' },
+  '엘리야':{ period:'BC874~849', type:'북이스라엘 선지자', deeds:'갈멜산 바알 선지자 450명 대결 승리. 가뭄 선포·해제. 과부 아들 살림. 광야에서 천사의 돌봄. 엘리사에게 사역 위임 후 불수레를 타고 승천.', verses:'왕상 17~왕하 2장 / "열심히 여호와 하나님을 위하여 일하였나이다"(왕상19:14)', mapEra:'divided' },
+  '엘리사':{ period:'BC849~798', type:'북이스라엘 선지자', deeds:'엘리야의 사역 계승자. "갑절의 영감"을 받음. 수넴 여인의 죽은 아들 살림. 나아만 장군의 문둥병 치유. 도끼 물에서 건짐.', verses:'왕하 2~13장', mapEra:'divided' },
+  '요  나':{ period:'BC793~760', type:'북이스라엘 선지자', deeds:'앗수르 니느웨로 가라는 명령을 피해 다시스로 도주. 폭풍·물고기 뱃속 3일. 니느웨에서 전파하자 왕부터 백성까지 전 도시 회개.', verses:'요나 1~4장 / 마12:40 인자의 표적', mapEra:'divided' },
+  '아모스':{ period:'BC760~750', type:'북이스라엘 선지자(남유다 출신)', deeds:'드고아 목자 출신. 선지자 학교 출신 아님("나는 선지자가 아니라"). 여로보암2세 시대 북이스라엘에서 사역. 사회 정의·공의 강조. 부자들의 가난한 자 착취 강력 비판.', verses:'암 1~9장 / "오직 정의를 물같이, 공의를 마르지 않는 강같이 흐르게 할지어다"(암5:24)', mapEra:'divided' },
+  '호세아':{ period:'BC760~722', type:'북이스라엘 선지자', deeds:'북이스라엘 출신 유일한 북이스라엘 선지자. 음란한 아내 고멜과의 결혼 명령 — 이스라엘의 영적 간음과 하나님의 사랑을 상징. 여로보암2세~북이스라엘 멸망까지 활동.', verses:'호 1~14장 / "나는 인애를 원하고 제사를 원하지 아니하며"(호6:6)', mapEra:'divided' },
+  '스마야':{ period:'BC931~913', type:'남유다 선지자', deeds:'하나님의 사람. 르호보암에게 이스라엘과 싸우지 말라는 하나님 말씀 전달. 시삭 침공 때 이스라엘의 죄를 경고.', verses:'왕상 12:22-24, 대하 11~12장', mapEra:'divided' },
+  '아사랴':{ period:'BC911~870', type:'남유다 선지자', deeds:'오뎃의 아들. 아사 왕이 이집트에서 돌아올 때 하나님을 구하면 찾을 것, 버리면 버림받을 것을 예언. 아사의 종교개혁 촉발.', verses:'대하 15:1-8', mapEra:'divided' },
+  '하나니':{ period:'BC895~860', type:'남유다 선지자', deeds:'아사 왕이 아람에 의존한 것을 책망. "주의 눈이 온 땅을 두루 살피심이라." 아사 왕에게 옥에 갇힘.', verses:'대하 16:7-10', mapEra:'divided' },
+  '예  후':{ period:'BC873~848', type:'남유다 선지자', deeds:'하나니의 아들. 여호사밧 왕이 북이스라엘 아합과 동맹한 것을 책망. "악인을 돕겠느냐 여호와를 미워하는 자를 사랑하겠느냐."', verses:'대하 19:1-3', mapEra:'divided' },
+  '요  엘':{ period:'BC835~810', type:'남유다 선지자', deeds:'르우엘의 아들. 메뚜기 재앙을 심판의 상징으로 사용. 회개 촉구. "성령을 모든 육체에 부어주리니" — 오순절 성령 강림의 예언(행2:17).', verses:'욜 1~3장, 행 2:17', mapEra:'divided' },
+  '스가랴(제사장)':{ period:'BC835~796', type:'남유다 제사장·선지자', deeds:'여호야다 제사장의 아들. 요아스 왕 시대. "너희가 여호와를 버렸으므로 여호와께서도 너희를 버리셨느니라." 백성들에게 돌에 맞아 순교.', verses:'대하 24:20-22', mapEra:'divided' },
+  '이사야':{ period:'BC740~700', type:'남유다 선지자(대선지자)', deeds:'"구약의 복음서." 웃시야~히스기야 왕 때 활동. 동정녀 탄생(사7:14), 고난받는 종(사53장), 고레스 이름까지 150년 전 예언. 히스기야 때 앗수르 격멸 예언. 전통적으로 톱에 켜서 순교.', verses:'사 1~66장 / "그가 찔림은 우리의 허물 때문이요 그가 상함은 우리의 죄악 때문이라"(사53:5)', mapEra:'divided' },
+  '미  가':{ period:'BC735~700', type:'남유다 선지자', deeds:'모레셋 출신 농촌 선지자. 요담·아하스·히스기야 왕 때 활동. 사회 불의·부패 비판. 베들레헴 메시아 탄생 예언 — 동방박사들이 이 구절로 탄생 장소 확인.', verses:'미 1~7장 / "베들레헴 에브라다야...이스라엘을 다스릴 자가 네게서 나올 것이라"(미5:2)', mapEra:'divided' },
+  '나  훔':{ period:'BC663~612', type:'남유다 선지자', deeds:'엘고스 출신. 니느웨(앗수르 수도) 심판 예언. 요나가 전파한 니느웨가 다시 타락함. BC612 니느웨 실제 멸망으로 예언 성취.', verses:'나 1~3장', mapEra:'divided' },
+  '스바냐':{ period:'BC640~609', type:'남유다 선지자', deeds:'히스기야의 현손. 요시야 왕 초기 활동. 전면적 심판(여호와의 날) 선포. 요시야 종교개혁의 선구자 역할.', verses:'습 1~3장 / "너의 하나님 여호와가 너의 가운데 계시니 그는 구원을 베푸실 전능자이시라"(습3:17)', mapEra:'divided' },
+  '하박국':{ period:'BC625~605', type:'남유다 선지자', deeds:'선지자 중 유일하게 하나님께 질문을 던지는 자. "어찌하여 악인을 허용하시나이까?" "오직 의인은 믿음으로 말미암아 살리라"(합2:4) — 로마서·갈라디아서·히브리서에 인용.', verses:'합 1~3장 / "비록 무화과나무가 무성하지 못하며...나는 여호와로 말미암아 즐거워하리로다"(합3:17-18)', mapEra:'divided' },
+  '예레미야':{ period:'BC627~586', type:'남유다 선지자(눈물의 선지자)', deeds:'아나돗 제사장 가문. 요시야~시드기야까지 40년 이상 활동. 예루살렘 항복 권고로 반역죄 낙인. 여러 차례 투옥. 새 언약 예언(렘31장). 예루살렘 함락 목격.', verses:'렘 1~52장, 애 1~5장 / "내가 너를 모태에 짓기 전에 너를 알았고"(렘1:5)', mapEra:'exile' },
+  '오바댜':{ period:'BC586~580', type:'남유다 선지자', deeds:'구약 최단편(1장 21절). 에돔(에서의 후손)이 예루살렘 멸망 때 방관하고 도망자 잡은 것 심판. 에돔의 완전한 멸망 예언.', verses:'옵 1장', mapEra:'exile' },
+  '에스겔':{ period:'BC593~571', type:'포로기 선지자', deeds:'제사장 출신. BC597 2차 포로로 바벨론 그발 강가에 끌려감. 네 생물·마른 뼈 환상. 예루살렘 심판 예언. 회복·새 성전 환상(겔40~48장).', verses:'겔 1~48장 / "마른 뼈들아 여호와의 말씀을 들을지어다...내가 너희 속에 생기를 넣으리니"(겔37:4-6)', mapEra:'exile' },
+  '다니엘':{ period:'BC605~536', type:'포로기 선지자', deeds:'BC605 1차 포로로 바벨론. 왕족 출신. 느부갓네살~고레스 왕 섬김. 꿈 해석. 사자 굴 생존. 풀무불 세 친구. 70이레·세계 제국 예언.', verses:'단 1~12장 / "그를 섬기는 자는 다 그의 영역에서 떨리고 두려워할지니 그는 살아 계시는 하나님이시오"(단6:26)', mapEra:'exile' },
+  '학  개':{ period:'BC520~516', type:'귀환기 선지자', deeds:'귀환 후 성전 재건 독려. "이 성전의 나중 영광이 이전 영광보다 크리라"(학2:9). 스룹바벨·대제사장 여호수아와 함께 BC515 성전 완공.', verses:'학 1~2장', mapEra:'return' },
+  '스가랴':{ period:'BC520~480', type:'귀환기 선지자', deeds:'제사장 잇도의 손자. 학개와 함께 성전 재건 독려. 8개의 환상. 메시아 예언: 나귀 타고 입성, 은 30개, 찔린 자를 봄.', verses:'슥 1~14장 / "그들이 그 찌른 바 그를 바라보고"(슥12:10)', mapEra:'return' },
+  '말라기':{ period:'BC433~420', type:'귀환기 선지자(구약 마지막)', deeds:'구약의 마지막 선지자. 제사장·백성 부패 책망. 이방인과의 혼인 문제. 엘리야 재림 예언(=세례 요한). 이후 약 400년 하나님 음성 침묵.', verses:'말 1~4장 / "보라 내가 내 사자를 보내리니...여호와의 길을 준비할 것이요"(말3:1)', mapEra:'return' },
+};
+
+// ══════════════════════════════════════
+// 이름 정규화 (공백 제거)
+// ══════════════════════════════════════
+function normName(n){ return n.replace(/\s/g,''); }
+
+// ══════════════════════════════════════
+// 지도 SVG (국경선 포함)
+// ══════════════════════════════════════
+function buildMapSVG(era, personName) {
+
+  // ════════════════════════════════════════
+  // 공통 지형 아웃라인 레이어 (600×460 viewBox)
+  // 이미지의 실제 지형 윤곽을 기반으로 좌표 설정
+  // ════════════════════════════════════════
+
+  const DEFS = `<defs>
+    <linearGradient id="gSea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a9fd4"/><stop offset="100%" stop-color="#2a7abf"/>
+    </linearGradient>
+    <linearGradient id="gDesert" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d4b483"/><stop offset="100%" stop-color="#c4a060"/>
+    </linearGradient>
+    <linearGradient id="gNile" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7ab870"/><stop offset="100%" stop-color="#5aa050"/>
+    </linearGradient>
+    <linearGradient id="gMeso" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8ab870"/><stop offset="100%" stop-color="#6a9850"/>
+    </linearGradient>
+    <filter id="sh"><feDropShadow dx="1" dy="1" stdDeviation="2" flood-opacity=".3"/></filter>
+  </defs>`;
+
+  // ── 배경: 전체 아라비아/사막 황토색
+  const BG = `<rect width="600" height="460" fill="url(#gDesert)"/>`;
+
+  // ── 지중해 (왼쪽, 실제 형태)
+  const MED = `
+    <path d="M0,15
+      Q18,12 40,14 Q62,16 82,20 Q98,24 112,32
+      Q128,42 140,55 Q152,68 158,82 Q164,96 163,112
+      Q162,128 155,142 Q146,155 132,160
+      Q116,165 98,163 Q78,160 58,153
+      Q38,145 20,133 Q6,122 0,108 Z"
+      fill="url(#gSea)" opacity=".92"/>
+    <path d="M0,15 Q18,12 40,14 Q62,16 82,20 Q98,24 112,32
+      Q128,42 140,55 Q152,68 158,82 Q164,96 163,112
+      Q162,128 155,142 Q146,155 132,160
+      Q116,165 98,163 Q78,160 58,153
+      Q38,145 20,133 Q6,122 0,108 Z"
+      fill="none" stroke="#6abcee" stroke-width="1.5" opacity=".6"/>
+    <!-- 물결 -->
+    <path d="M18,70 Q35,65 52,70" stroke="#8ad4ff" stroke-width="1" fill="none" opacity=".5"/>
+    <path d="M25,90 Q44,85 62,90" stroke="#8ad4ff" stroke-width="1" fill="none" opacity=".5"/>
+    <path d="M15,108 Q38,103 58,108" stroke="#8ad4ff" stroke-width="1" fill="none" opacity=".5"/>
+    <text x="22" y="92" fill="#c8e8ff" font-size="12" font-weight="700"
+          font-family="Noto Serif KR,serif">지 중 해</text>
+    <text x="28" y="107" fill="#a8d4ff" font-size="10"
+          font-family="Noto Serif KR,serif">(큰 바다)</text>`;
+
+  // ── 이집트 본체 (왼하단, 나일강 삼각주 포함)
+  const EGYPT_BODY = `
+    <!-- 이집트 지형 본체 -->
+    <path d="M0,115 Q28,108 58,107 Q90,106 118,115
+      Q142,126 154,145 Q162,162 160,190
+      Q158,230 148,268 Q135,308 115,336
+      Q92,358 65,368 Q38,372 15,362
+      Q4,354 0,338 Z"
+      fill="#c8a850" opacity=".72"/>
+    <path d="M0,115 Q28,108 58,107 Q90,106 118,115
+      Q142,126 154,145 Q162,162 160,190
+      Q158,230 148,268 Q135,308 115,336
+      Q92,358 65,368 Q38,372 15,362
+      Q4,354 0,338 Z"
+      fill="none" stroke="#a88030" stroke-width="1.5"/>
+    <!-- 나일강 초록 지대 -->
+    <path d="M52,108 Q72,100 95,98 Q118,98 135,112
+      Q116,134 95,138 Q74,138 55,126 Z"
+      fill="#6ab858" opacity=".65"/>
+    <path d="M52,108 Q72,100 95,98 Q118,98 135,112
+      Q116,134 95,138 Q74,138 55,126 Z"
+      fill="none" stroke="#4a9838" stroke-width="1"/>
+    <!-- 나일강 본류 -->
+    <path d="M74,368 Q68,320 65,275 Q62,235 62,195
+      Q62,165 64,140 Q66,125 70,112"
+      stroke="#3a8aee" stroke-width="5" fill="none" opacity=".82"
+      stroke-linecap="round"/>
+    <!-- 나일강 초록 띠 -->
+    <path d="M74,368 Q68,320 65,275 Q62,235 62,195
+      Q62,165 64,140 Q66,125 70,112"
+      stroke="#5ab848" stroke-width="18" fill="none" opacity=".35"
+      stroke-linecap="round"/>
+    <text x="22" y="245" fill="#ffe080" font-size="15" font-weight="900"
+          font-family="Noto Serif KR,serif">이 집 트</text>
+    <text x="60" y="195" fill="#3a8aee" font-size="10"
+          font-family="Noto Serif KR,serif">나일강</text>
+    <text x="55" y="122" fill="#4ab838" font-size="10"
+          font-family="Noto Serif KR,serif">삼각주</text>`;
+
+  // ── 시나이 반도 (삼각형 모양)
+  const SINAI_BODY = `
+    <path d="M155,148 Q178,138 205,140 Q225,145 240,158
+      Q252,175 248,208 Q240,245 222,272
+      Q205,290 185,295 Q165,290 152,272
+      Q138,252 136,222 Q134,192 140,170 Z"
+      fill="#c8a040" opacity=".62"/>
+    <path d="M155,148 Q178,138 205,140 Q225,145 240,158
+      Q252,175 248,208 Q240,245 222,272
+      Q205,290 185,295 Q165,290 152,272
+      Q138,252 136,222 Q134,192 140,170 Z"
+      fill="none" stroke="#b89030" stroke-width="1.5"/>
+    <text x="148" y="218" fill="#c8a040" font-size="11"
+          font-family="Noto Serif KR,serif">시나이</text>`;
+
+  // ── 홍해 (시나이 왼쪽)
+  const RED_SEA = `
+    <path d="M136,155 Q128,178 124,208
+      Q120,240 122,268 Q124,290 128,308"
+      stroke="#2a6aaa" stroke-width="14" fill="none" opacity=".65"
+      stroke-linecap="round"/>
+    <text x="88" y="228" fill="#8aceff" font-size="11"
+          font-family="Noto Serif KR,serif">홍해</text>`;
+
+  // ── 가나안 지역 (중앙, 지중해 동쪽 해안)
+  const CANAAN_BODY = `
+    <!-- 해안 평야 -->
+    <path d="M163,68 Q178,58 198,52 Q222,46 248,46
+      Q272,46 290,60 Q308,76 314,105
+      Q320,138 318,172 Q315,215 308,255
+      Q298,298 282,335 Q262,368 240,382
+      Q218,390 196,382 Q174,370 165,348
+      Q155,322 156,290 Q155,255 158,218
+      Q160,178 162,140 Q163,104 163,68 Z"
+      fill="#8aaa60" opacity=".58"/>
+    <path d="M163,68 Q178,58 198,52 Q222,46 248,46
+      Q272,46 290,60 Q308,76 314,105
+      Q320,138 318,172 Q315,215 308,255
+      Q298,298 282,335 Q262,368 240,382
+      Q218,390 196,382 Q174,370 165,348
+      Q155,322 156,290 Q155,255 158,218
+      Q160,178 162,140 Q163,104 163,68 Z"
+      fill="none" stroke="#e8d080" stroke-width="2.5"/>
+    <!-- 구릉 질감 선 -->
+    <path d="M182,95 Q215,85 248,92 Q272,100 285,118"
+      stroke="#5a8830" stroke-width="1.2" fill="none" opacity=".45"/>
+    <path d="M175,148 Q212,138 252,148 Q278,158 290,178"
+      stroke="#5a8830" stroke-width="1.2" fill="none" opacity=".45"/>
+    <path d="M170,202 Q210,192 252,202 Q278,212 292,232"
+      stroke="#5a8830" stroke-width="1.2" fill="none" opacity=".45"/>
+    <path d="M168,262 Q208,252 250,262 Q275,272 288,290"
+      stroke="#5a8830" stroke-width="1.2" fill="none" opacity=".45"/>`;
+
+  // ── 갈릴리 호수 + 요단강 + 사해
+  const WATER_SYSTEM = `
+    <!-- 갈릴리 호수 -->
+    <ellipse cx="300" cy="125" rx="20" ry="28" fill="#3a8acc" opacity=".92"/>
+    <ellipse cx="297" cy="120" rx="12" ry="8"  fill="#6aaedd" opacity=".45"/>
+    <path d="M300,153 Q303,188 300,228 Q297,265 293,305 Q290,335 288,365"
+      stroke="#3a8aee" stroke-width="5" fill="none" opacity=".85"
+      stroke-linecap="round"/>
+    <!-- 사해 -->
+    <ellipse cx="290" cy="358" rx="15" ry="33" fill="#2a5a9a" opacity=".88"/>
+    <ellipse cx="288" cy="350" rx="9"  ry="8"  fill="#4a7aaa" opacity=".4"/>
+    <!-- 레이블 -->
+    <text x="220" y="123" fill="#8aceff" font-size="10"
+          font-family="Noto Serif KR,serif">갈릴리 호수</text>
+    <text x="308" y="228" fill="#6abcff" font-size="10"
+          font-family="Noto Serif KR,serif">요단강</text>
+    <text x="218" y="356" fill="#8aceff" font-size="10"
+          font-family="Noto Serif KR,serif">사  해</text>`;
+
+  // ── 메소포타미아 (오른쪽)
+  const MESO_BODY = `
+    <path d="M398,22 Q450,10 510,16 Q552,24 574,52
+      Q590,80 585,122 Q578,162 552,186
+      Q522,208 486,212 Q450,214 420,198
+      Q392,180 385,148 Q378,112 385,75 Z"
+      fill="url(#gMeso)" opacity=".55"/>
+    <path d="M398,22 Q450,10 510,16 Q552,24 574,52
+      Q590,80 585,122 Q578,162 552,186
+      Q522,208 486,212 Q450,214 420,198
+      Q392,180 385,148 Q378,112 385,75 Z"
+      fill="none" stroke="#88c848" stroke-width="2" stroke-dasharray="5,3"/>
+    <!-- 유프라테스 -->
+    <path d="M388,70 Q410,145 428,222 Q438,272 445,340"
+      stroke="#3a8aee" stroke-width="4" fill="none" opacity=".72"
+      stroke-linecap="round"/>
+    <!-- 티그리스 -->
+    <path d="M532,48 Q545,125 543,215 Q540,288 532,360"
+      stroke="#5aaaee" stroke-width="3.5" fill="none" opacity=".65"
+      stroke-linecap="round"/>
+    <text x="428" y="90" fill="#b8e870" font-size="14" font-weight="700"
+          font-family="Noto Serif KR,serif">메소포타미아</text>
+    <text x="448" y="182" fill="#3a8aee" font-size="10"
+          font-family="Noto Serif KR,serif">유프라테스</text>
+    <text x="546" y="175" fill="#5aaaee" font-size="10"
+          font-family="Noto Serif KR,serif">티그리스</text>`;
+
+  // ── 아람(수리아) 산지
+  const ARAM_BODY = `
+    <path d="M316,38 Q358,24 398,32 Q394,78 384,128
+      Q358,148 322,148 Q302,130 305,88 Z"
+      fill="#7a9a50" opacity=".48"/>
+    <path d="M316,38 Q358,24 398,32 Q394,78 384,128
+      Q358,148 322,148 Q302,130 305,88 Z"
+      fill="none" stroke="#a8cc60" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="326" y="88" fill="#b8d870" font-size="13"
+          font-family="Noto Serif KR,serif">아 람</text>
+    <text x="326" y="103" fill="#98b858" font-size="10"
+          font-family="Noto Serif KR,serif">(수리아)</text>`;
+
+  // ── 블레셋 해안 지역
+  const PHIL_BODY = `
+    <path d="M158,265 Q174,258 176,282 Q175,340 165,372
+      Q155,378 142,368 Q128,352 128,318
+      Q130,285 144,265 Z"
+      fill="#9a5a3a" opacity=".42"/>
+    <text x="82" y="320" fill="#cc8060" font-size="12"
+          font-family="Noto Serif KR,serif">블레셋</text>`;
+
+  // ── 주변 나라 레이블
+  const SURR = `
+    <text x="316" y="262" fill="#c8a060" font-size="12"
+          font-family="Noto Serif KR,serif">암 몬</text>
+    <text x="320" y="342" fill="#c8a060" font-size="12"
+          font-family="Noto Serif KR,serif">모 압</text>
+    <text x="225" y="422" fill="#c8a060" font-size="12"
+          font-family="Noto Serif KR,serif">에 돔</text>
+    <text x="0,395" y="345" fill="#c8a060" font-size="11"
+          font-family="Noto Serif KR,serif">아라비아 사막</text>`;
+
+  // ── 나침반
+  const COMPASS = `
+    <g transform="translate(565,30)">
+      <circle cx="0" cy="0" r="18" fill="#1a2040" opacity=".85"
+              stroke="#c8960c" stroke-width="1.5"/>
+      <polygon points="0,-13  3,4  0,2 -3,4" fill="#e04040"/>
+      <polygon points="0, 13  3,-4  0,-2 -3,-4" fill="#e0e0e0"/>
+      <text x="-3.5" y="-5" fill="#fff" font-size="9" font-weight="900">N</text>
+    </g>`;
+
+  // ── 도시 마커 헬퍼
+  const DOT  = (x,y,c='#ffcc00') =>
+    `<circle cx="${x}" cy="${y}" r="5.5" fill="${c}" opacity=".9"
+             stroke="#1a1008" stroke-width="1"/>`;
+  const CITY = (x,y,label,ax,ay,c='#fff') =>
+    `${DOT(x,y,c)}<text x="${ax}" y="${ay}" fill="${c}" font-size="11"
+       font-family="Noto Serif KR,serif">${label}</text>`;
+
+  // 공통 도시
+  const C_JERUSALEM = CITY(238,290,'예루살렘',190,282,'#ffe080');
+  const C_SAMARIA   = CITY(232,198,'사마리아', 182,196,'#80ffff');
+  const C_JERICHO   = CITY(262,270,'여리고',   268,270,'#ffcc00');
+  const C_HEBRON    = CITY(228,322,'헤브론',   175,320,'#dddddd');
+  const C_BEER      = CITY(210,360,'브엘세바', 152,358,'#dddddd');
+  const C_SHECHEM   = CITY(248,178,'세겜',     255,176,'#dddddd');
+  const C_HAZOR     = CITY(280, 88,'하솔',     285, 86,'#dddddd');
+  const C_HARAN     = CITY(400, 36,'하란',     408, 34,'#ffcc00');
+  const C_UR        = CITY(516,188,'우르',     524,186,'#ffcc00');
+  const C_BABEL     = CITY(508,152,'바벨론',   516,149,'#ffe080');
+
+  // ── 인물 마커
+  const P = (x,y,name) => `
+    <circle cx="${x}" cy="${y}" r="15" fill="#ff6020" opacity=".22"/>
+    <circle cx="${x}" cy="${y}" r="9"  fill="#ff8040" opacity=".95"
+            stroke="#ffcc00" stroke-width="1.5"/>
+    <text x="${x+13}" y="${y+5}" fill="#ff8040" font-size="14" font-weight="900"
+          font-family="Noto Serif KR,serif">${name}</text>`;
+
+  // ── 국경선 헬퍼
+  const BORDER = (d, col='#ffe080', dash='0', w=2.5) =>
+    `<path d="${d}" fill="none" stroke="${col}"
+           stroke-width="${w}" stroke-dasharray="${dash}"/>`;
+
+  // ── 지도 제목 + 출처
+  const TITLE = (t,sub) => `
+    <rect x="0" y="0" width="600" height="24" fill="#1a2040" opacity=".75"/>
+    <text x="300" y="17" fill="#ffe080" font-size="15" font-weight="900"
+          text-anchor="middle" font-family="Noto Serif KR,serif">${t}</text>
+    <text x="8" y="452" fill="#888" font-size="10"
+          font-family="Noto Serif KR,serif">${sub}</text>`;
+
+  // ════════════════════════════════════════
+  // 시대별 지도 조합
+  // ════════════════════════════════════════
+  const maps = {
+
+    // ① 족장 시대 — 아브라함 이동경로
+    patriarch:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${EGYPT_BODY}${CANAAN_BODY}${MESO_BODY}${ARAM_BODY}
+      ${MED}${WATER_SYSTEM}${SINAI_BODY}${RED_SEA}
+      ${PHIL_BODY}${COMPASS}
+      ${C_HARAN}${C_UR}${C_SHECHEM}${C_HEBRON}${C_BEER}
+      <!-- 아브라함 경로: 우르→하란 (빨간 화살표) -->
+      <path d="M516,188 Q488,108 402,38"
+        stroke="#cc44ff" stroke-width="3.5" fill="none" stroke-dasharray="8,4"/>
+      <circle cx="516" cy="188" r="10" fill="#cc44ff" opacity=".8"/>
+      <text x="468" y="118" fill="#dd88ff" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">① 우르→하란</text>
+      <!-- 하란→가나안 (파란 화살표) -->
+      <path d="M402,38 Q355,50 308,65 Q275,78 252,112 Q240,142 240,175"
+        stroke="#ff8800" stroke-width="3.5" fill="none" stroke-dasharray="8,4"/>
+      <circle cx="402" cy="38" r="10" fill="#ff8800" opacity=".8"/>
+      <text x="298" y="55" fill="#ffaa44" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">② 하란→가나안</text>
+      <!-- 도착지 마커 -->
+      ${P(240,178,personName)}
+      <!-- 가나안 표시 -->
+      <text x="168" y="42" fill="#ffe080" font-size="13" font-weight="700"
+            font-family="Noto Serif KR,serif">가나안 (약속의 땅)</text>
+      ${TITLE('족장 시대 — 아브라함의 이동','창세기 11~25장')}
+    </svg>`,
+
+    // ② 이집트 시대 — 요셉
+    egypt:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${EGYPT_BODY}${CANAAN_BODY}
+      ${MED}${WATER_SYSTEM}${SINAI_BODY}${RED_SEA}
+      ${PHIL_BODY}${COMPASS}
+      ${CITY(102,118,'피람세스',108,116,'#ffcc00')}
+      ${CITY( 70,172,'멤피스',  76,172,'#ffcc00')}
+      ${CITY( 70,108,'고센',    76,108,'#90ee90')}
+      ${P(70,212,personName)}
+      <text x="22" y="285" fill="#ffe080" font-size="13" font-weight="700"
+            font-family="Noto Serif KR,serif">총리 사역지</text>
+      ${TITLE('이집트 — 요셉 시대','창세기 37~50장')}
+    </svg>`,
+
+    // ③ 출애굽
+    exodus:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${EGYPT_BODY}${CANAAN_BODY}
+      ${MED}${WATER_SYSTEM}${SINAI_BODY}${RED_SEA}
+      ${PHIL_BODY}${COMPASS}
+      <!-- 피람세스 출발 -->
+      ${CITY(102,118,'피람세스①',106,116,'#ffcc00')}
+      <!-- 출애굽 경로 -->
+      <path d="M102,125 Q118,138 130,155 Q138,172 140,195
+               Q142,222 148,248 Q160,268 175,282"
+        stroke="#ffcc00" stroke-width="3.5" fill="none" stroke-dasharray="8,4"/>
+      <!-- 시내산 -->
+      <polygon points="175,282 190,252 205,282"
+               fill="#aa8828" opacity=".95"/>
+      <path d="M175,282 L190,252 L205,282 Z"
+            fill="none" stroke="#ffcc00" stroke-width="2"/>
+      <circle cx="190" cy="252" r="7" fill="#ff8040"/>
+      <text x="158" y="300" fill="#ffcc00" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">시내산③</text>
+      <!-- 가나안 진입 -->
+      <path d="M205,282 Q225,265 248,250 Q268,238 275,215
+               Q280,192 270,168 Q268,145 265,115"
+        stroke="#ffcc00" stroke-width="3.5" fill="none" stroke-dasharray="8,4"/>
+      <text x="268" y="100" fill="#ffcc00" font-size="11" font-weight="700"
+            font-family="Noto Serif KR,serif">④ 가나안</text>
+      <text x="135" y="155" fill="#8aceff" font-size="10"
+            font-family="Noto Serif KR,serif">수에즈만</text>
+      ${P(102,130,personName)}
+      ${TITLE('출애굽과 광야 이동','출애굽기 ~ 민수기')}
+    </svg>`,
+
+    // ④ 가나안 정복/사사
+    canaan:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${CANAAN_BODY}
+      ${MED}${WATER_SYSTEM}${PHIL_BODY}${ARAM_BODY}${COMPASS}
+      <!-- 12지파 색상 구역 -->
+      <!-- 납달리 -->
+      <path d="M242,50 Q275,42 300,55 Q312,72 308,110
+               Q295,128 272,130 Q252,128 240,112 Z"
+            fill="#3a7a5a" opacity=".52"/>
+      <text x="260" y="92" fill="#c8ffc8" font-size="12" font-family="Noto Serif KR,serif">납달리</text>
+      <!-- 아셀 -->
+      <path d="M165,70 Q182,60 200,68 Q208,88 205,118
+               Q195,140 180,148 Q165,140 162,118 Z"
+            fill="#4a7a6a" opacity=".52"/>
+      <text x="148" y="108" fill="#c8ffc8" font-size="11" font-family="Noto Serif KR,serif">아 셀</text>
+      <!-- 스불론/잇사갈 -->
+      <path d="M200,120 Q240,112 282,122 Q292,140 285,162
+               Q262,175 235,172 Q210,168 198,150 Z"
+            fill="#5a6a8a" opacity=".52"/>
+      <text x="228" y="148" fill="#c8e8ff" font-size="11" font-family="Noto Serif KR,serif">스불론·잇사갈</text>
+      <!-- 므낫세 -->
+      <path d="M175,165 Q225,155 280,165 Q290,185 286,222
+               Q268,240 244,242 Q218,242 196,228 Q172,212 172,192 Z"
+            fill="#7a8a4a" opacity=".52"/>
+      <text x="205" y="205" fill="#ffe0a0" font-size="13" font-family="Noto Serif KR,serif">므낫세</text>
+      <!-- 에브라임 -->
+      <path d="M172,245 Q222,235 280,245 Q288,265 282,282
+               Q258,296 228,295 Q198,292 174,278 Q166,262 168,252 Z"
+            fill="#6a5a8a" opacity=".52"/>
+      <text x="200" y="272" fill="#e8c8ff" font-size="13" font-family="Noto Serif KR,serif">에브라임</text>
+      <!-- 베냐민 -->
+      <path d="M172,285 Q222,275 280,285 Q286,305 278,322
+               Q255,332 225,330 Q196,328 172,315 Z"
+            fill="#8a6a4a" opacity=".52"/>
+      <text x="198" y="312" fill="#ffd8a8" font-size="12" font-family="Noto Serif KR,serif">베냐민</text>
+      <!-- 유다 -->
+      <path d="M168,325 Q220,315 275,325 Q282,348 274,372
+               Q252,388 230,390 Q200,388 178,370
+               Q162,348 162,332 Z"
+            fill="#8a4a3a" opacity=".52"/>
+      <text x="196" y="358" fill="#ffc8a8" font-size="14" font-weight="700"
+            font-family="Noto Serif KR,serif">유 다</text>
+      <!-- 시므온 -->
+      <path d="M162,375 Q205,368 248,375 Q250,390 235,398
+               Q212,402 188,398 Q164,392 162,382 Z"
+            fill="#7a4a5a" opacity=".52"/>
+      <text x="178" y="390" fill="#ffb8b8" font-size="11" font-family="Noto Serif KR,serif">시므온</text>
+      <!-- 요단 동편 -->
+      <path d="M308,162 Q345,152 360,168 Q368,190 362,222
+               Q342,235 312,230 Q295,215 295,192 Z"
+            fill="#5a8a4a" opacity=".45"/>
+      <text x="312" y="200" fill="#c8f0a8" font-size="11" font-family="Noto Serif KR,serif">므낫세(동)</text>
+      <path d="M300,232 Q342,222 362,238 Q368,262 360,285
+               Q338,298 308,292 Q290,278 290,258 Z"
+            fill="#5a7a3a" opacity=".45"/>
+      <text x="310" y="265" fill="#c8f0a8" font-size="12" font-family="Noto Serif KR,serif">갓</text>
+      <path d="M295,292 Q338,282 358,298 Q362,325 352,350
+               Q330,362 305,358 Q285,342 285,318 Z"
+            fill="#7a6a3a" opacity=".45"/>
+      <text x="308" y="328" fill="#ffe8a8" font-size="12" font-family="Noto Serif KR,serif">르우벤</text>
+      <!-- 외곽 국경 -->
+      ${BORDER('M175,52 Q242,38 305,55 Q328,80 326,162 Q322,225 315,285 Q302,348 278,385 Q255,400 228,398 Q198,398 174,376 Q156,352 155,315 Q150,268 155,215 Q160,158 165,102 Z','#e8d080')}
+      ${C_JERUSALEM}${C_SAMARIA}${C_JERICHO}${C_HEBRON}${C_BEER}${C_SHECHEM}${C_HAZOR}
+      <!-- 주요 사건 -->
+      <text x="265" y="260" fill="#ff4040" font-size="11" font-weight="700"
+            font-family="Noto Serif KR,serif">① 여리고</text>
+      ${P(248,255,personName)}
+      <!-- 주변 -->
+      <text x="318" y="265" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">암 몬</text>
+      <text x="322" y="345" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">모 압</text>
+      <text x="225" y="425" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">에 돔</text>
+      ${TITLE('가나안 정복 — 12지파 분배','여호수아 ~ 사사기')}
+    </svg>`,
+
+    // ⑤ 통일왕국
+    united:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${CANAAN_BODY}
+      ${MED}${WATER_SYSTEM}${PHIL_BODY}${ARAM_BODY}${COMPASS}
+      <!-- 통일왕국 국경 -->
+      ${BORDER('M175,42 Q242,25 308,42 Q348,65 355,115 Q360,168 350,232 Q335,298 310,352 Q282,390 250,398 Q218,398 192,375 Q165,348 157,305 Q148,258 155,205 Q162,148 168,95 Z','#ffe080')}
+      <text x="178" y="68" fill="#a0d0ff" font-size="12" font-family="Noto Serif KR,serif">다윗·솔로몬 왕국</text>
+      <!-- 예루살렘 강조 (성전) -->
+      <circle cx="238" cy="290" r="16" fill="#ffe080" opacity=".88"/>
+      <polygon points="233,270 243,270 248,252 228,252"
+               fill="#ffaa00" opacity=".95"/>
+      <text x="190" y="282" fill="#ffe080" font-size="14" font-weight="900"
+            font-family="Noto Serif KR,serif">예루살렘</text>
+      <text x="190" y="300" fill="#ffcc00" font-size="11"
+            font-family="Noto Serif KR,serif">수도·성전 건축</text>
+      ${C_SAMARIA}${C_HEBRON}${C_BEER}${C_HAZOR}
+      ${CITY(282,58,'단',288,56,'#ddd')}
+      <!-- 주변 나라 -->
+      <text x="318" y="265" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">암 몬</text>
+      <text x="322" y="345" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">모 압</text>
+      <text x="225" y="425" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">에 돔</text>
+      ${P(238,230,personName)}
+      ${TITLE('통일왕국 — 다윗·솔로몬 시대','사무엘상 ~ 열왕기상 11장')}
+    </svg>`,
+
+    // ⑥ 분열왕국
+    divided:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${CANAAN_BODY}
+      ${MED}${WATER_SYSTEM}${PHIL_BODY}${ARAM_BODY}${COMPASS}
+      <!-- 북이스라엘 영역 -->
+      <path d="M175,45 Q242,28 308,45 Q345,65 348,115 Q345,165 325,195
+               Q300,222 265,228 Q232,232 200,220 Q172,208 165,175
+               Q158,142 162,100 Z"
+            fill="#0e6b6b" opacity=".45"/>
+      ${BORDER('M175,45 Q242,28 308,45 Q345,65 348,115 Q345,165 325,195 Q300,222 265,228 Q232,232 200,220 Q172,208 165,175 Q158,142 162,100 Z','#40c0c0')}
+      <text x="200" y="100" fill="#80ffff" font-size="16" font-weight="900"
+            font-family="Noto Serif KR,serif">북 이스라엘</text>
+      <text x="205" y="118" fill="#60e0e0" font-size="11"
+            font-family="Noto Serif KR,serif">(이스라엘)</text>
+      <!-- 남유다 영역 -->
+      <path d="M165,232 Q205,220 265,232 Q295,245 302,282
+               Q306,322 292,358 Q270,386 244,392 Q214,390 190,370
+               Q162,345 158,305 Q150,268 157,250 Z"
+            fill="#8b1a1a" opacity=".45"/>
+      ${BORDER('M165,232 Q205,220 265,232 Q295,245 302,282 Q306,322 292,358 Q270,386 244,392 Q214,390 190,370 Q162,345 158,305 Q150,268 157,250 Z','#ff6060')}
+      <text x="192" y="300" fill="#ffb0b0" font-size="16" font-weight="900"
+            font-family="Noto Serif KR,serif">남 유 다</text>
+      <text x="198" y="318" fill="#ee8888" font-size="11"
+            font-family="Noto Serif KR,serif">(유다)</text>
+      <!-- BC931 분열선 -->
+      <line x1="158" y1="232" x2="330" y2="232"
+            stroke="#ff4020" stroke-width="3" stroke-dasharray="9,4"/>
+      <text x="332" y="236" fill="#ff4020" font-size="11" font-weight="700"
+            font-family="Noto Serif KR,serif">BC931 분열</text>
+      <!-- 앗수르 -->
+      <path d="M396,25 Q458,12 524,20 Q565,30 580,60
+               Q590,95 574,130 Q555,158 520,168
+               Q484,175 450,162 Q416,148 402,118
+               Q390,88 395,58 Z"
+            fill="#5a3a20" opacity=".48"/>
+      ${BORDER('M396,25 Q458,12 524,20 Q565,30 580,60 Q590,95 574,130 Q555,158 520,168 Q484,175 450,162 Q416,148 402,118 Q390,88 395,58 Z','#c08040','5,3')}
+      <text x="432" y="90" fill="#c08040" font-size="14" font-weight="700"
+            font-family="Noto Serif KR,serif">앗 수 르</text>
+      <text x="428" y="108" fill="#c08040" font-size="10"
+            font-family="Noto Serif KR,serif">BC722 북왕국 멸망</text>
+      ${C_SAMARIA}${C_JERUSALEM}${C_HEBRON}
+      <text x="318" y="265" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">암 몬</text>
+      <text x="322" y="345" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">모 압</text>
+      <text x="225" y="425" fill="#c8a060" font-size="12" font-family="Noto Serif KR,serif">에 돔</text>
+      ${P(238,178,personName)}
+      ${TITLE('분열왕국 — 이스라엘과 유다','열왕기상 12장 ~ 열왕기하 25장')}
+    </svg>`,
+
+    // ⑦ 포로기
+    exile:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${MESO_BODY}${ARAM_BODY}${COMPASS}
+      <!-- 지중해 -->
+      <path d="M0,15 Q18,12 40,14 Q62,16 82,20 Q98,24 112,32
+               Q128,42 140,55 Q152,68 158,82 Q164,96 163,112
+               Q162,128 155,142 Q146,155 132,160
+               Q116,165 98,163 Q78,160 58,153
+               Q38,145 20,133 Q6,122 0,108 Z"
+            fill="url(#gSea)" opacity=".92"/>
+      <text x="22" y="92" fill="#c8e8ff" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">지 중 해</text>
+      <!-- 가나안/유다(폐허) -->
+      <path d="M163,68 Q200,52 240,52 Q268,52 286,68
+               Q300,86 298,128 Q292,175 275,208 Q255,238 228,242
+               Q200,240 180,220 Q162,200 160,168 Q155,132 158,98 Z"
+            fill="#4a3a2a" opacity=".55"/>
+      ${BORDER('M163,68 Q200,52 240,52 Q268,52 286,68 Q300,86 298,128 Q292,175 275,208 Q255,238 228,242 Q200,240 180,220 Q162,200 160,168 Q155,132 158,98 Z','#c8a040','6,3')}
+      <text x="168" y="128" fill="#aa8060" font-size="13" font-weight="700"
+            font-family="Noto Serif KR,serif">유 다</text>
+      <text x="162" y="146" fill="#aa8060" font-size="10"
+            font-family="Noto Serif KR,serif">(예루살렘 폐허)</text>
+      <!-- 바벨론 제국 국경 -->
+      ${BORDER('M396,25 Q460,10 538,16 Q582,24 598,56 Q610,86 604,130 Q596,170 565,196 Q532,218 495,222 Q456,226 422,212 Q390,196 380,162 Q368,130 376,88 Q383,52 396,25 Z','#8080cc')}
+      <text x="445" y="108" fill="#c0c0ff" font-size="18" font-weight="900"
+            font-family="Noto Serif KR,serif">바 벨 론</text>
+      ${C_BABEL}
+      <!-- 포로 이동경로 -->
+      <path d="M222,178 Q298,148 390,132 Q432,132 506,148"
+        stroke="#ff8040" stroke-width="3.5" fill="none" stroke-dasharray="8,4"/>
+      <text x="275" y="122" fill="#ff8040" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">포로 이동경로 →</text>
+      <!-- 그발강 -->
+      <path d="M430,230 Q462,240 495,232"
+        stroke="#80c0ff" stroke-width="3" fill="none"/>
+      <text x="425" y="258" fill="#80c0ff" font-size="10"
+            font-family="Noto Serif KR,serif">그발강 (에스겔)</text>
+      ${P(506,178,personName)}
+      ${TITLE('바벨론 포로기','열왕기하 25장, 다니엘 1~12장, 에스겔 1~48장')}
+    </svg>`,
+
+    // ⑧ 귀환기
+    return:`<svg viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+      ${DEFS}${BG}${ARAM_BODY}${COMPASS}
+      <!-- 지중해 -->
+      <path d="M0,15 Q18,12 40,14 Q62,16 82,20 Q98,24 112,32
+               Q128,42 140,55 Q152,68 158,82 Q164,96 163,112
+               Q162,128 155,142 Q146,155 132,160
+               Q116,165 98,163 Q78,160 58,153
+               Q38,145 20,133 Q6,122 0,108 Z"
+            fill="url(#gSea)" opacity=".92"/>
+      <text x="22" y="92" fill="#c8e8ff" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">지 중 해</text>
+      <!-- 가나안 (초록 = 귀환) -->
+      <path d="M163,68 Q200,52 240,52 Q268,52 286,68
+               Q300,86 298,128 Q292,175 275,208 Q255,238 228,242
+               Q200,240 180,220 Q162,200 160,168 Q155,132 158,98 Z"
+            fill="#2a5a2a" opacity=".52"/>
+      ${BORDER('M163,68 Q200,52 240,52 Q268,52 286,68 Q300,86 298,128 Q292,175 275,208 Q255,238 228,242 Q200,240 180,220 Q162,200 160,168 Q155,132 158,98 Z','#80e080')}
+      <text x="172" y="120" fill="#80ff80" font-size="13" font-weight="700"
+            font-family="Noto Serif KR,serif">가 나 안</text>
+      <!-- 페르시아 제국 -->
+      <path d="M366,16 Q445,4 528,10 Q578,16 598,46
+               Q612,76 606,118 Q598,160 568,185
+               Q536,210 496,216 Q456,220 422,205
+               Q388,188 374,158 Q358,126 362,86 Q364,48 366,16 Z"
+            fill="#5a3a70" opacity=".48"/>
+      ${BORDER('M366,16 Q445,4 528,10 Q578,16 598,46 Q612,76 606,118 Q598,160 568,185 Q536,210 496,216 Q456,220 422,205 Q388,188 374,158 Q358,126 362,86 Q364,48 366,16 Z','#c080ff')}
+      <text x="430" y="92" fill="#c080ff" font-size="16" font-weight="900"
+            font-family="Noto Serif KR,serif">페르시아 제국</text>
+      <text x="438" y="110" fill="#c080ff" font-size="11"
+            font-family="Noto Serif KR,serif">고레스 → 아닥사스다</text>
+      <!-- 유프라테스 -->
+      <path d="M370,92 Q392,162 412,238 Q422,285 430,348"
+        stroke="#3a8aee" stroke-width="4" fill="none" opacity=".72" stroke-linecap="round"/>
+      <text x="434" y="220" fill="#5aacff" font-size="10"
+            font-family="Noto Serif KR,serif">유프라테스</text>
+      <!-- 귀환 경로 -->
+      <path d="M494,158 Q422,130 352,120 Q308,116 258,130 Q234,140 196,168"
+        stroke="#ffcc00" stroke-width="3.5" fill="none" stroke-dasharray="8,4"/>
+      <text x="302" y="106" fill="#ffcc00" font-size="12" font-weight="700"
+            font-family="Noto Serif KR,serif">← 귀환경로 BC538</text>
+      <!-- 예루살렘 재건 -->
+      <circle cx="196" cy="172" r="13" fill="#ffe080" opacity=".92"/>
+      <polygon points="191,152 201,152 205,134 187,134"
+               fill="#ffaa00" opacity=".95"/>
+      <text x="148" y="164" fill="#ffe080" font-size="13" font-weight="900"
+            font-family="Noto Serif KR,serif">예루살렘</text>
+      <text x="148" y="182" fill="#ffcc00" font-size="10"
+            font-family="Noto Serif KR,serif">성전·성벽 재건</text>
+      <!-- 갈릴리+요단+사해 -->
+      <ellipse cx="298" cy="125" rx="18" ry="26" fill="#3a8acc" opacity=".88"/>
+      <path d="M298,151 Q301,188 298,225 Q295,262 290,302 Q287,332 285,358"
+        stroke="#3a8aee" stroke-width="4" fill="none" opacity=".82" stroke-linecap="round"/>
+      <ellipse cx="287" cy="355" rx="14" ry="30" fill="#2a5a9a" opacity=".85"/>
+      ${P(196,198,personName)}
+      ${TITLE('귀환기 — 페르시아 시대','에스라 ~ 느헤미야, 학개·스가랴·말라기')}
+    </svg>`,
+  };
+  return maps[era] || maps['canaan'];
+}
+
+// ══════════════════════════════════════
+// 인물 선택 처리
+// ══════════════════════════════════════
+let selectedEl = null;
+
+function selectPerson(name, el) {
+  // 이전 선택 해제
+  if (selectedEl) selectedEl.classList.remove('selected');
+  selectedEl = el;
+  el.classList.add('selected');
+
+  // 상단 이름 표시
+  document.getElementById('selected-name').textContent = name.trim();
+
+  const key = normName(name);
+  const data = Object.entries(INFO).find(([k])=>normName(k)===key)?.[1] || {
+    period:'정보 없음', type:'-',
+    deeds:'이 인물에 대한 정보를 준비 중입니다.',
+    verses:'-', mapEra:'canaan'
+  };
+
+  // 인물 탭 내용 갱신
+  const personTab = document.getElementById('tab-person');
+  personTab.innerHTML = `
+    <div id="info-left">
+      <div id="info-name">${name.trim()}</div>
+      <div id="info-period">${data.period}</div>
+      <div id="info-type-badge">${data.type}</div>
+    </div>
+    <div id="info-right">
+      <div id="info-deeds">${data.deeds}</div>
+      <div id="info-verses">📖 ${data.verses}</div>
+    </div>
+  `;
+  personTab.style.display = 'flex';
+
+  // 지도 탭 내용 갱신
+  document.getElementById('map-title').textContent = `${name.trim()} 시대의 지도`;
+  document.getElementById('map-svg-wrap').innerHTML = buildMapSVG(data.mapEra, name.trim());
+
+  // empty 숨김
+  const empty = document.getElementById('bottom-empty');
+  if (empty) empty.remove();
+}
+
+// ── 페이지에 삽입 ──
+window.addEventListener('DOMContentLoaded', () => {
+  const page = document.getElementById('tl-page');
+  const tlWrap = document.getElementById('tl-wrap');
+
+  // ── 공통 row-wrap 생성 함수
+  function makeRowWrap(labelText, labelBg, contentEl) {
+    const wrap = document.createElement('div');
+    wrap.className = 'row-wrap';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'row-label';
+    lbl.style.background = labelBg;
+    lbl.style.color = '#e8d080';
+    lbl.textContent = labelText;
+    wrap.appendChild(lbl);
+
+    contentEl.style.flex = '1';
+    contentEl.style.minWidth = '0';
+    wrap.appendChild(contentEl);
+    return wrap;
+  }
+
+  // ── 고정 높이 행들 먼저 추가 (yearbar, eraBar, arrowRow)
+  // 연도 눈금
+  yearbarEl.style.cssText = 'flex:1;position:relative;background:#f0e4b8;border-top:2px solid #c8960c;border-bottom:2px solid #c8960c;';
+  yearbarEl.style.height = '42px';
+  const yearRow = makeRowWrap('', '#1a1008', yearbarEl);
+  yearRow.style.height = '42px';
+  yearRow.style.flexShrink = '0';
+  page.appendChild(yearRow);
+
+  // 시대 배너
+  eraBar.style.cssText = 'flex:1;position:relative;height:45px;';
+  const eraRow = makeRowWrap('', '#1a1008', eraBar);
+  eraRow.style.height = '45px';
+  eraRow.style.flexShrink = '0';
+  page.appendChild(eraRow);
+
+  // 연대(화살표) 행
+  const arrowWrap = document.createElement('div');
+  arrowWrap.className = 'row-wrap';
+  arrowWrap.style.cssText = 'height:54px;flex-shrink:0;';
+
+  const arrowLbl = document.createElement('div');
+  arrowLbl.className = 'row-label';
+  arrowLbl.style.background = '#1a1008';
+  arrowLbl.style.color = '#e8d080';
+  arrowLbl.textContent = '연대';
+
+  const arrowInner = document.createElement('div');
+  arrowInner.style.cssText = 'flex:1;position:relative;height:54px;';
+
+  const preW = w(2200, 931);
+  arrowInner.innerHTML = `
+    <div style="position:absolute;left:0;width:${preW}px;top:2px;bottom:2px;background:rgba(30,58,110,0.15);"></div>
+    <div style="position:absolute;left:4px;top:50%;transform:translateY(-50%);color:#1e3a6e;font-size:13.5px;font-weight:900;font-family:'Noto Serif KR',serif;">B.C. 2200</div>
+    <div style="position:absolute;left:${x(931)}px;top:0;bottom:0;width:3px;background:#ff4020;box-shadow:0 0 8px #ff4020;z-index:20;"></div>
+    <div style="position:absolute;left:${x(931)}px;width:${w(931,722)}px;top:1px;height:12px;background:linear-gradient(90deg,#0e6b6b,#1a9090);display:flex;align-items:center;padding:0 6px;border-top:1.5px solid #2aacac;">
+      <span style="color:#80ffff;font-size:13.5px;font-weight:700;">▶ 북 이스라엘 BC931~722</span>
+    </div>
+    <div style="position:absolute;left:${x(931)}px;width:${w(931,586)}px;bottom:1px;height:12px;background:linear-gradient(90deg,#8b1a1a,#b02020);display:flex;align-items:center;padding:0 6px;border-bottom:1.5px solid #c84040;">
+      <span style="color:#ffb0b0;font-size:13.5px;font-weight:700;">▶ 남 유다 BC931~586</span>
+    </div>
+    <div style="position:absolute;left:${x(586)}px;width:${w(586,538)}px;top:2px;bottom:2px;background:linear-gradient(90deg,#3a3a60,#5a5a80);display:flex;align-items:center;justify-content:center;border:1px solid #7070a0;">
+      <span style="color:#c0c0ff;font-size:13.5px;font-weight:700;">포로기</span>
+    </div>
+    <div style="position:absolute;left:${x(538)}px;right:0;top:2px;bottom:2px;background:linear-gradient(90deg,#1a5c2a,#2a8a3a);display:flex;align-items:center;padding:0 8px;border:1px solid #50a060;">
+      <span style="color:#80ff80;font-size:13.5px;font-weight:700;">귀환기 BC538~</span>
+    </div>
+  `;
+  arrowWrap.appendChild(arrowLbl);
+  arrowWrap.appendChild(arrowInner);
+  page.appendChild(arrowWrap);
+
+  // ── 가변 높이 행들 (남은 높이를 균등 분배)
+  // 왕 행 (fill-row 클래스로 flex:1)
+  const preRow = buildKingRow('왕', '#1e3a6e', preLeaders, '#eef3fc', preColor);
+  preRow.style.flex = '0.8';
+  preRow.style.minHeight = '0';
+  preRow.querySelector('[style*="min-height"]') && (preRow.querySelector('[style*="min-height"]').style.minHeight = '0');
+  page.appendChild(preRow);
+
+  // 분열 마커 (고정 높이)
+  const splitDiv = document.createElement('div');
+  splitDiv.style.cssText = `padding-left:${72+x(931)}px;height:18px;flex-shrink:0;display:flex;align-items:center;gap:6px;background:transparent;`;
+  splitDiv.innerHTML = `<span style="color:#ff4020;font-size:13.5px;font-weight:900;">▼ BC 931 왕국 분열 ▼</span>`;
+  page.appendChild(splitDiv);
+
+  // 북이스라엘 왕 행
+  const northRow = buildKingRow('이스라엘', '#0e6b6b', northKings, '#e8f5f5', () => '#0a5060');
+  northRow.style.flex = '0.8';
+  northRow.style.minHeight = '0';
+  page.appendChild(northRow);
+
+  // 남유다 왕 행
+  const southRow = buildKingRow('유다', '#8b1a1a', southKings, '#fdf0f0', southColor);
+  southRow.style.flex = '0.8';
+  southRow.style.minHeight = '0';
+  page.appendChild(southRow);
+
+  // 선지자 섹션
+  const prophetSec = buildProphetSection();
+  prophetSec.style.flex = '2';  // 선지자는 2배 높이
+  prophetSec.style.minHeight = '0';
+  prophetSec.style.overflow = 'hidden';
+  prophetSec.style.display = 'flex';
+  prophetSec.style.flexDirection = 'column';
+  // prophet-section-body도 flex:1로
+  const propBody = prophetSec.querySelector('.prophet-section-body');
+  if (propBody) {
+    propBody.style.flex = '1';
+    propBody.style.minHeight = '0';
+    propBody.style.position = 'relative';
+  }
+  page.appendChild(prophetSec);
+
+  // ── 행 내부 body도 높이 100%로
+  document.querySelectorAll('.king-seg').forEach(seg => {
+    // king-seg는 top:0;bottom:0 으로 이미 부모에 맞춤
+  });
+  // prophet-lane 높이를 균등 분배
+  requestAnimationFrame(() => {
+    const lanes = document.querySelectorAll('.prophet-lane');
+    if (lanes.length > 0 && propBody) {
+      const h = propBody.clientHeight;
+      const perLane = Math.floor(h / lanes.length);
+      lanes.forEach(lane => {
+        lane.style.height = perLane + 'px';
+      });
+      // 선지자 카드 위치도 재조정
+      const cards = propBody.querySelectorAll('.prophet-card');
+      cards.forEach(card => {
+        const lane = parseInt(card.style.top) > 0 ?
+          Math.floor(parseInt(card.style.top) / 52) : 0;
+        const newTop = lane * perLane + Math.floor(perLane * 0.15);
+        const newH = Math.floor(perLane * 0.7);
+        card.style.top = newTop + 'px';
+        card.style.height = newH + 'px';
+        card.style.lineHeight = newH + 'px';
+        card.style.borderRadius = (newH / 2) + 'px';
+        // 글자 크기도 조정
+        const pname = card.querySelector('.pname');
+        if (pname) pname.style.fontSize = Math.min(newH * 0.5, 21) + 'px';
+        const pbook = card.querySelector('.pbook');
+        if (pbook) pbook.style.fontSize = Math.min(newH * 0.35, 15) + 'px';
+      });
+    }
+  });
+
+});
+</script>
+
+</div><!-- /tl-page -->
+</body>
+</html>
