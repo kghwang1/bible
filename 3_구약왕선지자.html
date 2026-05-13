@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=0.5,maximum-scale=3.0,user-scalable=yes">
 <meta charset="UTF-8">
 <title>구약성경 왕·선지자 연대 타임라인</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
   --p-return:#1a6a30;
 
   /* 1년 = 몇 px */
-  --px-per-yr: 1.5px;
+  --px-per-yr: 1.8px;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -46,7 +46,15 @@ body{
 }
 
 /* ══ 상단 60%: 연대기 스크롤 영역 ══ */
-#tl-wrap{height:45vh;overflow-x:auto;overflow-y:hidden;}
+#tl-wrap{
+  height:50vh;
+  overflow-x:auto;
+  overflow-y:hidden;
+  flex-shrink:0;
+  background:var(--parch);
+  border-bottom:3px solid var(--gold);
+  -webkit-overflow-scrolling:touch;
+}
 #tl-wrap::-webkit-scrollbar{ height:6px; }
 #tl-wrap::-webkit-scrollbar-track{ background:#2a1a08; }
 #tl-wrap::-webkit-scrollbar-thumb{ background:var(--gold); border-radius:3px; }
@@ -75,7 +83,7 @@ body{
 #tab-bar{
   display:flex;
   align-items:stretch;
-  height:17px;
+  height:52px;
   background:#0d0d1a;
   border-bottom:2px solid var(--gold);
   flex-shrink:0;
@@ -152,8 +160,8 @@ body{
   text-align:center;
 }
 #info-type-badge{
-  font-size:5.5px;
-  padding:1px 6px;
+  font-size:18px;
+  padding:3px 12px;
   border-radius:20px;
   font-weight:700;
   color:#fff;
@@ -162,7 +170,7 @@ body{
 }
 #info-right{
   flex:1;
-  padding:6px 9px;
+  padding:12px 18px;
   overflow-y:auto;
   display:flex;
   flex-direction:column;
@@ -222,7 +230,7 @@ body{
   align-items:center;
   justify-content:center;
   height:100%;
-  font-size:6px;
+  font-size:24px;
   color:#4a4a8a;
   font-weight:700;
   letter-spacing:1px;
@@ -294,7 +302,7 @@ h1{
 
 /* ══ 연도 눈금 행 ══ */
 .yearbar{
-  height:14px;
+  height:42px;
   background:var(--parch2);
   border-top:2px solid var(--gold);
   border-bottom:2px solid var(--gold);
@@ -327,7 +335,7 @@ h1{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:6px;
+  font-size:22px;
   font-weight:700;
   color:#fff;
   border-right:1px solid rgba(255,255,255,0.3);
@@ -389,7 +397,7 @@ h1{
   color:#fff;
   font-size:12.8px;
   font-weight:700;
-  padding:1px 2px;
+  padding:1px 4px;
   border-radius:2px;
   white-space:nowrap;
   z-index:21;
@@ -397,7 +405,7 @@ h1{
 
 /* ══ 화살표 타임라인 행 ══ */
 .arrow-row{
-  height:12px;
+  height:32px;
   position:relative;
   display:flex;
   align-items:center;
@@ -472,7 +480,7 @@ h1{
   font-family:'Noto Serif KR',serif;
   font-size:22.5px;
   font-weight:900;
-  padding:3px 6px 6px 84px;  /* 왼쪽 패딩으로 lane-label 영역 확보 */
+  padding:6px 12px 6px 84px;  /* 왼쪽 패딩으로 lane-label 영역 확보 */
   color:#fff;
   letter-spacing:2px;
   border-radius:3px 3px 0 0;
@@ -496,7 +504,7 @@ h1{
 /* 선지자 레인 */
 .prophet-lane{
   position:relative;
-  height:15px;
+  height:46px;
   border-bottom:1px solid #ddd0f0;
 }
 .prophet-lane:last-child{ border-bottom:none; }
@@ -523,7 +531,7 @@ h1{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
-  padding:4px 7px;
+  padding:8px 14px;
   background:var(--parch2);
   border:1px solid var(--gold);
   border-radius:4px;
@@ -535,23 +543,40 @@ h1{
 </style>
 
 <style>
-/* 모바일 전면 최적화 */
-* { box-sizing: border-box; }
-body { font-size: 6px !important; min-height: 100vh; overflow: auto; }
-#tl-wrap { height: 45vh; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
-#map-wrap { height: auto; min-height: 180px; overflow: auto; padding: 6px; }
-.toolbar { flex-wrap: wrap; gap: 3px; padding: 3px 5px; min-height: unset; }
-.toolbar button, .toolbar select, .toolbar label { 
-  font-size: 7px !important; padding: 2px 4px !important; 
-  height: auto !important; min-height: unset !important;
-}
-h1, .title, [class*="title"] { font-size: 10px !important; padding: 3px !important; }
-.info-panel, #info-panel { font-size: 7px !important; padding: 4px !important; }
-.legend, #legend { font-size: 6px !important; }
-/* 타임라인 텍스트 */
-[class*="label"], [class*="name"], [class*="king"], [class*="prophet"] {
-  font-size: 5.5px !important;
-  line-height: 1.2 !important;
+/* ── 모바일 최적화 ── */
+@media (max-width: 768px) {
+  :root { --px-per-yr: 1.8px; }
+  
+  /* 상단 타이틀 숨김 */
+  h1 { display:none; }
+  
+  /* 툴바 작게 */
+  #toolbar, .toolbar {
+    flex-wrap:wrap; gap:2px; padding:3px 4px;
+    font-size:9px;
+  }
+  #toolbar button, #toolbar select,
+  .toolbar button, .toolbar select {
+    font-size:8px !important; padding:2px 5px !important;
+    height:22px !important;
+  }
+  
+  /* 타임라인 텍스트 */
+  .tl-year-label { font-size:8px !important; }
+  .era-label { font-size:7px !important; }
+  .king-block, .prophet-block, [class*="block"] {
+    font-size:6px !important;
+    line-height:1.1 !important;
+    padding:0 1px !important;
+  }
+  .row-label { font-size:7px !important; width:28px !important; }
+  
+  /* 하단 패널 */
+  #bottom-panel { flex:1; overflow:auto; }
+  #tab-bar { font-size:9px; padding:4px 6px; flex-wrap:wrap; gap:4px; }
+  #tab-bar .tab-btn { font-size:9px !important; padding:3px 8px !important; }
+  #selected-name { font-size:10px !important; }
+  #tab-content { font-size:10px; padding:8px; overflow:auto; }
 }
 </style>
 </head>
@@ -802,7 +827,7 @@ function buildArrowRow(){
 
   // 화살표 body — yearbar/eraBar와 동일하게 margin-left:72px
   const body = document.createElement('div');
-  body.style.cssText = 'position:relative;height:12px;margin-left:72px;';
+  body.style.cssText = 'position:relative;height:32px;margin-left:72px;';
 
   // BC2000~BC931 구간 배경 (왕 행과 시각적 정렬)
   const pre = document.createElement('div');
@@ -941,7 +966,7 @@ function buildProphetSection(){
     body.appendChild(line);
 
     const lbl = document.createElement('div');
-    lbl.style.cssText = `position:absolute;left:${lx+3}px;top:2px;font-size:6.5px;color:${d.color||'#888'};font-weight:700;z-index:2;`;
+    lbl.style.cssText = `position:absolute;left:${lx+3}px;top:2px;font-size:12px;color:${d.color||'#888'};font-weight:700;z-index:2;`;
     lbl.textContent = `BC${d.bc} ${d.label}`;
     body.appendChild(lbl);
   });
@@ -972,7 +997,7 @@ function buildProphetSection(){
     const narrow = width < 100;
     if(narrow) card.classList.add('narrow');
 
-    card.style.cssText = `left:${left}px;width:${Math.max(width,80)}px;top:${laneTop+9}px;height:12px;background:${p.color};z-index:3;`;
+    card.style.cssText = `left:${left}px;width:${Math.max(width,80)}px;top:${laneTop+9}px;height:34px;background:${p.color};z-index:3;`;
     card.innerHTML = `<span class="pname">${p.name}</span>${!narrow?`<span class="pbook">${p.book}</span>`:''}`;
     card.title = `${p.name} — ${p.book} (BC${p.start}~${p.end})`;
     card.style.cursor = 'pointer';
@@ -1781,7 +1806,7 @@ window.addEventListener('DOMContentLoaded', () => {
   page.appendChild(yearRow);
 
   // 시대 배너
-  eraBar.style.cssText = 'flex:1;position:relative;height:15px;';
+  eraBar.style.cssText = 'flex:1;position:relative;height:45px;';
   const eraRow = makeRowWrap('', '#1a1008', eraBar);
   eraRow.style.height = '45px';
   eraRow.style.flexShrink = '0';
@@ -1790,7 +1815,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // 연대(화살표) 행
   const arrowWrap = document.createElement('div');
   arrowWrap.className = 'row-wrap';
-  arrowWrap.style.cssText = 'height:18px;flex-shrink:0;';
+  arrowWrap.style.cssText = 'height:54px;flex-shrink:0;';
 
   const arrowLbl = document.createElement('div');
   arrowLbl.className = 'row-label';
@@ -1799,7 +1824,7 @@ window.addEventListener('DOMContentLoaded', () => {
   arrowLbl.textContent = '연대';
 
   const arrowInner = document.createElement('div');
-  arrowInner.style.cssText = 'flex:1;position:relative;height:18px;';
+  arrowInner.style.cssText = 'flex:1;position:relative;height:54px;';
 
   const preW = w(2200, 931);
   arrowInner.innerHTML = `
