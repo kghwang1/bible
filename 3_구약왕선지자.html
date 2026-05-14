@@ -40,14 +40,14 @@ body{
   background:var(--bg);
   color:var(--ink);
   min-height:100vh;
-  overflow:hidden;
+  overflow:auto;
   display:flex;
   flex-direction:column;
 }
 
 /* ══ 상단 60%: 연대기 스크롤 영역 ══ */
 #tl-wrap{
-  height:58vh;
+  height:55vh;
   overflow-x:auto;
   overflow-y:hidden;
   flex-shrink:0;
@@ -71,12 +71,12 @@ body{
 
 /* ══ 하단 40%: 인물정보 + 지도 ══ */
 #bottom-panel{
-  height:42vh;
+  height:45vh;
   flex-shrink:0;
   background:#12122a;
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  overflow:auto;
 }
 
 /* 탭 버튼 */
@@ -90,7 +90,7 @@ body{
 }
 .tab-btn{
   padding:0 24px;
-  font-size:22.5px;
+  font-size:13px;
   font-weight:700;
   color:#6060a0;
   background:transparent;
@@ -112,7 +112,7 @@ body{
   padding:0 16px;
   display:flex;
   align-items:center;
-  font-size:27px;
+  font-size:13px;
   font-weight:900;
   color:#ffe080;
   font-family:'Noto Serif KR',serif;
@@ -133,8 +133,8 @@ body{
   height:100%;
 }
 #info-left{
-  width:240px;
-  min-width:220px;
+  width:120px;
+  min-width:100px;
   background:#0d0d22;
   display:flex;
   flex-direction:column;
@@ -147,20 +147,20 @@ body{
 }
 #info-name{
   font-family:'Noto Serif KR',serif;
-  font-size:42px;
+  font-size:13px;
   font-weight:900;
   color:#ffe080;
   text-align:center;
   line-height:1.2;
 }
 #info-period{
-  font-size:21px;
+  font-size:13px;
   color:#aac0ff;
   font-weight:700;
   text-align:center;
 }
 #info-type-badge{
-  font-size:18px;
+  font-size:13px;
   padding:3px 12px;
   border-radius:20px;
   font-weight:700;
@@ -177,12 +177,12 @@ body{
   gap:7px;
 }
 #info-deeds{
-  font-size:34px;
+  font-size:13px;
   line-height:1.85;
   color:#e0e8ff;
 }
 #info-verses{
-  font-size:29px;
+  font-size:13px;
   color:#80d0a0;
   line-height:1.7;
   border-top:1px solid #2a2a5a;
@@ -208,7 +208,7 @@ body{
 #map-title{
   position:absolute;
   top:10px;left:16px;
-  font-size:22.5px;
+  font-size:13px;
   font-weight:700;
   color:#ffe080;
   font-family:'Noto Serif KR',serif;
@@ -230,7 +230,7 @@ body{
   align-items:center;
   justify-content:center;
   height:100%;
-  font-size:24px;
+  font-size:13px;
   color:#4a4a8a;
   font-weight:700;
   letter-spacing:1px;
@@ -244,7 +244,7 @@ body{
 h1{
   text-align:center;
   font-family:'Noto Serif KR',serif;
-  font-size:39px;
+  font-size:13px;
   font-weight:900;
   color:var(--c-unified);
   letter-spacing:5px;
@@ -265,14 +265,14 @@ h1{
 }
 
 .row-label{
-  width:72px;
-  min-width:72px;
+  width:20px;
+  min-width:20px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
+  font-size:13px;
   font-weight:700;
-  writing-mode:vertical-rl;
+  writing-mode:vertical-lr;
   letter-spacing:2px;
   color:#fff;
   border-radius:3px 0 0 3px;
@@ -302,7 +302,7 @@ h1{
 
 /* ══ 연도 눈금 행 ══ */
 .yearbar{
-  height:42px;
+  height:24px;
   background:var(--parch2);
   border-top:2px solid var(--gold);
   border-bottom:2px solid var(--gold);
@@ -315,7 +315,7 @@ h1{
   display:flex;
   align-items:center;
   padding-left:3px;
-  font-size:21px;
+  font-size:13px;
   font-weight:700;
   font-family:'Noto Serif KR',serif;
   color:#1a2e6a;
@@ -325,9 +325,9 @@ h1{
 
 /* ══ 시대 헤더 배너 ══ */
 .era-bar{
-  height:28px;
+  height:20px;
   position:relative;
-  margin-bottom:3px;
+  margin-bottom:2px;
 }
 .era-seg{
   position:absolute;
@@ -335,7 +335,7 @@ h1{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:22px;
+  font-size:13px;
   font-weight:700;
   color:#fff;
   border-right:1px solid rgba(255,255,255,0.3);
@@ -359,7 +359,7 @@ h1{
 }
 .king-seg:hover{ filter:brightness(1.15); }
 .king-seg .kname{
-  font-size:19px;
+  font-size:13px;
   font-weight:700;
   color:#fff;
   text-shadow:0 1px 2px rgba(0,0,0,0.5);
@@ -371,7 +371,7 @@ h1{
   line-height:1.3;
 }
 .king-seg .kyear{
-  font-size:14.4px;
+  font-size:13px;
   color:rgba(255,255,255,0.75);
   white-space:nowrap;
   margin-top:1px;
@@ -395,7 +395,7 @@ h1{
   top:2px;
   background:#ff4020;
   color:#fff;
-  font-size:12.8px;
+  font-size:13px;
   font-weight:700;
   padding:1px 4px;
   border-radius:2px;
@@ -417,7 +417,7 @@ h1{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
+  font-size:13px;
   font-weight:700;
   color:#fff;
   border-radius:2px;
@@ -445,7 +445,7 @@ h1{
   position:absolute;
   border-radius:20px;
   padding:0 10px;
-  font-size:15px;
+  font-size:13px;
   font-weight:700;
   color:#fff;
   display:flex;
@@ -464,21 +464,21 @@ h1{
 }
 .prophet-card .pname{
   font-family:'Noto Serif KR',serif;
-  font-size:17.2px;
+  font-size:13px;
   font-weight:900;
 }
 .prophet-card .pbook{
-  font-size:12.8px;
+  font-size:13px;
   opacity:0.85;
 }
 /* 좁을 때 책이름 숨김 */
 .prophet-card.narrow .pbook{ display:none; }
-.prophet-card.narrow .pname{ font-size:15px; }
+.prophet-card.narrow .pname{ font-size:13px; }
 
 /* ══ 섹션 타이틀 ══ */
 .section-title{
   font-family:'Noto Serif KR',serif;
-  font-size:22.5px;
+  font-size:13px;
   font-weight:900;
   padding:6px 12px 6px 84px;  /* 왼쪽 패딩으로 lane-label 영역 확보 */
   color:#fff;
@@ -511,16 +511,16 @@ h1{
 .lane-label{
   position:absolute;
   left:0;top:0;bottom:0;
-  width:72px;
+  width:20px;
   background:rgba(255,255,255,0.9);
   border-right:2px solid #9060c0;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:12.8px;
+  font-size:13px;
   font-weight:700;
   color:#5c2d91;
-  writing-mode:vertical-rl;
+  writing-mode:vertical-lr;
   letter-spacing:1px;
   z-index:5;
 }
@@ -535,28 +535,21 @@ h1{
   background:var(--parch2);
   border:1px solid var(--gold);
   border-radius:4px;
-  font-size:14.2px;
+  font-size:13px;
 }
 .li{ display:flex;align-items:center;gap:5px; }
 .ld{ width:14px;height:14px;border-radius:3px; }
 .ld.round{ border-radius:8px; }
 </style>
 
-<style id="mobile-fix">
-@media (max-width:900px){
-  /* h1 타이틀 숨김 */
-  h1 { display:none !important; }
-  
-  /* 안내문 크기 */
-  #bottom-empty {
-    font-size:14px !important;
-    padding:12px !important;
-  }
-  
-  /* tab-content 스크롤 */
-  #tab-content { overflow:auto !important; }
-  #info-right { overflow-y:auto !important; }
-}
+<style id="mobile-extra">
+h1 { display:none !important; }
+* { font-size:13px !important; }
+#tab-content { overflow:auto !important; }
+#info-right { overflow-y:auto !important; }
+#tab-bar { height:36px !important; }
+.tab-btn { padding:0 10px !important; }
+#selected-name { min-width:60px !important; max-width:100px !important; }
 </style>
 </head>
 <body>
@@ -750,10 +743,10 @@ const prophets = [
 ];
 
 const LANE_LABELS = [
-  '초기 ~ 포로기',
-  '이스라엘',
-  '유',
-  '다',
+  '',
+  '',
+  '',
+  '',
 ];
 const LANE_COLORS = [
   '#2d4a8a','#0d5c6c','#7a1080','#6a0a8a'
@@ -777,7 +770,7 @@ for(let yr = 2200; yr >= 400; yr -= 50){
 // ── 시대 배너 ──
 const eraBar = document.createElement('div');
 eraBar.className = 'era-bar';
-eraBar.style.cssText = 'flex:1;position:relative;height:28px;';
+eraBar.style.cssText = 'flex:1;position:relative;height:20px;';
 // margin-left 제거 — DOMContentLoaded에서 row-wrap 구조로 처리
 
 function addEraSeg(el, label, startBc, endBc, bg){
@@ -816,7 +809,7 @@ function buildArrowRow(){
 
   // BC2000 라벨
   const startLabel = document.createElement('div');
-  startLabel.style.cssText = `position:absolute;left:4px;top:50%;transform:translateY(-50%);color:#1e3a6e;font-size:13.5px;font-weight:900;font-family:'Noto Serif KR',serif;`;
+  startLabel.style.cssText = `position:absolute;left:4px;top:50%;transform:translateY(-50%);color:#1e3a6e;font-size:13px;font-weight:900;font-family:'Noto Serif KR',serif;`;
   startLabel.textContent = 'B.C. 2000';
   body.appendChild(startLabel);
 
@@ -831,28 +824,28 @@ function buildArrowRow(){
   const north = document.createElement('div');
   const nLeft = x(931), nWidth = w(931,722);
   north.style.cssText = `position:absolute;left:${nLeft}px;width:${nWidth}px;top:1px;height:14px;background:linear-gradient(90deg,#0e6b6b,#1a9090);display:flex;align-items:center;padding:0 6px;border-top:1.5px solid #2aacac;`;
-  north.innerHTML = `<span style="color:#80ffff;font-size:13.5px;font-weight:700;">▶ 북 이스라엘 BC931~722 앗수르멸망</span>`;
+  north.innerHTML = `<span style="color:#80ffff;font-size:13px;font-weight:700;">▶ 북 이스라엘 BC931~722 앗수르멸망</span>`;
   body.appendChild(north);
 
   // 남 화살표
   const south = document.createElement('div');
   const sLeft = x(931), sWidth = w(931,586);
   south.style.cssText = `position:absolute;left:${sLeft}px;width:${sWidth}px;bottom:1px;height:14px;background:linear-gradient(90deg,#8b1a1a,#b02020);display:flex;align-items:center;padding:0 6px;border-bottom:1.5px solid #c84040;`;
-  south.innerHTML = `<span style="color:#ffb0b0;font-size:13.5px;font-weight:700;">▶ 남 유다 BC931~586 바벨론멸망</span>`;
+  south.innerHTML = `<span style="color:#ffb0b0;font-size:13px;font-weight:700;">▶ 남 유다 BC931~586 바벨론멸망</span>`;
   body.appendChild(south);
 
   // 포로기
   const exile = document.createElement('div');
   const eLeft = x(586), eWidth = w(586,538);
   exile.style.cssText = `position:absolute;left:${eLeft}px;width:${eWidth}px;top:2px;bottom:2px;background:linear-gradient(90deg,#3a3a60,#5a5a80);display:flex;align-items:center;justify-content:center;border:1.5px solid #7070a0;`;
-  exile.innerHTML = `<span style="color:#c0c0ff;font-size:13.5px;font-weight:700;">포로기</span>`;
+  exile.innerHTML = `<span style="color:#c0c0ff;font-size:13px;font-weight:700;">포로기</span>`;
   body.appendChild(exile);
 
   // 귀환
   const ret = document.createElement('div');
   const rLeft = x(538);
   ret.style.cssText = `position:absolute;left:${rLeft}px;right:0;top:2px;bottom:2px;background:linear-gradient(90deg,#1a5c2a,#2a8a3a);display:flex;align-items:center;justify-content:space-between;padding:0 10px;border:1.5px solid #50a060;`;
-  ret.innerHTML = `<span style="color:#80ff80;font-size:13.5px;font-weight:700;">귀환기 BC538~</span><span style="color:#80ff80;font-size:13.5px;font-weight:700;">BC400 ▶</span>`;
+  ret.innerHTML = `<span style="color:#80ff80;font-size:13px;font-weight:700;">귀환기 BC538~</span><span style="color:#80ff80;font-size:13px;font-weight:700;">BC400 ▶</span>`;
   body.appendChild(ret);
 
   wrap.appendChild(body);
@@ -945,7 +938,7 @@ function buildProphetSection(){
     body.appendChild(line);
 
     const lbl = document.createElement('div');
-    lbl.style.cssText = `position:absolute;left:${lx+3}px;top:2px;font-size:12px;color:${d.color||'#888'};font-weight:700;z-index:2;`;
+    lbl.style.cssText = `position:absolute;left:${lx+3}px;top:2px;font-size:13px;color:${d.color||'#888'};font-weight:700;z-index:2;`;
     lbl.textContent = `BC${d.bc} ${d.label}`;
     body.appendChild(lbl);
   });
@@ -1780,14 +1773,14 @@ window.addEventListener('DOMContentLoaded', () => {
   yearbarEl.style.cssText = 'flex:1;position:relative;background:#f0e4b8;border-top:2px solid #c8960c;border-bottom:2px solid #c8960c;';
   yearbarEl.style.height = '42px';
   const yearRow = makeRowWrap('', '#1a1008', yearbarEl);
-  yearRow.style.height = '42px';
+  yearRow.style.height = '24px';
   yearRow.style.flexShrink = '0';
   page.appendChild(yearRow);
 
   // 시대 배너
-  eraBar.style.cssText = 'flex:1;position:relative;height:45px;';
+  eraBar.style.cssText = 'flex:1;position:relative;height:20px;';
   const eraRow = makeRowWrap('', '#1a1008', eraBar);
-  eraRow.style.height = '45px';
+  eraRow.style.height = '20px';
   eraRow.style.flexShrink = '0';
   page.appendChild(eraRow);
 
@@ -1808,19 +1801,19 @@ window.addEventListener('DOMContentLoaded', () => {
   const preW = w(2200, 931);
   arrowInner.innerHTML = `
     <div style="position:absolute;left:0;width:${preW}px;top:2px;bottom:2px;background:rgba(30,58,110,0.15);"></div>
-    <div style="position:absolute;left:4px;top:50%;transform:translateY(-50%);color:#1e3a6e;font-size:13.5px;font-weight:900;font-family:'Noto Serif KR',serif;">B.C. 2200</div>
+    <div style="position:absolute;left:4px;top:50%;transform:translateY(-50%);color:#1e3a6e;font-size:13px;font-weight:900;font-family:'Noto Serif KR',serif;">B.C. 2200</div>
     <div style="position:absolute;left:${x(931)}px;top:0;bottom:0;width:3px;background:#ff4020;box-shadow:0 0 8px #ff4020;z-index:20;"></div>
     <div style="position:absolute;left:${x(931)}px;width:${w(931,722)}px;top:1px;height:12px;background:linear-gradient(90deg,#0e6b6b,#1a9090);display:flex;align-items:center;padding:0 6px;border-top:1.5px solid #2aacac;">
-      <span style="color:#80ffff;font-size:13.5px;font-weight:700;">▶ 북 이스라엘 BC931~722</span>
+      <span style="color:#80ffff;font-size:13px;font-weight:700;">▶ 북 이스라엘 BC931~722</span>
     </div>
     <div style="position:absolute;left:${x(931)}px;width:${w(931,586)}px;bottom:1px;height:12px;background:linear-gradient(90deg,#8b1a1a,#b02020);display:flex;align-items:center;padding:0 6px;border-bottom:1.5px solid #c84040;">
-      <span style="color:#ffb0b0;font-size:13.5px;font-weight:700;">▶ 남 유다 BC931~586</span>
+      <span style="color:#ffb0b0;font-size:13px;font-weight:700;">▶ 남 유다 BC931~586</span>
     </div>
     <div style="position:absolute;left:${x(586)}px;width:${w(586,538)}px;top:2px;bottom:2px;background:linear-gradient(90deg,#3a3a60,#5a5a80);display:flex;align-items:center;justify-content:center;border:1px solid #7070a0;">
-      <span style="color:#c0c0ff;font-size:13.5px;font-weight:700;">포로기</span>
+      <span style="color:#c0c0ff;font-size:13px;font-weight:700;">포로기</span>
     </div>
     <div style="position:absolute;left:${x(538)}px;right:0;top:2px;bottom:2px;background:linear-gradient(90deg,#1a5c2a,#2a8a3a);display:flex;align-items:center;padding:0 8px;border:1px solid #50a060;">
-      <span style="color:#80ff80;font-size:13.5px;font-weight:700;">귀환기 BC538~</span>
+      <span style="color:#80ff80;font-size:13px;font-weight:700;">귀환기 BC538~</span>
     </div>
   `;
   arrowWrap.appendChild(arrowLbl);
@@ -1829,7 +1822,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ── 가변 높이 행들 (남은 높이를 균등 분배)
   // 왕 행 (fill-row 클래스로 flex:1)
-  const preRow = buildKingRow('왕', '#1e3a6e', preLeaders, '#eef3fc', preColor);
+  const preRow = buildKingRow('', '#1e3a6e', preLeaders, '#eef3fc', preColor);
   preRow.style.flex = '0.8';
   preRow.style.minHeight = '0';
   preRow.querySelector('[style*="min-height"]') && (preRow.querySelector('[style*="min-height"]').style.minHeight = '0');
@@ -1838,17 +1831,17 @@ window.addEventListener('DOMContentLoaded', () => {
   // 분열 마커 (고정 높이)
   const splitDiv = document.createElement('div');
   splitDiv.style.cssText = `padding-left:${72+x(931)}px;height:18px;flex-shrink:0;display:flex;align-items:center;gap:6px;background:transparent;`;
-  splitDiv.innerHTML = `<span style="color:#ff4020;font-size:13.5px;font-weight:900;">▼ BC 931 왕국 분열 ▼</span>`;
+  splitDiv.innerHTML = `<span style="color:#ff4020;font-size:13px;font-weight:900;">▼ BC 931 왕국 분열 ▼</span>`;
   page.appendChild(splitDiv);
 
   // 북이스라엘 왕 행
-  const northRow = buildKingRow('이스라엘', '#0e6b6b', northKings, '#e8f5f5', () => '#0a5060');
+  const northRow = buildKingRow('', '#0e6b6b', northKings, '#e8f5f5', () => '#0a5060');
   northRow.style.flex = '0.8';
   northRow.style.minHeight = '0';
   page.appendChild(northRow);
 
   // 남유다 왕 행
-  const southRow = buildKingRow('유다', '#8b1a1a', southKings, '#fdf0f0', southColor);
+  const southRow = buildKingRow('', '#8b1a1a', southKings, '#fdf0f0', southColor);
   southRow.style.flex = '0.8';
   southRow.style.minHeight = '0';
   page.appendChild(southRow);
