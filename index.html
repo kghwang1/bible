@@ -1447,12 +1447,12 @@ function godpiaUrl(bid,ch){
   const vol=GODPIA_VOL[bid]||'gen';
 
   if(curVer==='KJH'){
-    // 킹제임스 흠정역 — holybible.or.kr (본문 직접 표시)
-    // VL=책번호(1~66), CN=장번호
-    return 'http://www.holybible.or.kr/BIBLE_hkjv/cgi/bibleftxt.php?VR=0&VL='+bid+'&CN='+ch+'&CV=99&FR=';
+    // 킹제임스 흠정역 — godpia (흠정역 탭 직접 파라미터)
+    // godpia ver 코드: hkjv = 흠정역
+    return 'https://www.godpia.com/read/reading.asp?vol='+vol+'&chap='+ch+'&ver=hkjv';
   }
   if(curVer==='KJV'){
-    // 영어 KJV — YouVersion (bible.com)
+    // 영어 KJV — YouVersion (bible.com, https 지원)
     const kjvCode=YOUVER_CODE[bid]||'GEN';
     return 'https://www.bible.com/bible/1/'+kjvCode+'.'+ch+'.KJV';
   }
