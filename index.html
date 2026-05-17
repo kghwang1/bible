@@ -95,20 +95,20 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 /* 읽기 */
 #s-read{background:#f0ede6}
-.read-hdr{background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;padding:6px 10px 4px;flex-shrink:0}
-.read-hdr-row1{display:flex;align-items:center;gap:6px;margin-bottom:3px}
-.read-hdr-left{display:flex;gap:5px;flex-shrink:0}
-.read-hdr-center{flex:1;text-align:center;min-width:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.read-hdr-center .day-tag{font-size:.6rem;color:#6b4d28;font-weight:700;width:100%;text-align:center}
-.read-hdr-center h2{font-family:'Noto Serif KR',serif;font-size:.92rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
-.read-hdr-row2{display:flex;align-items:center;gap:6px;padding-top:1px;margin-top:-2px}
-.nav-btn{padding:5px 10px;border-radius:16px;border:1.5px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.67rem;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}
-.nav-btn:hover{background:#f5e9c8}
-.font-btn{padding:3px 10px;border-radius:14px;border:1.5px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.7rem;font-weight:700;cursor:pointer}
-.font-label{font-size:.65rem;color:#a07850;font-weight:600}
-.done-btn{width:52px;min-height:46px;padding:6px 4px;border-radius:10px;border:none;cursor:pointer;font-size:.72rem;font-weight:700;line-height:1.4;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s}
-.done-btn.unread{background:linear-gradient(160deg,#3a7050,#225038);color:#fff;box-shadow:0 3px 10px rgba(58,112,80,.4)}
-.done-btn.already{background:linear-gradient(160deg,#8b5e2a,#5c3d1e);color:#f5e8c8}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .bible-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
 .bible-frame{width:calc(100% + 18px);border:none;flex:1;min-height:0}
 
@@ -279,18 +279,64 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 }
 .appendix-quick-btn:hover{background:rgba(201,168,76,.3)}
 
-.read-right-col{display:flex;flex-direction:column;gap:4px;flex-shrink:0;align-items:center}
-.appendix-side-btn{
-  width:52px;padding:4px 2px;border-radius:10px;
-  border:1.5px solid rgba(201,168,76,.6);
-  background:rgba(201,168,76,.15);
-  color:#c9a84c;font-size:.6rem;font-weight:700;
-  cursor:pointer;text-align:center;line-height:1.4;
-  font-family:'Noto Sans KR',sans-serif;
-  transition:all .2s;
-}
+
+
 .appendix-side-btn:hover{background:rgba(201,168,76,.3)}
 
+
+/* ── 읽기 헤더 ── */
+.read-hdr{background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;padding:2px 8px;flex-shrink:0}
+/* 1행 */
+.rh1{display:flex;align-items:center;gap:4px;height:32px}
+.rh1-left{display:flex;gap:3px;flex-shrink:0;align-items:center}
+.rh1-center{flex:1;text-align:center;min-width:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.rh1-center .day-tag{font-size:.6rem;color:#6b4d28;font-weight:700}
+.rh1-center h2{font-family:'Noto Serif KR',serif;font-size:.92rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
+.rh1-right{display:flex;gap:3px;flex-shrink:0;align-items:center}
+/* 공통 버튼 높이 32px */
+.rh-nbtn{height:28px;padding:0 8px;border-radius:14px;border:1.5px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.67rem;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}
+.rh-nbtn:hover{background:#f5e9c8}
+.done-btn{height:28px;padding:0 6px;border-radius:10px;border:none;cursor:pointer;font-size:.67rem;font-weight:700;line-height:1;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;white-space:nowrap}
+.done-btn.unread{background:linear-gradient(160deg,#3a7050,#225038);color:#fff;box-shadow:0 2px 6px rgba(58,112,80,.4)}
+.done-btn.already{background:linear-gradient(160deg,#8b5e2a,#5c3d1e);color:#f5e8c8}
+.rh-abtn{height:28px;padding:0 7px;border-radius:10px;border:1.5px solid rgba(201,168,76,.6);background:rgba(201,168,76,.15);color:#c9a84c;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans KR',sans-serif}
+/* 2행 */
+.rh2{display:flex;align-items:center;gap:5px;height:20px;margin-top:1px}
+.rh-fbtn{height:18px;padding:0 8px;border-radius:12px;border:1.5px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.7rem;font-weight:700;cursor:pointer}
+.font-label{font-size:.65rem;color:#a07850;font-weight:600}
+
+
+/* 성경 버전 선택 */
+.ver-label{font-size:.65rem;color:#c9a84c;font-weight:700;letter-spacing:.1em;width:100%;text-align:left;margin-bottom:-4px}
+.ver-select-row{display:flex;gap:8px;width:100%}
+.ver-sel-btn{
+  flex:1;padding:8px 4px;border-radius:14px;
+  border:2px solid rgba(201,168,76,.3);background:rgba(255,255,255,.05);
+  color:rgba(245,232,200,.65);font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;transition:all .25s;font-weight:700;font-size:.75rem;
+  text-align:center;line-height:1.4;
+}
+.ver-sel-btn.on{
+  background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));
+  border-color:#c9a84c;color:#e8c97a;
+  box-shadow:0 0 14px rgba(201,168,76,.25);
+}
+
+/* 캡처 영역 */
+#celCapture{
+  width:100%;
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+  padding:20px 0 10px;
+}
+
+.info-card-sub{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:14px;
+  padding:10px 16px;
+  margin-top:8px;
+}
 </style>
 </head>
 <body>
@@ -299,10 +345,18 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
+    <!-- 읽기 계획 선택 -->
     <div class="plan-select-row">
       <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
       <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
       <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
+    </div>
+    <!-- 성경 버전 선택 -->
+    <div class="ver-label">📖 성경 버전</div>
+    <div class="ver-select-row">
+      <button class="ver-sel-btn on" id="verBtn1" onclick="selectVer('GAE',this)">개역개정</button>
+      <button class="ver-sel-btn" id="verBtn2" onclick="selectVer('KJH',this)">킹제임스<br>흠정역</button>
+      <button class="ver-sel-btn" id="verBtn3" onclick="selectVer('KJV',this)">영어성경<br>KJV</button>
     </div>
     <div class="input-card">
       <div style="width:100%">
@@ -361,26 +415,26 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 읽기 -->
 <div class="screen" id="s-read">
   <div class="read-hdr">
-    <div class="read-hdr-row1">
-      <div class="read-hdr-left">
-        <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
-        <button class="nav-btn" onclick="showScreen('s-list')">목록</button>
+    <div class="rh1">
+      <div class="rh1-left">
+        <button class="rh-nbtn" onclick="showScreen('s-cover')">처음으로</button>
+        <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
       </div>
-      <div class="read-hdr-center">
+      <div class="rh1-center">
         <div class="day-tag" id="dayTag"></div>
         <h2 id="readTitle"></h2>
       </div>
-      <div class="read-right-col">
+      <div class="rh1-right">
         <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
-          <span id="cmpTxt">모두<br>읽음</span>
+          <span id="cmpTxt">모두읽음</span>
         </button>
-        <button class="appendix-side-btn" onclick="showScreen('s-appendix')">📚<br><span>부록</span></button>
+        <button class="rh-abtn" onclick="showScreen('s-appendix')">📚부록</button>
       </div>
     </div>
-    <div class="read-hdr-row2">
-      <button class="font-btn" onclick="changeFont(1)">A+</button>
+    <div class="rh2">
+      <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
       <span class="font-label" id="fontLabel">기본</span>
-      <button class="font-btn" onclick="changeFont(-1)">A-</button>
+      <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
     </div>
   </div>
   <div class="bible-wrap">
@@ -551,20 +605,20 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 축하 -->
 <div class="screen" id="s-celebrate">
   <div class="cel-wrap" id="celWrap">
-    <div class="cel-title" id="celTitle">오늘 성경읽기<br>완료했습니다 ✝</div>
-    <div class="stars-row" id="starsRow">
-      <span class="star-ani s1">⭐</span>
-      <span class="star-ani s2">✨</span>
-      <span class="star-ani s3">🌟</span>
-      <span class="star-ani s4">💫</span>
-      <span class="star-ani s5">✨</span>
+    <!-- 캡처 영역: 축하글~읽은 구절까지만 -->
+    <div id="celCapture">
+      <div class="cel-title" id="celTitle">축!! 완료</div>
+      <div class="info-card">
+        <div class="info-row"><div class="info-range" id="celRange">—</div></div>
+        <div class="info-row"><div class="info-prog" id="celProg">—</div></div>
+      </div>
     </div>
-    <div class="info-card">
+    <!-- 캡처 밖: 날짜·이름 -->
+    <div class="info-card info-card-sub">
       <div class="info-row"><div class="info-date" id="celDate">—</div></div>
-      <div class="info-row"><div class="info-range" id="celRange">—</div></div>
       <div class="info-row"><div class="info-reader" id="celReader">—</div></div>
-      <div class="info-row"><div class="info-prog" id="celProg">—</div></div>
     </div>
+    <!-- 공유 버튼 (캡처 영역 밖) -->
     <button class="capture-btn" id="captureBtn" onclick="doShare()">📤 공유하기</button>
     <div class="cel-btns">
       <button class="cel-btn" onclick="showScreen('s-cover')">처음으로</button>
@@ -1145,10 +1199,29 @@ const GODPIA_VOL = {
   65:'jud',66:'rev'
 };
 
+// KJV 책 이름 매핑 (BibleGateway)
+const KJV_BOOK = {
+  1:'Genesis',2:'Exodus',3:'Leviticus',4:'Numbers',5:'Deuteronomy',
+  6:'Joshua',7:'Judges',8:'Ruth',9:'1+Samuel',10:'2+Samuel',
+  11:'1+Kings',12:'2+Kings',13:'1+Chronicles',14:'2+Chronicles',
+  15:'Ezra',16:'Nehemiah',17:'Esther',18:'Job',19:'Psalms',20:'Proverbs',
+  21:'Ecclesiastes',22:'Song+of+Solomon',23:'Isaiah',24:'Jeremiah',
+  25:'Lamentations',26:'Ezekiel',27:'Daniel',28:'Hosea',29:'Joel',
+  30:'Amos',31:'Obadiah',32:'Jonah',33:'Micah',34:'Nahum',35:'Habakkuk',
+  36:'Zephaniah',37:'Haggai',38:'Zechariah',39:'Malachi',
+  40:'Matthew',41:'Mark',42:'Luke',43:'John',44:'Acts',45:'Romans',
+  46:'1+Corinthians',47:'2+Corinthians',48:'Galatians',49:'Ephesians',
+  50:'Philippians',51:'Colossians',52:'1+Thessalonians',53:'2+Thessalonians',
+  54:'1+Timothy',55:'2+Timothy',56:'Titus',57:'Philemon',58:'Hebrews',
+  59:'James',60:'1+Peter',61:'2+Peter',62:'1+John',63:'2+John',
+  64:'3+John',65:'Jude',66:'Revelation'
+};
+
 // 계획별 독립 저장소 키
 const SK = {1:'bible_plan1', 2:'bible_plan2'};
 let curPlan = 1;
-let ST = {checks:{},reader:'',startDate:'',filter:'all'};
+let curVer = 'GAE'; // GAE=개역개정, KJH=흠정역, KJV=영어KJV
+let ST = {checks:{},reader:'',startDate:'',filter:'all',ver:'GAE'};
 let PLAN = PLAN_DATA[1];
 let curN = 0, fontIdx = 1;
 const FONT_LABELS = ['소','기본','중','대','특대'];
@@ -1173,6 +1246,12 @@ function selectPlan(n, btn){
   document.getElementById('startDateInput').value = ST.startDate || '';
   document.getElementById('readerInput').value    = ST.reader    || '';
   updateEndDate();
+  // 버전 버튼 상태 복원
+  curVer = ST.ver || 'GAE';
+  document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
+  const vMap = {'GAE':'verBtn1','KJH':'verBtn2','KJV':'verBtn3'};
+  const vBtn = document.getElementById(vMap[curVer]);
+  if(vBtn) vBtn.classList.add('on');
 }
 
 function today(){ return new Date(); }
@@ -1291,7 +1370,7 @@ function openItem(n){
 function updateDoneBtn(){
   const done=!!ST.checks[curN];
   document.getElementById('cmpBtn').className='done-btn '+(done?'already':'unread');
-  document.getElementById('cmpTxt').innerHTML=done?'이미<br>읽음':'모두<br>읽음';
+  document.getElementById('cmpTxt').innerHTML=done?'이미읽음':'모두읽음';
 }
 
 const BOOK_KEYS=Object.keys(BID).sort((a,b)=>b.length-a.length);
@@ -1320,8 +1399,30 @@ function expandNums(str,max){
   });
   return r;
 }
+// 성경 버전 선택
+function selectVer(ver, btn){
+  curVer = ver;
+  ST.ver = ver;
+  saveST();
+  document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// 버전별 성경 URL 생성
 function godpiaUrl(bid,ch){
   const vol=GODPIA_VOL[bid]||'gen';
+
+  if(curVer==='KJH'){
+    // 킹제임스 흠정역 — 말씀보존학회 모바일
+    const kjhVol=GODPIA_VOL[bid]||'gen';
+    return 'https://www.wordpreserved.com/bible/?book='+kjhVol+'&chapter='+ch;
+  }
+  if(curVer==='KJV'){
+    // 영어 KJV — BibleGateway
+    const kjvBook=KJV_BOOK[bid]||'Genesis';
+    return 'https://www.biblegateway.com/passage/?search='+encodeURIComponent(kjvBook+'+'+ch)+'&version=KJV';
+  }
+  // 기본: 개역개정 (godpia)
   return 'https://www.godpia.com/read/reading.asp?vol='+vol+'&chap='+ch;
 }
 function loadBible(p){
@@ -1378,35 +1479,18 @@ function showCelebration(n){
   const p=PLAN.find(x=>x.n===n); if(!p) return;
   const done=PLAN.filter(x=>ST.checks[x.n]).length;
   const pct=Math.round(done/PLAN.length*100);
-  document.getElementById('celDate').textContent=fmtKo(today());
+  // 순서: 읽은구절 → 날짜 → 이름 → 진행률
   document.getElementById('celRange').textContent=p.r;
+  document.getElementById('celDate').textContent=fmtKo(today());
   document.getElementById('celReader').textContent=ST.reader||'—';
   document.getElementById('celProg').textContent=done+'일 / '+PLAN.length+'일 ('+pct+'%) 읽음';
 
-  // 이름 기반 고유 스타일 적용
+  // 이름 기반 글자체 개인화
   const name = ST.reader || '생명수';
   const h = nameHash(name);
-
-  // 글자체 변경
-  const fontIdx = h % CEL_FONTS.length;
+  const fi = h % CEL_FONTS.length;
   const titleEl = document.getElementById('celTitle');
-  if(titleEl) titleEl.style.fontFamily = CEL_FONTS[fontIdx];
-
-  // 별 기호 순서·색 변경 (5개 선택)
-  const starsEl = document.getElementById('starsRow');
-  if(starsEl){
-    // 이름 해시로 기호 5개 선택
-    const picked=[];
-    for(let i=0;i<5;i++){
-      picked.push(STAR_POOL[(h+i*7)%STAR_POOL.length]);
-    }
-    // 색상도 고유하게
-    starsEl.innerHTML=picked.map((s,i)=>{
-      const hue=HUE_POOL[(h+i*3)%HUE_POOL.length];
-      const delay=(i*0.3).toFixed(1);
-      return `<span class="star-ani s${i+1}" style="animation-delay:${delay}s,${delay}s,${delay}s;filter:hue-rotate(${hue}deg) brightness(1.4) drop-shadow(0 0 8px rgba(255,220,50,.6))">${s}</span>`;
-    }).join('');
-  }
+  if(titleEl) titleEl.style.fontFamily = CEL_FONTS[fi];
 
   showScreen('s-celebrate');
 }
@@ -1418,22 +1502,23 @@ function goNext(){
 async function doShare(){
   const btn=document.getElementById('captureBtn');
   const celBtns=document.querySelector('.cel-btns');
-  const wrap=document.getElementById('celWrap');
-  if(!wrap||typeof html2canvas==='undefined') return;
+  // 캡처 영역: celCapture (축하글~읽은구절까지만)
+  const captureEl=document.getElementById('celCapture');
+  if(!captureEl||typeof html2canvas==='undefined') return;
   btn.textContent='준비 중…'; btn.disabled=true;
   celBtns.style.display='none'; btn.style.display='none';
   try{
-    const canvas=await html2canvas(wrap,{backgroundColor:'#140b04',scale:2,useCORS:true,logging:false});
+    const canvas=await html2canvas(captureEl,{backgroundColor:'#140b04',scale:2,useCORS:true,logging:false});
     const jc=document.createElement('canvas');
-    jc.width=canvas.width;jc.height=canvas.height;
+    jc.width=canvas.width; jc.height=canvas.height;
     const ctx=jc.getContext('2d');
-    ctx.fillStyle='#140b04';ctx.fillRect(0,0,jc.width,jc.height);
+    ctx.fillStyle='#140b04'; ctx.fillRect(0,0,jc.width,jc.height);
     ctx.drawImage(canvas,0,0);
     const fname='성경읽기_'+new Date().toISOString().slice(0,10)+'.jpg';
     const blob=await new Promise(res=>jc.toBlob(res,'image/jpeg',0.92));
     const file=new File([blob],fname,{type:'image/jpeg'});
     if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'오늘 성경읽기 완료',text:'말씀을 읽었습니다 ✝'});
+      await navigator.share({files:[file],title:'축!! 완료',text:'오늘 말씀을 읽었습니다 ✝'});
     } else {
       const url=URL.createObjectURL(blob);
       const newTab=window.open(url,'_blank');
