@@ -1582,13 +1582,15 @@ async function savePrayerToGist(text){
         files: { [GIST_FILE]: { content: text || '(기도제목 없음)' } }
       })
     });
-    if(res.ok && statusEl){
-      statusEl.textContent = '✓ 모두에게 공유됨';
-      setTimeout(()=>{ if(statusEl) statusEl.textContent=''; }, 3000);
+    if(res.ok){
+      if(statusEl){ statusEl.textContent = '✓ 모두에게 공유됨'; setTimeout(()=>{ if(statusEl) statusEl.textContent=''; }, 3000); }
+    } else {
+      const errData = await res.json().catch(()=>({}));
+      const msg = errData.message || res.status;
+      if(statusEl){ statusEl.textContent = '오류: '+msg; setTimeout(()=>{ if(statusEl) statusEl.textContent=''; }, 5000); }
     }
   }catch(e){
-    if(statusEl) statusEl.textContent = '저장 실패 (오프라인?)';
-    setTimeout(()=>{ if(statusEl) statusEl.textContent=''; }, 3000);
+    if(statusEl){ statusEl.textContent = '네트워크 오류: '+e.message; setTimeout(()=>{ if(statusEl) statusEl.textContent=''; }, 5000); }
   }
 }
 
