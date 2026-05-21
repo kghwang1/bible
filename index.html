@@ -1575,7 +1575,7 @@ async function savePrayerToGist(text){
     const res = await fetch('https://api.github.com/gists/'+GIST_ID, {
       method: 'PATCH',
       headers: {
-        'Authorization': 'token '+GIST_TOKEN,
+        'Authorization': 'Bearer '+GIST_TOKEN,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
