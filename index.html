@@ -1419,22 +1419,24 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 #kjv-app #reading { top:0 !important; }
 
 
-/* 헤더 재구성 */
-.read-hdr{background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;padding:3px 8px 4px;flex-shrink:0}
-.rh1{display:flex;align-items:center;gap:4px;height:42px}
-.rh1-left{display:flex;gap:3px;flex-shrink:0;align-items:center}
-.rh1-center{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;min-width:0;overflow:hidden;
-}
-.rh1-center .day-tag{font-size:.78rem;color:#6b4d28;font-weight:700}
-.rh1-center h2{font-family:'Noto Serif KR',serif;font-size:1.17rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;margin:0}
-.rh1-right{display:flex;flex-direction:column;gap:2px;flex-shrink:0;align-items:flex-end}
-.done-btn{height:22px;padding:0 5px;border-radius:8px;border:none;cursor:pointer;font-size:.6rem;font-weight:700;line-height:1;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;white-space:nowrap;min-width:52px}
-.rh2{display:flex;align-items:center;gap:5px;height:26px;margin-top:1px}
-.rh2-right{display:flex;gap:4px;margin-left:auto}
-.rh-abtn2{height:22px;padding:0 9px;border-radius:8px;border:1.5px solid rgba(201,168,76,.5);background:rgba(201,168,76,.12);color:#c9a84c;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;transition:all .18s}
+/* 헤더 grid 구조 */
+.read-hdr{background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;padding:4px 8px;flex-shrink:0}
+.rh-grid{display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;min-height:62px;gap:4px}
+/* 왼쪽 열 */
+.rh-col-left{display:flex;flex-direction:column;justify-content:space-between;gap:3px;flex-shrink:0}
+.rh-top-left{display:flex;gap:3px;align-items:center}
+.rh-bot-left{display:flex;gap:4px;align-items:center}
+/* 중앙 열: 상하 완전 중앙 */
+.rh-col-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:0;overflow:hidden}
+.rh-col-center .day-tag{font-size:.78rem;color:#6b4d28;font-weight:700;width:100%;text-align:center}
+.rh-col-center h2{font-family:'Noto Serif KR',serif;font-size:1.17rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;margin:0}
+/* 오른쪽 열 */
+.rh-col-right{display:flex;flex-direction:column;justify-content:space-between;gap:3px;flex-shrink:0;align-items:flex-end}
+.rh-top-right{display:flex;align-items:center}
+.rh-bot-right{display:flex;gap:4px;align-items:center}
+/* 버튼 공통 */
+.done-btn{height:26px;padding:0 7px;border-radius:8px;border:none;cursor:pointer;font-size:.65rem;font-weight:700;line-height:1;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;white-space:nowrap;min-width:54px}
+.rh-abtn2{height:24px;padding:0 9px;border-radius:8px;border:1.5px solid rgba(201,168,76,.5);background:rgba(201,168,76,.12);color:#c9a84c;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;transition:all .18s}
 
 </style>
 </head>
@@ -1510,28 +1512,35 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 읽기 -->
 <div class="screen" id="s-read">
   <div class="read-hdr">
-    <div class="rh1">
-      <div class="rh1-left">
-        <button class="rh-nbtn" onclick="showScreen('s-cover')">처음</button>
-        <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+    <div class="rh-grid">
+      <!-- 왼쪽: 위=처음·목록, 아래=A+기본A- -->
+      <div class="rh-col-left">
+        <div class="rh-top-left">
+          <button class="rh-nbtn" onclick="showScreen('s-cover')">처음</button>
+          <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+        </div>
+        <div class="rh-bot-left">
+          <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
+          <span class="font-label" id="fontLabel">기본</span>
+          <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
+        </div>
       </div>
-      <div class="rh1-center">
+      <!-- 중앙: 날짜+제목 전체 높이 상하중앙 -->
+      <div class="rh-col-center">
         <div class="day-tag" id="dayTag"></div>
         <h2 id="readTitle"></h2>
       </div>
-      <div class="rh1-right">
-        <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
-          <span id="cmpTxt">모두읽음</span>
-        </button>
-      </div>
-    </div>
-    <div class="rh2">
-      <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
-      <span class="font-label" id="fontLabel">기본</span>
-      <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
-      <div class="rh2-right">
-        <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
-        <button class="rh-abtn2" onclick="window.open('https://www.godpia.com/read/reading.asp','_blank')">🔊</button>
+      <!-- 오른쪽: 위=이미읽음, 아래=부록·스피커 -->
+      <div class="rh-col-right">
+        <div class="rh-top-right">
+          <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
+            <span id="cmpTxt">모두읽음</span>
+          </button>
+        </div>
+        <div class="rh-bot-right">
+          <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
+          <button class="rh-abtn2" onclick="window.open('https://www.godpia.com/read/reading.asp','_blank')">🔊</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1703,28 +1712,32 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- KJV 성경 읽기 화면 -->
 <div class="screen" id="s-kjv-reader">
   <div class="read-hdr">
-    <div class="rh1">
-      <div class="rh1-left">
-        <button class="rh-nbtn" onclick="closeKJVReader()">처음</button>
-        <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+    <div class="rh-grid">
+      <div class="rh-col-left">
+        <div class="rh-top-left">
+          <button class="rh-nbtn" onclick="closeKJVReader()">처음</button>
+          <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+        </div>
+        <div class="rh-bot-left">
+          <button class="rh-fbtn" onclick="kjvChangeFont(1)">A+</button>
+          <span class="font-label" id="kjvFontLabel">기본</span>
+          <button class="rh-fbtn" onclick="kjvChangeFont(-1)">A-</button>
+        </div>
       </div>
-      <div class="rh1-center">
+      <div class="rh-col-center">
         <div class="day-tag" id="kjvDayTag"></div>
         <h2 id="kjvReadTitle"></h2>
       </div>
-      <div class="rh1-right">
-        <button class="done-btn unread" id="kjvCmpBtn" onclick="kjvDoneAndCelebrate()">
-          <span id="kjvCmpTxt">모두읽음</span>
-        </button>
-      </div>
-    </div>
-    <div class="rh2">
-      <button class="rh-fbtn" onclick="kjvChangeFont(1)">A+</button>
-      <span class="font-label" id="kjvFontLabel">기본</span>
-      <button class="rh-fbtn" onclick="kjvChangeFont(-1)">A-</button>
-      <div class="rh2-right">
-        <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
-        <button class="rh-abtn2" onclick="ttsOpen()">🔊</button>
+      <div class="rh-col-right">
+        <div class="rh-top-right">
+          <button class="done-btn unread" id="kjvCmpBtn" onclick="kjvDoneAndCelebrate()">
+            <span id="kjvCmpTxt">모두읽음</span>
+          </button>
+        </div>
+        <div class="rh-bot-right">
+          <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
+          <button class="rh-abtn2" onclick="ttsOpen()">🔊</button>
+        </div>
       </div>
     </div>
   </div>
