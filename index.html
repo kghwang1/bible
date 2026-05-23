@@ -385,6 +385,1029 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .kjv-frame {
   width:100%;flex:1;border:none;min-height:0;
 }
+
+/* ── KJV 성경 앱 ── */
+
+  :root {
+    --parchment: #f5f0e8;
+    --parchment-dark: #ede6d6;
+    --ink: #1a1208;
+    --ink-light: #3d2f1a;
+    --gold: #b8860b;
+    --gold-light: #d4a017;
+    --gold-pale: #f0e0a0;
+    --red: #8b1a1a;
+    --shadow: rgba(26,18,8,0.15);
+    --panel-bg: #faf7f2;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  #kjv-app {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--ink);
+    color: var(--ink);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── App Shell ── */
+  #kjv-app {
+    width: 100%;
+    max-width: 480px;
+    height: 100dvh;
+    position: relative;
+    overflow: hidden;
+    background: var(--parchment);
+  }
+
+  /* ── Pages ── */
+  .page {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--parchment);
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.35s;
+    will-change: transform;
+  }
+  .page.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+  .page.slide-left { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+
+  /* ══════════════════════════════════════
+     HOME PAGE
+  ══════════════════════════════════════ */
+  #home {
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .home-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(184,134,11,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 90%, rgba(139,26,26,0.15) 0%, transparent 55%),
+      linear-gradient(160deg, #1a1208 0%, #2d2010 60%, #1a1208 100%);
+  }
+  .home-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E");
+    background-size: 4px 4px;
+  }
+
+  .home-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: 0 24px;
+  }
+
+  .home-crown {
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-top: 48px;
+    opacity: 0.8;
+    font-family: 'Cinzel', serif;
+  }
+
+  .home-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(36px, 10vw, 48px);
+    font-weight: 700;
+    color: var(--gold-light);
+    text-align: center;
+    line-height: 1.1;
+    margin-top: 10px;
+    text-shadow: 0 2px 20px rgba(184,134,11,0.4);
+    letter-spacing: 2px;
+  }
+
+  .home-subtitle {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: rgba(240,224,160,0.6);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .home-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin-top: 20px;
+  }
+
+  /* Continue reading card */
+  .continue-card {
+    width: 100%;
+    margin-top: 24px;
+    background: rgba(184,134,11,0.08);
+    border: 1px solid rgba(184,134,11,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .continue-card:active { background: rgba(184,134,11,0.15); }
+  .continue-label {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .continue-ref {
+    font-family: 'Cinzel', serif;
+    font-size: 23px;
+    color: var(--gold-light);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .continue-verse {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: rgba(240,224,160,0.55);
+    margin-top: 4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .continue-none {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(240,224,160,0.4);
+    margin-top: 4px;
+  }
+
+  /* Main nav buttons */
+  .home-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .home-btn {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(184,134,11,0.3);
+    background: rgba(184,134,11,0.06);
+    color: var(--gold-pale);
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .home-btn:active { background: rgba(184,134,11,0.18); }
+  .home-btn .btn-icon { font-size: 20px; }
+  .home-btn.primary {
+    background: linear-gradient(135deg, rgba(184,134,11,0.25), rgba(184,134,11,0.1));
+    border-color: rgba(184,134,11,0.5);
+  }
+
+  .home-date {
+    margin-top: auto;
+    padding-bottom: 36px;
+    text-align: center;
+  }
+  .home-date-text {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: rgba(184,134,11,0.45);
+    letter-spacing: 2px;
+  }
+
+  /* ══════════════════════════════════════
+     BOOKS LIST PAGE
+  ══════════════════════════════════════ */
+  #books {
+    background: var(--panel-bg);
+  }
+
+  .page-header {
+    background: var(--ink);
+    padding: 52px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--gold-light);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px 4px 0;
+    line-height: 1;
+  }
+  .page-header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+  }
+
+  /* Testament tabs */
+  .testament-tabs {
+    display: flex;
+    background: var(--ink);
+    padding: 0 20px 14px;
+    gap: 8px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(184,134,11,0.3);
+    background: transparent;
+    color: rgba(212,160,23,0.6);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* Books scroll area */
+  .books-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px 24px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .book-block {
+    margin-bottom: 14px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px var(--shadow);
+  }
+  .book-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 10px 14px 8px;
+    background: var(--parchment-dark);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .book-name .read-pct {
+    font-size: 10px;
+    color: var(--gold);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+  }
+  .chapter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px 10px 10px;
+  }
+  .ch-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1.5px solid var(--parchment-dark);
+    background: var(--parchment);
+    color: var(--ink-light);
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .ch-btn:active { transform: scale(0.92); }
+  .ch-btn.read {
+    background: var(--ink);
+    color: var(--gold-light);
+    border-color: var(--ink);
+  }
+  .ch-btn.current {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(184,134,11,0.08);
+  }
+
+  /* ══════════════════════════════════════
+     READING PAGE
+  ══════════════════════════════════════ */
+  #reading {
+    background: var(--parchment);
+    overflow: hidden;
+  }
+
+  .reading-header {
+    background: var(--ink);
+    padding: 48px 18px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .reading-loc {
+    flex: 1;
+    text-align: center;
+  }
+  .reading-loc-main {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+  }
+  .reading-loc-sub {
+    font-size: 11px;
+    color: rgba(184,134,11,0.5);
+    font-family: 'Noto Sans KR', sans-serif;
+    margin-top: 1px;
+  }
+
+  /* Swipeable verse area */
+  .verse-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .verse-scroll {
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px 20px 0;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  .loading-txt {
+    text-align: center;
+    color: var(--gold);
+    font-style: italic;
+    font-size: 16px;
+    margin-top: 60px;
+    font-family: 'EB Garamond', serif;
+  }
+
+  .verse-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    line-height: 1.75;
+  }
+  .verse-num {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold);
+    min-width: 24px;
+    padding-top: 4px;
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+  .verse-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 22px;
+    color: var(--ink);
+    flex: 1;
+  }
+  .verse-word {
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s, color 0.15s;
+    display: inline;
+  }
+  .verse-word:hover, .verse-word.selected {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  .chapter-done-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 20px 20px;
+  }
+  .done-hint {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(61,47,26,0.45);
+  }
+  .done-btn {
+    background: var(--ink);
+    color: var(--gold-light);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 3px 12px var(--shadow);
+    transition: background 0.2s, transform 0.1s;
+  }
+  .done-btn:active { transform: scale(0.96); }
+
+  /* Word panel */
+  .word-panel {
+    background: var(--ink);
+    border-radius: 18px 18px 0 0;
+    flex-shrink: 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+    transition: height 0.3s cubic-bezier(.4,0,.2,1);
+  }
+  .word-panel.collapsed { height: 0; overflow: hidden; }
+  .word-panel.open {
+    height: calc(3 * 1.6em + 80px);
+    overflow: hidden;
+  }
+  .word-panel.expanded {
+    height: 55vh;
+    overflow: hidden;
+  }
+
+  .word-panel-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .word-panel-handle {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 6px;
+    cursor: pointer;
+  }
+  .word-panel-handle::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 3px;
+    background: rgba(184,134,11,0.35);
+    border-radius: 2px;
+  }
+
+  .word-panel-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0 18px 6px;
+  }
+  .word-panel-word {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+  .word-panel-pron {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(212,160,23,0.55);
+  }
+  .word-save-btn {
+    margin-left: auto;
+    background: rgba(184,134,11,0.15);
+    border: 1px solid rgba(184,134,11,0.3);
+    color: var(--gold);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .word-save-btn.saved { background: var(--gold); color: var(--ink); }
+
+  .word-panel-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 18px 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .word-def-section { margin-bottom: 10px; }
+  .word-def-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(184,134,11,0.45);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .word-def-value {
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    color: rgba(240,224,160,0.85);
+    line-height: 1.5;
+  }
+  .word-def-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 3px;
+  }
+  .word-def-tag {
+    background: rgba(184,134,11,0.12);
+    border: 1px solid rgba(184,134,11,0.2);
+    color: rgba(240,224,160,0.7);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-family: 'EB Garamond', serif;
+  }
+
+  /* Swipe feedback */
+  .swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 20;
+  }
+  .swipe-indicator.left { left: 16px; }
+  .swipe-indicator.right { right: 16px; }
+  .swipe-indicator.show { opacity: 1; }
+
+  /* ══════════════════════════════════════
+     VOCABULARY PAGE
+  ══════════════════════════════════════ */
+  #vocab {
+    background: var(--panel-bg);
+    overflow: hidden;
+  }
+
+  .vocab-date-bar {
+    background: var(--ink);
+    padding: 0 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .vocab-date-bar::-webkit-scrollbar { display: none; }
+
+  .vocab-date-chip {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(184,134,11,0.3);
+    background: transparent;
+    color: rgba(212,160,23,0.6);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .vocab-date-chip.active {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  .vocab-swipe-area {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .vocab-day {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    padding: 14px 16px 24px;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s;
+  }
+  .vocab-day.slide-out-left { transform: translateX(-100%); opacity: 0; }
+  .vocab-day.slide-out-right { transform: translateX(100%); opacity: 0; }
+
+  .vocab-empty {
+    text-align: center;
+    color: rgba(61,47,26,0.35);
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    margin-top: 60px;
+  }
+
+  .vocab-card {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 6px var(--shadow);
+    border-left: 3px solid var(--gold);
+  }
+  .vocab-card-word {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .vocab-card-pron {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: 1px;
+  }
+  .vocab-card-def {
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    color: var(--ink-light);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .vocab-card-ref {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10px;
+    color: rgba(61,47,26,0.4);
+    margin-top: 6px;
+  }
+  .vocab-card-del {
+    float: right;
+    background: none;
+    border: none;
+    color: rgba(139,26,26,0.4);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 0 0 8px;
+    line-height: 1;
+  }
+
+  /* ══════════════════════════════════════
+     LANG TABS (한글 / 영문)
+  ══════════════════════════════════════ */
+  .lang-tabs {
+    display: flex;
+    background: var(--ink);
+    border-bottom: 1px solid rgba(184,134,11,0.2);
+    flex-shrink: 0;
+  }
+  .lang-tab {
+    flex: 1;
+    padding: 9px 0;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: rgba(212,160,23,0.4);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .lang-tab.active { color: var(--gold-light); }
+  .lang-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 15%; right: 15%;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+  .lang-tab-ko { font-family: 'Noto Sans KR', sans-serif; font-size: 13px; letter-spacing: 0; }
+
+  /* 한글 본문 */
+  .verse-text-ko {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 17px;
+    color: var(--ink);
+    flex: 1;
+    line-height: 1.9;
+    word-break: keep-all;
+  }
+  .verse-text-ko.loading {
+    color: rgba(26,18,8,0.3);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  /* Google 한국어 TTS 배지 */
+  .tts-engine-badge.google-ko {
+    background: rgba(52,168,83,0.2);
+    border-color: rgba(52,168,83,0.35);
+    color: rgba(120,220,140,0.9);
+  }
+
+  /* ══════════════════════════════════════
+     TTS PLAYER BAR
+  ══════════════════════════════════════ */
+  .tts-bar {
+    background: linear-gradient(135deg, #1a1208 0%, #2a1e0e 100%);
+    border-top: 1px solid rgba(184,134,11,0.25);
+    flex-shrink: 0;
+    padding: 8px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tts-bar.hidden { display: none; }
+
+  .tts-top-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tts-verse-info {
+    flex: 1;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: rgba(212,160,23,0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .tts-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-light);
+    font-size: 23px;
+    line-height: 1;
+  }
+  .tts-btn:active { background: rgba(184,134,11,0.15); }
+  .tts-btn.primary {
+    width: 48px; height: 48px;
+    background: var(--gold);
+    border-radius: 50%;
+    font-size: 20px;
+    color: var(--ink);
+    box-shadow: 0 2px 8px rgba(184,134,11,0.4);
+    flex-shrink: 0;
+  }
+  .tts-btn.primary:active { transform: scale(0.93); }
+  .tts-btn.small { font-size: 20px; color: rgba(212,160,23,0.7); }
+
+  .tts-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tts-progress-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(184,134,11,0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+  }
+  .tts-progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s linear;
+    pointer-events: none;
+  }
+
+  .tts-speed-btn {
+    background: rgba(184,134,11,0.1);
+    border: 1px solid rgba(184,134,11,0.25);
+    border-radius: 5px;
+    color: rgba(212,160,23,0.8);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    padding: 4px 9px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tts-speed-btn:active { background: rgba(184,134,11,0.25); }
+
+  /* highlight currently spoken verse */
+  .verse-row.speaking .verse-text { color: var(--gold); }
+  .verse-row.speaking .verse-num  { color: var(--gold-light); }
+
+  /* scrollbars */
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(184,134,11,0.25); border-radius: 2px; }
+
+  /* ══════════════════════════════════════
+     GOOGLE TTS SETTINGS MODAL
+  ══════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal-box {
+    background: #1e1608;
+    border: 1px solid rgba(184,134,11,0.35);
+    border-radius: 18px;
+    padding: 24px 22px 20px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  .modal-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .modal-desc {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    color: rgba(240,224,160,0.5);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .modal-desc a {
+    color: var(--gold);
+    text-decoration: underline;
+  }
+  .modal-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: rgba(184,134,11,0.6);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .modal-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 8px;
+    color: var(--gold-pale);
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    margin-bottom: 10px;
+  }
+  .modal-input:focus { border-color: var(--gold); }
+  .modal-select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 8px;
+    color: var(--gold-pale);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    outline: none;
+    margin-bottom: 16px;
+    appearance: none;
+  }
+  .modal-select option { background: #1e1608; }
+  .modal-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .modal-btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: 8px;
+    border: 1px solid rgba(184,134,11,0.3);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .modal-btn.cancel {
+    background: transparent;
+    color: rgba(212,160,23,0.6);
+  }
+  .modal-btn.save {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+  .modal-btn.clear {
+    background: rgba(139,26,26,0.2);
+    color: rgba(220,100,100,0.8);
+    border-color: rgba(139,26,26,0.3);
+    flex: 0 0 auto;
+    padding: 11px 14px;
+  }
+  .modal-status {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px;
+    margin-top: 10px;
+    text-align: center;
+    min-height: 16px;
+  }
+  .modal-status.ok { color: #6dbf6d; }
+  .modal-status.err { color: #e07070; }
+
+  /* Google TTS 표시 배지 */
+  .tts-engine-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(66,133,244,0.2);
+    border: 1px solid rgba(66,133,244,0.35);
+    color: rgba(150,190,255,0.85);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tts-engine-badge.web {
+    background: rgba(184,134,11,0.1);
+    border-color: rgba(184,134,11,0.2);
+    color: rgba(212,160,23,0.55);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 10px 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(184,134,11,0.3);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 </style>
 </head>
 <body>
@@ -397,7 +1420,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="plan-select-row">
       <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
       <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
-      <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">📖 KJV<br>영한성경</button>
+      <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">📖KJV<br>영한</button>
       <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
     </div>
 
@@ -646,17 +1669,228 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
 </div>
 
-<!-- KJV 읽기 화면 -->
-<div class="screen" id="s-kjv">
-  <div class="kjv-hdr">
-    <button class="nav-btn" onclick="exitKJV()">← 처음으로</button>
-    <div class="kjv-hdr-title">📖 KJV 영한성경</div>
-    <button class="done-btn unread kjv-done-btn" onclick="kjvMarkDone()">
-      <span>모두<br>읽음</span>
-    </button>
+<!-- KJV 성경 읽기 화면 -->
+<div class="screen" id="s-kjv-reader">
+  <div class="rh1" style="background:linear-gradient(135deg,#1a1208,#2d2010);border-bottom:2px solid #b8860b;padding:6px 10px;flex-shrink:0">
+    <div class="rh1-left">
+      <button class="rh-nbtn" style="border-color:rgba(184,134,11,.5);color:#d4a017" onclick="closeKJVReader()">처음으로</button>
+      <button class="rh-nbtn" style="border-color:rgba(184,134,11,.5);color:#d4a017" onclick="showScreen('s-list')">목록</button>
+    </div>
+    <div class="rh1-center">
+      <div class="day-tag" id="kjvDayTag" style="color:#b8860b"></div>
+      <h2 id="kjvReadTitle" style="color:#f5f0e8;font-family:'Cinzel',serif;font-size:.85rem"></h2>
+    </div>
+    <div class="rh1-right">
+      <button class="done-btn unread" id="kjvCmpBtn" onclick="kjvDoneAndCelebrate()" style="background:linear-gradient(160deg,#8b1a1a,#5c1010);box-shadow:0 2px 6px rgba(139,26,26,.4)">
+        <span id="kjvCmpTxt">모두읽음</span>
+      </button>
+      <button class="rh-abtn" onclick="showScreen('s-appendix')" style="border-color:rgba(184,134,11,.4);color:#d4a017">📚부록</button>
+    </div>
   </div>
-  <div class="kjv-frame-wrap">
-    <iframe id="kjvFrame" class="kjv-frame" src="kjv-reader.html" allowfullscreen></iframe>
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;position:relative">
+    <div id="kjv-app">
+
+  <!-- ══ HOME ══ -->
+  <div class="page" id="home">
+    <div class="home-bg"></div>
+    <div class="home-content">
+      <div class="home-crown">World English Bible</div>
+      <div class="home-title">Holy<br>Scripture</div>
+      <div class="home-subtitle">Read · Meditate · Remember</div>
+      <div class="home-divider"></div>
+
+      <!-- Continue reading -->
+      <div class="continue-card" id="continueCard" onclick="continuReading()">
+        <div class="continue-label">Continue Reading</div>
+        <div class="continue-ref" id="continueRef">—</div>
+        <div class="continue-verse" id="continueVerse"></div>
+        <div class="continue-none" id="continueNone" style="display:none">아직 읽은 부분이 없습니다</div>
+      </div>
+
+      <!-- Nav -->
+      <div class="home-nav">
+        <button class="home-btn primary" onclick="showPage('books')">
+          <span class="btn-icon">📖</span>
+          <span>성경 목록</span>
+        </button>
+        <button class="home-btn" onclick="showPage('vocab')">
+          <span class="btn-icon">📝</span>
+          <span>단어장</span>
+        </button>
+      </div>
+
+      <div class="home-date">
+        <div class="home-date-text" id="homeDate"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOOKS ══ -->
+  <div class="page hidden" id="books">
+    <div class="page-header">
+      <button class="back-btn" onclick="closeKJVReader()">←</button>
+      <div class="page-header-title">성경 목록</div>
+    </div>
+    <div class="testament-tabs">
+      <button class="tab-btn active" id="tabOT" onclick="switchTestament('OT')">구약 Old Testament</button>
+      <button class="tab-btn" id="tabNT" onclick="switchTestament('NT')">신약 New Testament</button>
+    </div>
+    <div class="books-scroll" id="booksScroll"></div>
+  </div>
+
+  <!-- ══ READING ══ -->
+  <div class="page hidden" id="reading">
+    <div class="reading-header">
+      <button class="back-btn" onclick="showPage('books')">←</button>
+      <div class="reading-loc">
+        <div class="reading-loc-main" id="readingLocMain">Genesis 1</div>
+        <div class="reading-loc-sub" id="readingLocSub"></div>
+      </div>
+      <button class="back-btn" style="font-size:18px" onclick="ttsOpen()" title="낭독 시작">🔊</button>
+      <button class="back-btn" style="font-size:18px" onclick="closeKJVReader()">⌂</button>
+    </div>
+
+    <!-- 한글 / 영문 탭 -->
+    <div class="lang-tabs">
+      <button class="lang-tab lang-tab-ko active" id="tabKo" onclick="switchLang('ko')">한글 KJV</button>
+      <button class="lang-tab" id="tabEn" onclick="switchLang('en')">English KJV</button>
+    </div>
+
+    <div class="verse-container" id="verseContainer">
+      <div class="swipe-indicator left" id="swipeLeft">◀ PREV</div>
+      <div class="swipe-indicator right" id="swipeRight">NEXT ▶</div>
+      <div class="verse-scroll" id="verseScroll">
+        <div class="loading-txt">Loading scripture…</div>
+      </div>
+    </div>
+
+    <!-- Word panel -->
+    <div class="word-panel collapsed" id="wordPanel">
+      <div class="word-panel-inner">
+        <div class="word-panel-handle" onclick="toggleWordPanel()"></div>
+        <div class="word-panel-header">
+          <div class="word-panel-word" id="wpWord"></div>
+          <div class="word-panel-pron" id="wpPron"></div>
+          <button class="word-save-btn" id="wpSaveBtn" onclick="saveWord()">저장</button>
+        </div>
+        <div class="word-panel-scroll" id="wpScroll">
+          <div class="word-def-section">
+            <div class="word-def-label">한국어 뜻</div>
+            <div class="word-def-value" id="wpKorean" style="font-family:'Noto Sans KR',sans-serif;font-size:14px;color:rgba(240,224,160,0.95);line-height:1.6">—</div>
+          </div>
+          <div class="word-def-section">
+            <div class="word-def-label">Meaning (English)</div>
+            <div class="word-def-value" id="wpMeaning"></div>
+          </div>
+          <div class="word-def-section">
+            <div class="word-def-label">Synonyms</div>
+            <div class="word-def-tags" id="wpSynonyms"></div>
+          </div>
+          <div class="word-def-section">
+            <div class="word-def-label">Antonyms</div>
+            <div class="word-def-tags" id="wpAntonyms"></div>
+          </div>
+          <div class="word-def-section">
+            <div class="word-def-label">Example Phrase</div>
+            <div class="word-def-value" id="wpPhrase"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TTS Player Bar -->
+    <div class="tts-bar hidden" id="ttsBar">
+      <div class="tts-top-row">
+        <button class="tts-btn small" id="ttsPrevBtn" onclick="ttsPrevVerse()" title="이전 절">⏮</button>
+        <button class="tts-btn primary" id="ttsPlayBtn" onclick="ttsTogglePlay()">▶</button>
+        <button class="tts-btn small" id="ttsNextBtn" onclick="ttsNextVerse()" title="다음 절">⏭</button>
+        <div class="tts-verse-info" id="ttsVerseInfo">—</div>
+        <span class="tts-engine-badge web" id="ttsEngineBadge">WEB</span>
+        <button class="tts-speed-btn" id="ttsSpeedBtn" onclick="ttsNextSpeed()">1×</button>
+        <button class="tts-btn small" onclick="openTtsSettings()" title="음성 설정" style="font-size:16px">⚙️</button>
+        <button class="tts-btn small" onclick="ttsClose()" title="닫기" style="color:rgba(212,160,23,0.45)">✕</button>
+      </div>
+      <div class="tts-bottom-row">
+        <div class="tts-progress-wrap" id="ttsProgressWrap" onclick="ttsSeekClick(event)">
+          <div class="tts-progress-fill" id="ttsProgressFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google TTS 설정 모달 -->
+  <div class="modal-overlay" id="ttsModal">
+    <div class="modal-box">
+      <div class="modal-title">🎙 Google Cloud TTS 설정</div>
+      <div class="modal-desc">
+        월 <b style="color:var(--gold)">100만 자 무료</b> (WaveNet · Chirp 3 HD 동일).<br>
+        API 키 발급: <a href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">Google Cloud Console</a>
+        → Text-to-Speech API 활성화 → 사용자 인증 정보 → API 키 생성
+      </div>
+      <div class="modal-label">API Key</div>
+      <input class="modal-input" id="ttsApiKeyInput" type="password" placeholder="AIza..." autocomplete="off" />
+      <div class="modal-label">영문 음성 선택</div>
+      <select class="modal-select" id="ttsVoiceSelect">
+        <optgroup label="✨ Chirp 3: HD (최고음질 · 월 100만자 무료)">
+          <option value="en-US-Chirp3-HD-Charon">Chirp3-HD Charon (남성, 깊고 차분)</option>
+          <option value="en-US-Chirp3-HD-Puck" selected>Chirp3-HD Puck (남성, 활기찬)</option>
+          <option value="en-US-Chirp3-HD-Aoede">Chirp3-HD Aoede (여성, 자연스러운)</option>
+          <option value="en-US-Chirp3-HD-Kore">Chirp3-HD Kore (여성, 차분한)</option>
+          <option value="en-US-Chirp3-HD-Fenrir">Chirp3-HD Fenrir (남성, 권위있는)</option>
+          <option value="en-US-Chirp3-HD-Leda">Chirp3-HD Leda (여성, 따뜻한)</option>
+          <option value="en-GB-Chirp3-HD-Charon">Chirp3-HD 영국 Charon (남성)</option>
+          <option value="en-GB-Chirp3-HD-Aoede">Chirp3-HD 영국 Aoede (여성)</option>
+        </optgroup>
+        <optgroup label="WaveNet (고음질 · 월 100만자 무료)">
+          <option value="en-US-Wavenet-D">WaveNet-D (남성)</option>
+          <option value="en-US-Wavenet-F">WaveNet-F (여성)</option>
+          <option value="en-GB-Wavenet-B">WaveNet-B 영국 (남성)</option>
+          <option value="en-GB-Wavenet-A">WaveNet-A 영국 (여성)</option>
+        </optgroup>
+        <optgroup label="Neural2 (고음질)">
+          <option value="en-US-Neural2-D">Neural2-D (남성)</option>
+          <option value="en-US-Neural2-F">Neural2-F (여성)</option>
+        </optgroup>
+      </select>
+      <div class="modal-label">한글 음성 선택</div>
+      <select class="modal-select" id="ttsKoVoiceSelect">
+        <optgroup label="✨ Chirp 3: HD 한국어 (최고음질)">
+          <option value="ko-KR-Chirp3-HD-Charon">Chirp3-HD Charon (남성)</option>
+          <option value="ko-KR-Chirp3-HD-Aoede" selected>Chirp3-HD Aoede (여성)</option>
+          <option value="ko-KR-Chirp3-HD-Puck">Chirp3-HD Puck (남성, 활기찬)</option>
+          <option value="ko-KR-Chirp3-HD-Kore">Chirp3-HD Kore (여성, 차분한)</option>
+        </optgroup>
+        <optgroup label="WaveNet 한국어">
+          <option value="ko-KR-Wavenet-A">WaveNet-A (여성)</option>
+          <option value="ko-KR-Wavenet-B">WaveNet-B (여성)</option>
+          <option value="ko-KR-Wavenet-C">WaveNet-C (남성)</option>
+          <option value="ko-KR-Wavenet-D">WaveNet-D (남성)</option>
+        </optgroup>
+      </select>
+      <div class="modal-btns">
+        <button class="modal-btn clear" onclick="clearTtsApiKey()">삭제</button>
+        <button class="modal-btn cancel" onclick="closeTtsSettings()">취소</button>
+        <button class="modal-btn save" onclick="saveTtsSettings()">저장</button>
+      </div>
+      <div class="modal-status" id="ttsModalStatus"></div>
+    </div>
+  </div>
+
+  <!-- ══ VOCAB ══ -->
+  <div class="page hidden" id="vocab">
+    <div class="page-header">
+      <button class="back-btn" onclick="closeKJVReader()">←</button>
+      <div class="page-header-title">단어장</div>
+    </div>
+    <div class="vocab-date-bar" id="vocabDateBar"></div>
+    <div class="vocab-swipe-area" id="vocabSwipeArea">
+      <div class="vocab-day" id="vocabDayContent"></div>
+    </div>
+  </div>
+
+</div>
+    <!-- Toast -->
+<div class="toast" id="kjv-toast"></div>
   </div>
 </div>
 
@@ -692,7 +1926,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+
 <script>
+
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
 
 // 두 가지 계획 데이터
@@ -1314,6 +2550,21 @@ const KJH_BOOK = {
   62:'요한일서',63:'요한이서',64:'요한삼서',65:'유다서',66:'요한계시록'
 };
 
+// KJV 앱 책 코드 매핑 (bid → abbr)
+const KJV_ABBR = {
+  1:'GEN',2:'EXO',3:'LEV',4:'NUM',5:'DEU',6:'JOS',7:'JDG',8:'RUT',
+  9:'1SA',10:'2SA',11:'1KI',12:'2KI',13:'1CH',14:'2CH',
+  15:'EZR',16:'NEH',17:'EST',18:'JOB',19:'PSA',20:'PRO',
+  21:'ECC',22:'SNG',23:'ISA',24:'JER',25:'LAM',26:'EZK',27:'DAN',
+  28:'HOS',29:'JOL',30:'AMO',31:'OBA',32:'JON',33:'MIC',34:'NAM',
+  35:'HAB',36:'ZEP',37:'HAG',38:'ZEC',39:'MAL',
+  40:'MAT',41:'MRK',42:'LUK',43:'JHN',44:'ACT',45:'ROM',
+  46:'1CO',47:'2CO',48:'GAL',49:'EPH',50:'PHP',51:'COL',
+  52:'1TH',53:'2TH',54:'1TI',55:'2TI',56:'TIT',57:'PHM',
+  58:'HEB',59:'JAS',60:'1PE',61:'2PE',62:'1JN',63:'2JN',
+  64:'3JN',65:'JUD',66:'REV'
+};
+
 // 계획별 독립 저장소 키
 const SK = {1:'bible_plan1', 2:'bible_plan2'};
 let curPlan = 1;
@@ -1383,11 +2634,45 @@ function openAppendixPage(type){
 let kjvPlan = null; // KJV 읽기 중인 플랜 아이템
 
 function selectKJV(btn){
-  // 다른 버튼 off
   document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  // KJV 화면으로 이동
-  showScreen('s-kjv');
+  // 읽기 시작 버튼을 누를 때 이동 (여기선 선택만)
+}
+
+function sendTodayChapterToKJV(){
+  // 오늘 날짜에 해당하는 PLAN 항목 찾기
+  const todayStr = today();
+  let todayPlan = null;
+  for(const p of PLAN){
+    const d = addDays(parseDate(ST.startDate || todayStr), p.n - 1);
+    if(fmt(d) === todayStr){ todayPlan = p; break; }
+  }
+  if(!todayPlan) todayPlan = PLAN[0];
+
+  // 읽기 범위에서 첫 번째 책/장 추출
+  const segs = parseRange(todayPlan.r);
+  if(!segs.length) return;
+
+  const bid = segs[0].bid;
+  const ch  = segs[0].ch;
+  const abbr = KJV_ABBR[bid] || 'GEN';
+
+  // iframe이 로드된 후 메시지 전달
+  const frame = document.getElementById('kjvFrame');
+  function sendMsg(){
+    try{
+      frame.contentWindow.postMessage(
+        { type:'OPEN_CHAPTER', abbr, ch, range: todayPlan.r },
+        '*'
+      );
+    }catch(e){}
+  }
+  // 이미 로드됐으면 바로, 아니면 onload 후
+  if(frame.contentDocument && frame.contentDocument.readyState === 'complete'){
+    setTimeout(sendMsg, 300);
+  } else {
+    frame.onload = () => setTimeout(sendMsg, 300);
+  }
 }
 
 function exitKJV(){
@@ -1443,10 +2728,77 @@ function startReading(){
     if(!sd){ alert('시작 날짜를 입력해주세요.'); return; }
     if(sd!==ST.startDate){ ST.checks={}; PLAN.forEach(p=>ST.checks[p.n]=false); }
     ST.startDate=sd; ST.reader=rd; saveST();
-    const idx=todayIdx(sd);
-    const item=PLAN[Math.min(idx,PLAN.length-1)];
-    renderList(); openItem(item.n);
+
+    // KJV 선택 여부 확인
+    const kjvBtn = document.getElementById('selBtnKjv');
+    if(kjvBtn && kjvBtn.classList.contains('on')){
+      // KJV: 내장 KJV 화면으로 이동
+      const idx=todayIdx(sd);
+      const item=PLAN[Math.min(idx,PLAN.length-1)];
+      kjvCurItem = item;
+      // 헤더 업데이트
+      const d = addDays(parseDate(sd), item.n-1);
+      document.getElementById('kjvDayTag').textContent = fmtKo(d)+'·제'+item.n+'일';
+      document.getElementById('kjvReadTitle').textContent = item.r;
+      // 오늘 장 열기
+      const segs = parseRange(item.r);
+      if(segs.length){
+        const abbr = KJV_ABBR[segs[0].bid]||'GEN';
+        const ch = segs[0].ch;
+        showScreen('s-kjv-reader');
+        setTimeout(()=>{ openChapter(abbr, ch); showPage('reading'); }, 200);
+      } else {
+        showScreen('s-kjv-reader');
+      }
+    } else {
+      // 개역개정/기본: 기존 방식
+      const idx=todayIdx(sd);
+      const item=PLAN[Math.min(idx,PLAN.length-1)];
+      renderList(); openItem(item.n);
+    }
   }catch(err){ alert('오류: '+err.message); }
+}
+
+// KJV 읽기 모드로 열기
+function openItemKJV(item){
+  // 상단 헤더 날짜·제목 업데이트
+  const d = addDays(parseDate(ST.startDate), item.n-1);
+  document.getElementById('dayTag').textContent = fmtKo(d)+'·제'+item.n+'일';
+  document.getElementById('readTitle').textContent = item.r;
+  // 읽음 버튼 상태
+  const done = ST.checks[item.n];
+  const btn = document.getElementById('cmpBtn');
+  const txt = document.getElementById('cmpTxt');
+  if(btn) btn.className = 'done-btn '+(done?'already':'unread');
+  if(txt) txt.innerHTML = done?'이미읽음':'모두읽음';
+  // bibleFrame에 KJV 앱 로드
+  const frame = document.getElementById('bibleFrame');
+  // KJV 앱이 이미 로드됐는지 확인
+  const alreadyKjv = frame.src && frame.src.includes('kjv-reader.html');
+  if(!alreadyKjv){
+    frame.src = 'kjv-reader.html';
+  }
+  // 오늘 장 전달
+  const segs = parseRange(item.r);
+  if(segs.length){
+    const abbr = KJV_ABBR[segs[0].bid]||'GEN';
+    const ch = segs[0].ch;
+    function sendMsg(){
+      try{
+        frame.contentWindow.postMessage(
+          {type:'OPEN_CHAPTER', abbr, ch, range: item.r}, '*'
+        );
+      }catch(e){}
+    }
+    if(alreadyKjv){
+      setTimeout(sendMsg, 200);
+    } else {
+      frame.onload = ()=>setTimeout(sendMsg, 300);
+    }
+  }
+  // curItem 설정 (모두읽음 버튼용)
+  curItem = item;
+  showScreen('s-read');
 }
 
 function setFilter(f,btn){
@@ -1695,6 +3047,1282 @@ document.addEventListener('DOMContentLoaded',()=>{
   try{fontIdx=parseInt(localStorage.getItem('bible_fi')||'1');}catch(e){}
   initCover();
 });
+
+
+// ── KJV 성경 앱 JS (내장) ──
+
+// KJV 읽기 완료 → 통합앱 축하페이지
+let kjvCurItem = null;
+function kjvDoneAndCelebrate(){
+  if(kjvCurItem){
+    ST.checks[kjvCurItem.n] = true;
+    saveST();
+    showCelebration(kjvCurItem.n);
+  } else {
+    showScreen('s-celebrate');
+  }
+}
+
+
+function closeKJVReader(){
+  showScreen('s-cover');
+}
+
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+
+const BOOKS_OT = [
+  {name:'Genesis',abbr:'GEN',chapters:50},{name:'Exodus',abbr:'EXO',chapters:40},
+  {name:'Leviticus',abbr:'LEV',chapters:27},{name:'Numbers',abbr:'NUM',chapters:36},
+  {name:'Deuteronomy',abbr:'DEU',chapters:34},{name:'Joshua',abbr:'JOS',chapters:24},
+  {name:'Judges',abbr:'JDG',chapters:21},{name:'Ruth',abbr:'RUT',chapters:4},
+  {name:'1 Samuel',abbr:'1SA',chapters:31},{name:'2 Samuel',abbr:'2SA',chapters:24},
+  {name:'1 Kings',abbr:'1KI',chapters:22},{name:'2 Kings',abbr:'2KI',chapters:25},
+  {name:'1 Chronicles',abbr:'1CH',chapters:29},{name:'2 Chronicles',abbr:'2CH',chapters:36},
+  {name:'Ezra',abbr:'EZR',chapters:10},{name:'Nehemiah',abbr:'NEH',chapters:13},
+  {name:'Esther',abbr:'EST',chapters:10},{name:'Job',abbr:'JOB',chapters:42},
+  {name:'Psalms',abbr:'PSA',chapters:150},{name:'Proverbs',abbr:'PRO',chapters:31},
+  {name:'Ecclesiastes',abbr:'ECC',chapters:12},{name:'Song of Solomon',abbr:'SNG',chapters:8},
+  {name:'Isaiah',abbr:'ISA',chapters:66},{name:'Jeremiah',abbr:'JER',chapters:52},
+  {name:'Lamentations',abbr:'LAM',chapters:5},{name:'Ezekiel',abbr:'EZK',chapters:48},
+  {name:'Daniel',abbr:'DAN',chapters:12},{name:'Hosea',abbr:'HOS',chapters:14},
+  {name:'Joel',abbr:'JOL',chapters:3},{name:'Amos',abbr:'AMO',chapters:9},
+  {name:'Obadiah',abbr:'OBA',chapters:1},{name:'Jonah',abbr:'JON',chapters:4},
+  {name:'Micah',abbr:'MIC',chapters:7},{name:'Nahum',abbr:'NAH',chapters:3},
+  {name:'Habakkuk',abbr:'HAB',chapters:3},{name:'Zephaniah',abbr:'ZEP',chapters:3},
+  {name:'Haggai',abbr:'HAG',chapters:2},{name:'Zechariah',abbr:'ZEC',chapters:14},
+  {name:'Malachi',abbr:'MAL',chapters:4}
+];
+const BOOKS_NT = [
+  {name:'Matthew',abbr:'MAT',chapters:28},{name:'Mark',abbr:'MRK',chapters:16},
+  {name:'Luke',abbr:'LUK',chapters:24},{name:'John',abbr:'JHN',chapters:21},
+  {name:'Acts',abbr:'ACT',chapters:28},{name:'Romans',abbr:'ROM',chapters:16},
+  {name:'1 Corinthians',abbr:'1CO',chapters:16},{name:'2 Corinthians',abbr:'2CO',chapters:13},
+  {name:'Galatians',abbr:'GAL',chapters:6},{name:'Ephesians',abbr:'EPH',chapters:6},
+  {name:'Philippians',abbr:'PHP',chapters:4},{name:'Colossians',abbr:'COL',chapters:4},
+  {name:'1 Thessalonians',abbr:'1TH',chapters:5},{name:'2 Thessalonians',abbr:'2TH',chapters:3},
+  {name:'1 Timothy',abbr:'1TI',chapters:6},{name:'2 Timothy',abbr:'2TI',chapters:4},
+  {name:'Titus',abbr:'TIT',chapters:3},{name:'Philemon',abbr:'PHM',chapters:1},
+  {name:'Hebrews',abbr:'HEB',chapters:13},{name:'James',abbr:'JAS',chapters:5},
+  {name:'1 Peter',abbr:'1PE',chapters:5},{name:'2 Peter',abbr:'2PE',chapters:3},
+  {name:'1 John',abbr:'1JN',chapters:5},{name:'2 John',abbr:'2JN',chapters:1},
+  {name:'3 John',abbr:'3JN',chapters:1},{name:'Jude',abbr:'JUD',chapters:1},
+  {name:'Revelation',abbr:'REV',chapters:22}
+];
+const ALL_BOOKS = [...BOOKS_OT, ...BOOKS_NT];
+
+// ══════════════════════════════════════════════
+//  STATE & STORAGE
+// ══════════════════════════════════════════════
+
+let state = {
+  currentBook: 'GEN',
+  currentChapter: 1,
+  readChapters: {},  // {GEN_1: true, ...}
+  vocab: {},         // {YYYY-MM-DD: [{word, pron, meaning, synonyms, antonyms, phrase, ref}]}
+  currentWord: null,
+  wordPanelState: 'collapsed',
+  testament: 'OT',
+  vocabDateIdx: 0
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('bibleReaderState');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      Object.assign(state, parsed);
+    }
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem('bibleReaderState', JSON.stringify(state)); } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+//  PAGE NAVIGATION
+// ══════════════════════════════════════════════
+
+const PAGES = ['home','books','reading','vocab'];
+let currentPage = 'home';
+
+function showPage(name) {
+  const prev = document.getElementById(currentPage);
+  const next = document.getElementById(name);
+  const forward = PAGES.indexOf(name) >= PAGES.indexOf(currentPage);
+
+  prev.classList.add(forward ? 'slide-left' : 'hidden');
+  prev.classList.remove(forward ? 'hidden' : 'slide-left');
+  next.classList.remove('hidden','slide-left');
+
+  currentPage = name;
+
+  if (name === 'home') updateHome();
+  if (name === 'books') renderBooks();
+  if (name === 'vocab') renderVocab();
+}
+
+// ══════════════════════════════════════════════
+//  HOME
+// ══════════════════════════════════════════════
+
+function updateHome() {
+  // Date
+  const now = new Date();
+  const opts = { year:'numeric', month:'long', day:'numeric', weekday:'long' };
+  document.getElementById('homeDate').textContent = now.toLocaleDateString('en-US', opts).toUpperCase();
+
+  // Continue reading
+  const book = ALL_BOOKS.find(b => b.abbr === state.currentBook);
+  const ref = document.getElementById('continueRef');
+  const verse = document.getElementById('continueVerse');
+
+  ref.textContent = book ? `${book.name}  ${state.currentChapter}` : '—';
+  verse.textContent = '';
+  document.getElementById('continueNone').style.display = 'none';
+}
+
+function continuReading() {
+  openChapter(state.currentBook, state.currentChapter);
+  showPage('reading');
+}
+
+// ══════════════════════════════════════════════
+//  BOOKS LIST
+// ══════════════════════════════════════════════
+
+function switchTestament(t) {
+  state.testament = t;
+  document.getElementById('tabOT').classList.toggle('active', t === 'OT');
+  document.getElementById('tabNT').classList.toggle('active', t === 'NT');
+  renderBooks();
+}
+
+function renderBooks() {
+  const books = state.testament === 'OT' ? BOOKS_OT : BOOKS_NT;
+  const container = document.getElementById('booksScroll');
+  container.innerHTML = '';
+
+  books.forEach(book => {
+    const readCount = Array.from({length: book.chapters}, (_,i) =>
+      state.readChapters[`${book.abbr}_${i+1}`] ? 1 : 0
+    ).reduce((a,b) => a+b, 0);
+
+    const block = document.createElement('div');
+    block.className = 'book-block';
+
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'book-name';
+    nameDiv.innerHTML = `<span>${book.name}</span>
+      <span class="read-pct">${readCount > 0 ? readCount + '/' + book.chapters + ' 읽음' : ''}</span>`;
+    block.appendChild(nameDiv);
+
+    const grid = document.createElement('div');
+    grid.className = 'chapter-grid';
+
+    for (let ch = 1; ch <= book.chapters; ch++) {
+      const btn = document.createElement('button');
+      btn.className = 'ch-btn';
+      btn.textContent = ch;
+      const key = `${book.abbr}_${ch}`;
+      if (state.readChapters[key]) btn.classList.add('read');
+      if (book.abbr === state.currentBook && ch === state.currentChapter) btn.classList.add('current');
+      btn.onclick = () => {
+        openChapter(book.abbr, ch);
+        showPage('reading');
+      };
+      grid.appendChild(btn);
+    }
+    block.appendChild(grid);
+    container.appendChild(block);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  BIBLE API  (WEB + KJV 영문 + KJV 한글)
+// ══════════════════════════════════════════════
+
+const API_BASE = 'https://bible-api.com';
+const GETBIBLE_BASE = 'https://api.getbible.net/v2';
+
+let verseCache    = {};   // WEB 영문 (기존)
+let kjvEnCache    = {};   // KJV 영문
+let kjvKoCache    = {};   // KJV 한글
+
+// 현재 언어 탭 ('en' | 'ko')
+let currentLang = 'ko';
+let currentKjvEn = [];   // KJV 영문 절 배열
+let currentKjvKo = [];   // KJV 한글 절 배열
+
+// ── 책 이름 → getbible 책 번호 매핑 (1~66) ──
+const BOOK_NUM = {
+  'Genesis':1,'Exodus':2,'Leviticus':3,'Numbers':4,'Deuteronomy':5,
+  'Joshua':6,'Judges':7,'Ruth':8,'1 Samuel':9,'2 Samuel':10,
+  '1 Kings':11,'2 Kings':12,'1 Chronicles':13,'2 Chronicles':14,
+  'Ezra':15,'Nehemiah':16,'Esther':17,'Job':18,'Psalms':19,
+  'Proverbs':20,'Ecclesiastes':21,'Song of Solomon':22,'Isaiah':23,
+  'Jeremiah':24,'Lamentations':25,'Ezekiel':26,'Daniel':27,'Hosea':28,
+  'Joel':29,'Amos':30,'Obadiah':31,'Jonah':32,'Micah':33,'Nahum':34,
+  'Habakkuk':35,'Zephaniah':36,'Haggai':37,'Zechariah':38,'Malachi':39,
+  'Matthew':40,'Mark':41,'Luke':42,'John':43,'Acts':44,'Romans':45,
+  '1 Corinthians':46,'2 Corinthians':47,'Galatians':48,'Ephesians':49,
+  'Philippians':50,'Colossians':51,'1 Thessalonians':52,'2 Thessalonians':53,
+  '1 Timothy':54,'2 Timothy':55,'Titus':56,'Philemon':57,'Hebrews':58,
+  'James':59,'1 Peter':60,'2 Peter':61,'1 John':62,'2 John':63,
+  '3 John':64,'Jude':65,'Revelation':66
+};
+
+// ── getbible API : 책번호/장번호.json 형식 ──
+// URL: https://api.getbible.net/v2/{translation}/{bookNum}/{ch}.json
+async function fetchKjvChapter(bookName, ch, translation) {
+  const cacheKey = `${translation}_${bookName}_${ch}`;
+  const cache = translation === 'kjv' ? kjvEnCache : kjvKoCache;
+  if (cache[cacheKey]) return cache[cacheKey];
+
+  const bookNum = BOOK_NUM[bookName];
+  if (!bookNum) { console.warn('책 번호 없음:', bookName); return []; }
+
+  const url = `${GETBIBLE_BASE}/${translation}/${bookNum}/${ch}.json`;
+
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('API error ' + r.status);
+    const data = await r.json();
+
+    // 응답 구조: { verses: { "1": {verse:1, text:"..."}, ... } }
+    let verses = [];
+    if (data && data.verses) {
+      verses = Object.values(data.verses).map(v => ({
+        num: v.verse,
+        text: (v.text || '').trim().replace(/\n/g, ' ')
+      }));
+    }
+    cache[cacheKey] = verses;
+    return verses;
+  } catch(e) {
+    console.warn('getbible fetch error:', e, url);
+    return [];
+  }
+}
+
+// ── 기존 WEB 영문 fetch ──
+async function fetchChapter(abbr, ch) {
+  const key = `${abbr}_${ch}`;
+  if (verseCache[key]) return verseCache[key];
+  const book = ALL_BOOKS.find(b => b.abbr === abbr);
+  const query = encodeURIComponent(`${book.name} ${ch}`);
+  const url = `${API_BASE}/${query}?translation=web`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('API error');
+  const data = await r.json();
+  const verses = (data.verses || []).map(v => ({
+    num: v.verse,
+    text: v.text.trim().replace(/\n/g, ' ')
+  }));
+  verseCache[key] = verses;
+  return verses;
+}
+
+// ══════════════════════════════════════════════
+//  READING
+// ══════════════════════════════════════════════
+
+let currentVerses = [];
+let swipeStartX = 0, swipeStartY = 0;
+
+// ── 탭 전환 ──
+function switchLang(lang) {
+  currentLang = lang;
+  document.getElementById('tabKo').classList.toggle('active', lang === 'ko');
+  document.getElementById('tabEn').classList.toggle('active', lang === 'en');
+
+  // TTS 배지 업데이트
+  updateEngineBadge();
+
+  // 이미 로드된 절이 있으면 재렌더링
+  if (lang === 'ko' && currentKjvKo.length > 0) {
+    currentVerses = currentKjvKo;
+    renderVersesKo(currentKjvKo);
+  } else if (lang === 'en' && currentKjvEn.length > 0) {
+    currentVerses = currentKjvEn;
+    renderVersesEn(currentKjvEn);
+  }
+}
+
+function openChapter(abbr, ch) {
+  // TTS 중지
+  if (tts.active || tts.playing) {
+    ttsStopAll();
+    tts.playing = false;
+    tts.verseIdx = 0;
+    ttsRemoveHighlight();
+    if (tts.active) {
+      document.getElementById('ttsProgressFill').style.width = '0%';
+      ttsUpdateUI();
+    }
+  }
+
+  state.currentBook = abbr;
+  state.currentChapter = ch;
+  saveState();
+
+  const book = ALL_BOOKS.find(b => b.abbr === abbr);
+  document.getElementById('readingLocMain').textContent = `${book.name}  ${ch}`;
+  document.getElementById('readingLocSub').textContent  = `Chapter ${ch} of ${book.chapters}`;
+  closeWordPanel();
+
+  const scroll = document.getElementById('verseScroll');
+  scroll.innerHTML = '<div class="loading-txt">Loading scripture…</div>';
+
+  currentKjvKo = [];
+  currentKjvEn = [];
+
+  // KJV 한글 + 영문 동시 로드
+  Promise.all([
+    fetchKjvChapter(book.name, ch, 'koreankjv'),
+    fetchKjvChapter(book.name, ch, 'kjv')
+  ]).then(([koVerses, enVerses]) => {
+    currentKjvKo = koVerses;
+    currentKjvEn = enVerses;
+
+    if (currentLang === 'ko') {
+      currentVerses = koVerses.length > 0 ? koVerses : enVerses;
+      if (koVerses.length > 0) renderVersesKo(koVerses);
+      else renderVersesEn(enVerses);
+    } else {
+      currentVerses = enVerses;
+      renderVersesEn(enVerses);
+    }
+
+    // 홈 미리보기 업데이트 (한글 우선)
+    const preview = (koVerses[0] || enVerses[0]);
+    if (preview) {
+      const el = document.getElementById('continueVerse');
+      if (el) el.textContent = preview.text.substring(0, 80) + '…';
+    }
+  }).catch(() => {
+    scroll.innerHTML = '<div class="loading-txt">Failed to load. Check connection.</div>';
+  });
+}
+
+// ── 영문 KJV 렌더링 (단어 탭 기능 유지) ──
+function renderVersesEn(verses) {
+  const scroll = document.getElementById('verseScroll');
+  scroll.innerHTML = '';
+  const abbr = state.currentBook;
+  const ch   = state.currentChapter;
+  const book = ALL_BOOKS.find(b => b.abbr === abbr);
+
+  verses.forEach(v => {
+    const row = document.createElement('div');
+    row.className = 'verse-row';
+
+    const num = document.createElement('div');
+    num.className = 'verse-num';
+    num.textContent = v.num;
+
+    const txt = document.createElement('div');
+    txt.className = 'verse-text';
+
+    const words = v.text.split(/(\s+)/);
+    words.forEach(w => {
+      if (/^\s+$/.test(w)) {
+        txt.appendChild(document.createTextNode(w));
+      } else {
+        const clean = w.replace(/[^a-zA-Z'-]/g, '');
+        if (clean.length < 2) {
+          txt.appendChild(document.createTextNode(w));
+        } else {
+          const span = document.createElement('span');
+          span.className = 'verse-word';
+          span.textContent = w;
+          span.dataset.word = clean;
+          span.onclick = () => handleWordClick(span, clean);
+          txt.appendChild(span);
+        }
+      }
+    });
+
+    row.appendChild(num);
+    row.appendChild(txt);
+    scroll.appendChild(row);
+  });
+
+  appendDoneArea(scroll, abbr, ch);
+}
+
+// ── 한글 KJV 렌더링 ──
+function renderVersesKo(verses) {
+  const scroll = document.getElementById('verseScroll');
+  scroll.innerHTML = '';
+  const abbr = state.currentBook;
+  const ch   = state.currentChapter;
+
+  verses.forEach(v => {
+    const row = document.createElement('div');
+    row.className = 'verse-row';
+
+    const num = document.createElement('div');
+    num.className = 'verse-num';
+    num.textContent = v.num;
+
+    const txt = document.createElement('div');
+    txt.className = 'verse-text-ko';
+    txt.textContent = v.text;
+
+    row.appendChild(num);
+    row.appendChild(txt);
+    scroll.appendChild(row);
+  });
+
+  appendDoneArea(scroll, abbr, ch);
+
+  // 홈 미리보기
+  if (verses.length > 0) {
+    const el = document.getElementById('continueVerse');
+    if (el) el.textContent = verses[0].text.substring(0, 80) + '…';
+  }
+}
+
+function appendDoneArea(scroll, abbr, ch) {
+  const doneArea = document.createElement('div');
+  doneArea.className = 'chapter-done-area';
+  doneArea.innerHTML = `
+    <div class="done-hint">← Swipe to navigate · Tap words to look up →</div>
+    <button class="done-btn" onclick="kjvMarkChapterDone('${abbr}',${ch})">✓ COMPLETE</button>
+  `;
+  scroll.appendChild(doneArea);
+}
+
+// 기존 호환성 유지
+function renderVerses(verses, abbr, ch, book) {
+  renderVersesEn(verses);
+}
+
+function kjvMarkChapterDone(abbr, ch) {
+  const key = `${abbr}_${ch}`;
+  state.readChapters[key] = true;
+
+  // Auto-advance
+  const book = ALL_BOOKS.find(b => b.abbr === abbr);
+  if (ch < book.chapters) {
+    openChapter(abbr, ch + 1);
+    showToast('장 완료! 다음 장으로 이동합니다');
+  } else {
+    showToast(`${book.name} 완독! 🎉`);
+  }
+  saveState();
+}
+
+// Swipe navigation
+const vc = document.getElementById('verseContainer');
+vc.addEventListener('touchstart', e => {
+  swipeStartX = e.touches[0].clientX;
+  swipeStartY = e.touches[0].clientY;
+}, {passive: true});
+
+vc.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  const dy = e.changedTouches[0].clientY - swipeStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    if (dx < 0) goNextChapter();
+    else goPrevChapter();
+  }
+}, {passive: true});
+
+// swipe indicators
+vc.addEventListener('touchmove', e => {
+  const dx = e.touches[0].clientX - swipeStartX;
+  const dy = e.touches[0].clientY - swipeStartY;
+  if (Math.abs(dx) > 20 && Math.abs(dx) > Math.abs(dy)) {
+    document.getElementById('swipeLeft').classList.toggle('show', dx > 0);
+    document.getElementById('swipeRight').classList.toggle('show', dx < 0);
+  }
+}, {passive: true});
+
+vc.addEventListener('touchend', () => {
+  document.getElementById('swipeLeft').classList.remove('show');
+  document.getElementById('swipeRight').classList.remove('show');
+}, {passive: true});
+
+function goNextChapter() {
+  const book = ALL_BOOKS.find(b => b.abbr === state.currentBook);
+  if (state.currentChapter < book.chapters) {
+    openChapter(state.currentBook, state.currentChapter + 1);
+  } else {
+    // Next book
+    const idx = ALL_BOOKS.findIndex(b => b.abbr === state.currentBook);
+    if (idx < ALL_BOOKS.length - 1) {
+      openChapter(ALL_BOOKS[idx + 1].abbr, 1);
+    }
+  }
+}
+function goPrevChapter() {
+  if (state.currentChapter > 1) {
+    openChapter(state.currentBook, state.currentChapter - 1);
+  } else {
+    const idx = ALL_BOOKS.findIndex(b => b.abbr === state.currentBook);
+    if (idx > 0) {
+      const prev = ALL_BOOKS[idx - 1];
+      openChapter(prev.abbr, prev.chapters);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+//  WORD LOOKUP (Free Dictionary API — CORS OK)
+//  + MyMemory Translation API for Korean
+// ══════════════════════════════════════════════
+
+let lookupCache = {};
+let currentLookupWord = null;
+let currentLookupRef = '';
+
+// 자주 쓰이는 성경 단어 한글 내장 사전
+const BIBLE_KO = {
+  'god':'하나님','lord':'주님','heaven':'하늘','earth':'땅','light':'빛','darkness':'어둠',
+  'water':'물','spirit':'영','soul':'영혼','flesh':'육체','heart':'마음','mind':'생각',
+  'word':'말씀','truth':'진리','faith':'믿음','love':'사랑','grace':'은혜','mercy':'긍휼',
+  'sin':'죄','righteousness':'의','salvation':'구원','redemption':'속량','covenant':'언약',
+  'prophet':'선지자','priest':'제사장','king':'왕','angel':'천사','devil':'마귀',
+  'prayer':'기도','worship':'예배','sacrifice':'제물','temple':'성전','altar':'제단',
+  'creation':'창조','blessing':'축복','curse':'저주','death':'죽음','life':'생명',
+  'peace':'평화','joy':'기쁨','hope':'소망','glory':'영광','power':'능력','wisdom':'지혜',
+  'beginning':'처음','formless':'형태없는','void':'공허한','deep':'깊음','surface':'수면',
+  'hovering':'운행하는','expanse':'궁창','evening':'저녁','morning':'아침','day':'날',
+  'good':'좋다','created':'창조했다','divided':'나누었다','gathered':'모였다',
+  'seas':'바다','dry':'마른','land':'육지','vegetation':'식물','seed':'씨앗',
+  'fruit':'열매','stars':'별','seasons':'계절','creatures':'생물','blessed':'복을 주셨다',
+  'image':'형상','likeness':'모양','dominion':'다스림','holy':'거룩한','righteous':'의로운',
+  'eternal':'영원한','almighty':'전능하신','servant':'종','nation':'나라','people':'백성',
+  'wilderness':'광야','mountain':'산','river':'강','valley':'골짜기','desert':'사막',
+  'commandment':'계명','law':'율법','gospel':'복음','kingdom':'나라','throne':'보좌',
+  'lamb':'어린양','shepherd':'목자','vine':'포도나무','bread':'떡','wine':'포도주',
+  'wrath':'진노','judgment':'심판','forgiveness':'용서','healing':'치유','miracle':'기적',
+  'resurrection':'부활','ascension':'승천','baptism':'세례','communion':'성찬',
+  'apostle':'사도','disciple':'제자','church':'교회','cross':'십자가','blood':'피',
+  'atonement':'속죄','sanctification':'거룩함','justification':'칭의','repentance':'회개'
+};
+
+async function translateToKorean(text) {
+  // 1) 내장 사전에서 단어 단위 우선 검색
+  const lower = text.trim().toLowerCase();
+  if (BIBLE_KO[lower]) return BIBLE_KO[lower];
+
+  // 2) MyMemory API (CORS 허용, 무료)
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ko`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const tr = d?.responseData?.translatedText;
+    if (tr && tr !== text && !/ERROR/.test(tr)) return tr;
+  } catch(e) {}
+  return null;
+}
+
+async function handleWordClick(span, word) {
+  document.querySelectorAll('.verse-word.selected').forEach(s => s.classList.remove('selected'));
+  span.classList.add('selected');
+
+  currentLookupWord = word;
+  const book = ALL_BOOKS.find(b => b.abbr === state.currentBook);
+  currentLookupRef = `${book.name} ${state.currentChapter}`;
+
+  openWordPanel('loading');
+  document.getElementById('wpWord').textContent = word.toUpperCase();
+  document.getElementById('wpPron').textContent = '…';
+  document.getElementById('wpKorean').textContent = '번역 중…';
+  document.getElementById('wpMeaning').textContent = 'Looking up…';
+  document.getElementById('wpSynonyms').innerHTML = '';
+  document.getElementById('wpAntonyms').innerHTML = '';
+  document.getElementById('wpPhrase').textContent = '';
+  updateSaveButton(word);
+
+  const key = word.toLowerCase();
+  if (lookupCache[key]) { displayWordInfo(lookupCache[key]); return; }
+
+  // Fetch dictionary + translation in parallel
+  const [dictResult, koResult] = await Promise.allSettled([
+    fetchDictionary(key),
+    translateToKorean(word)
+  ]);
+
+  const dictInfo = dictResult.status === 'fulfilled' ? dictResult.value : null;
+  const korean = koResult.status === 'fulfilled' ? koResult.value : null;
+
+  const info = dictInfo || {
+    pronunciation: '',
+    meaning: `See "${word}" in a Bible dictionary.`,
+    synonyms: [], antonyms: [], phrase: ''
+  };
+  info.korean = korean || '—';
+
+  // If we have meaning but no korean yet, try translating the first meaning
+  if (!korean && dictInfo && dictInfo.meaning) {
+    const firstLine = dictInfo.meaning.split('\n')[0].replace(/^\([^)]+\)\s*/, '');
+    const ko2 = await translateToKorean(firstLine).catch(() => null);
+    if (ko2) info.korean = ko2;
+  }
+
+  lookupCache[key] = info;
+  displayWordInfo(info);
+}
+
+async function fetchDictionary(key) {
+  const resp = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(key)}`);
+  if (!resp.ok) throw new Error('not found');
+  const data = await resp.json();
+  const entry = data[0];
+
+  const phonetic = entry.phonetic ||
+    (entry.phonetics || []).find(p => p.text)?.text || '';
+
+  let meanings = [];
+  let synonyms = new Set();
+  let antonyms = new Set();
+  let phrase = '';
+
+  (entry.meanings || []).forEach(m => {
+    m.definitions?.forEach((d, i) => {
+      if (i === 0 && meanings.length < 3) {
+        meanings.push(`(${m.partOfSpeech}) ${d.definition}`);
+        if (d.example && !phrase) phrase = d.example;
+      }
+      d.synonyms?.forEach(s => synonyms.add(s));
+      d.antonyms?.forEach(a => antonyms.add(a));
+    });
+    m.synonyms?.forEach(s => synonyms.add(s));
+    m.antonyms?.forEach(a => antonyms.add(a));
+  });
+
+  return {
+    pronunciation: phonetic,
+    meaning: meanings.join('\n') || 'No definition found.',
+    synonyms: [...synonyms].slice(0, 5),
+    antonyms: [...antonyms].slice(0, 4),
+    phrase: phrase
+  };
+}
+
+function displayWordInfo(info) {
+  document.getElementById('wpPron').textContent = info.pronunciation || '';
+  document.getElementById('wpKorean').textContent = info.korean || '—';
+
+  const meaningEl = document.getElementById('wpMeaning');
+  meaningEl.innerHTML = '';
+  (info.meaning || '').split('\n').forEach((line, i) => {
+    if (i > 0) meaningEl.appendChild(document.createElement('br'));
+    meaningEl.appendChild(document.createTextNode(line));
+  });
+
+  const synEl = document.getElementById('wpSynonyms');
+  synEl.innerHTML = '';
+  (info.synonyms || []).forEach(w => {
+    const tag = document.createElement('span');
+    tag.className = 'word-def-tag';
+    tag.textContent = w;
+    synEl.appendChild(tag);
+  });
+
+  const antEl = document.getElementById('wpAntonyms');
+  antEl.innerHTML = '';
+  (info.antonyms || []).forEach(w => {
+    const tag = document.createElement('span');
+    tag.className = 'word-def-tag';
+    tag.textContent = w;
+    antEl.appendChild(tag);
+  });
+
+  document.getElementById('wpPhrase').textContent = info.phrase || '';
+}
+
+function openWordPanel(mode) {
+  const panel = document.getElementById('wordPanel');
+  panel.classList.remove('collapsed','open','expanded');
+  panel.classList.add(mode === 'loading' ? 'open' : 'open');
+  state.wordPanelState = 'open';
+}
+function closeWordPanel() {
+  const panel = document.getElementById('wordPanel');
+  panel.classList.remove('open','expanded');
+  panel.classList.add('collapsed');
+  state.wordPanelState = 'collapsed';
+}
+function toggleWordPanel() {
+  const panel = document.getElementById('wordPanel');
+  if (state.wordPanelState === 'open') {
+    panel.classList.remove('open');
+    panel.classList.add('expanded');
+    state.wordPanelState = 'expanded';
+  } else if (state.wordPanelState === 'expanded') {
+    panel.classList.remove('expanded');
+    panel.classList.add('open');
+    state.wordPanelState = 'open';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  SAVE WORD
+// ══════════════════════════════════════════════
+
+function kjvTodayKey() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function updateSaveButton(word) {
+  const btn = document.getElementById('wpSaveBtn');
+  const today = kjvTodayKey();
+  const saved = (state.vocab[today] || []).some(e => e.word.toLowerCase() === word.toLowerCase());
+  btn.textContent = saved ? '저장됨' : '저장';
+  btn.classList.toggle('saved', saved);
+}
+
+function saveWord() {
+  if (!currentLookupWord) return;
+  const today = kjvTodayKey();
+  if (!state.vocab[today]) state.vocab[today] = [];
+
+  const existing = state.vocab[today].findIndex(e => e.word.toLowerCase() === currentLookupWord.toLowerCase());
+  if (existing >= 0) {
+    state.vocab[today].splice(existing, 1);
+    showToast('단어 삭제됨');
+  } else {
+    const info = lookupCache[currentLookupWord.toLowerCase()] || {};
+    state.vocab[today].push({
+      word: currentLookupWord,
+      pron: info.pronunciation || '',
+      korean: info.korean || '',
+      meaning: info.meaning || '',
+      synonyms: info.synonyms || [],
+      antonyms: info.antonyms || [],
+      phrase: info.phrase || '',
+      ref: currentLookupRef,
+      ts: Date.now()
+    });
+    showToast('단어장에 저장됨');
+  }
+  saveState();
+  updateSaveButton(currentLookupWord);
+}
+
+// ══════════════════════════════════════════════
+//  VOCAB PAGE
+// ══════════════════════════════════════════════
+
+let vocabDates = [];
+let vocabIdx = 0;
+
+function renderVocab() {
+  // Build date list (today + any dates with words)
+  const today = kjvTodayKey();
+  const allDates = new Set([today, ...Object.keys(state.vocab)]);
+  vocabDates = Array.from(allDates).sort((a,b) => b.localeCompare(a));
+  if (!vocabDates.includes(today)) vocabDates.unshift(today);
+  // Deduplicate
+  vocabDates = [...new Set(vocabDates)];
+
+  vocabIdx = 0; // today
+
+  // Date chips
+  const bar = document.getElementById('vocabDateBar');
+  bar.innerHTML = '';
+  vocabDates.forEach((d, i) => {
+    const chip = document.createElement('button');
+    chip.className = 'vocab-date-chip' + (i === 0 ? ' active' : '');
+    chip.textContent = formatDateChip(d);
+    chip.dataset.idx = i;
+    chip.onclick = () => switchVocabDate(i);
+    bar.appendChild(chip);
+  });
+
+  renderVocabDay(0);
+
+  // Swipe
+  setupVocabSwipe();
+}
+
+function formatDateChip(d) {
+  const dt = new Date(d + 'T00:00:00');
+  const kjvToday = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((today - dt) / 86400000);
+  if (diff === 0) return 'TODAY';
+  if (diff === 1) return 'YESTERDAY';
+  return dt.toLocaleDateString('en-US', {month:'short', day:'numeric'}).toUpperCase();
+}
+
+function switchVocabDate(idx) {
+  vocabIdx = idx;
+  document.querySelectorAll('.vocab-date-chip').forEach((c,i) => {
+    c.classList.toggle('active', i === idx);
+  });
+  renderVocabDay(idx);
+}
+
+function renderVocabDay(idx) {
+  const date = vocabDates[idx];
+  const words = state.vocab[date] || [];
+  const el = document.getElementById('vocabDayContent');
+
+  el.style.transform = '';
+  el.style.opacity = '';
+
+  if (words.length === 0) {
+    el.innerHTML = '<div class="vocab-empty">이 날 저장된 단어가 없습니다</div>';
+    return;
+  }
+
+  el.innerHTML = '';
+  words.slice().reverse().forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'vocab-card';
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start">
+        <div style="flex:1">
+          <div class="vocab-card-word">${w.word}</div>
+          <div class="vocab-card-pron">${w.pron}</div>
+        </div>
+        <button class="vocab-card-del" onclick="deleteVocabWord('${date}','${w.word.replace(/'/g,"\\'")}')">✕</button>
+      </div>
+      ${w.korean ? `<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:500;color:#1a1208;margin-top:6px">🇰🇷 ${w.korean}</div>` : ''}
+      <div class="vocab-card-def" style="margin-top:4px">${w.meaning}</div>
+      ${w.phrase ? `<div class="vocab-card-def" style="font-style:italic;opacity:.7;margin-top:4px">"${w.phrase}"</div>` : ''}
+      <div class="vocab-card-ref">${w.ref}</div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+function deleteVocabWord(date, word) {
+  if (!state.vocab[date]) return;
+  state.vocab[date] = state.vocab[date].filter(e => e.word !== word);
+  saveState();
+  renderVocabDay(vocabIdx);
+}
+
+function setupVocabSwipe() {
+  const area = document.getElementById('vocabSwipeArea');
+  let sx = 0, sy = 0;
+  area.addEventListener('touchstart', e => {
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, {passive: true});
+  area.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      const newIdx = dx < 0
+        ? Math.min(vocabIdx + 1, vocabDates.length - 1)
+        : Math.max(vocabIdx - 1, 0);
+      if (newIdx !== vocabIdx) switchVocabDate(newIdx);
+    }
+  }, {passive: true});
+}
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('kjv-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+
+// ══════════════════════════════════════════════
+//  TTS ENGINE  (Google Cloud TTS + Web Speech 폴백)
+// ══════════════════════════════════════════════
+
+const TTS_SPEEDS     = [0.8, 1.0, 1.2, 1.5, 2.0];
+const TTS_SPEED_LABELS = ['0.8×', '1×', '1.2×', '1.5×', '2×'];
+// Google TTS speaking rate: 1.0 기준 배율
+const GOOGLE_RATES   = [0.8, 1.0, 1.15, 1.35, 1.7];
+
+let tts = {
+  active: false,
+  playing: false,
+  verseIdx: 0,
+  speedIdx: 1,
+  utterance: null,
+  audio: null,
+  voices: [],
+  preferredVoice: null,
+  googleKey: '',
+  googleVoice: 'en-US-Chirp3-HD-Puck',
+  googleKoVoice: 'ko-KR-Chirp3-HD-Aoede',
+  useGoogle: false
+};
+
+// ── 저장된 Google 설정 로드 ──
+function loadTtsSettings() {
+  tts.googleKey     = localStorage.getItem('ttsGoogleKey')     || '';
+  tts.googleVoice   = localStorage.getItem('ttsGoogleVoice')   || 'en-US-Chirp3-HD-Puck';
+  tts.googleKoVoice = localStorage.getItem('ttsGoogleKoVoice') || 'ko-KR-Chirp3-HD-Aoede';
+  tts.useGoogle     = !!tts.googleKey;
+  updateEngineBadge();
+}
+
+function updateEngineBadge() {
+  const badge = document.getElementById('ttsEngineBadge');
+  if (!badge) return;
+  if (currentLang === 'ko') {
+    if (tts.useGoogle && tts.googleKey) {
+      badge.textContent = 'GOOGLE KO';
+      badge.className = 'tts-engine-badge google-ko';
+    } else {
+      badge.textContent = 'KO';
+      badge.className = 'tts-engine-badge web';
+    }
+  } else {
+    if (tts.useGoogle && tts.googleKey) {
+      badge.textContent = 'GOOGLE';
+      badge.className = 'tts-engine-badge';
+    } else {
+      badge.textContent = 'WEB';
+      badge.className = 'tts-engine-badge web';
+    }
+  }
+}
+
+// ── 설정 모달 ──
+function openTtsSettings() {
+  document.getElementById('ttsApiKeyInput').value   = tts.googleKey;
+  document.getElementById('ttsVoiceSelect').value   = tts.googleVoice;
+  document.getElementById('ttsKoVoiceSelect').value = tts.googleKoVoice;
+  document.getElementById('ttsModalStatus').textContent = '';
+  document.getElementById('ttsModalStatus').className   = 'modal-status';
+  document.getElementById('ttsModal').classList.add('show');
+}
+function closeTtsSettings() {
+  document.getElementById('ttsModal').classList.remove('show');
+}
+function clearTtsApiKey() {
+  localStorage.removeItem('ttsGoogleKey');
+  localStorage.removeItem('ttsGoogleVoice');
+  localStorage.removeItem('ttsGoogleKoVoice');
+  tts.googleKey  = '';
+  tts.useGoogle  = false;
+  updateEngineBadge();
+  document.getElementById('ttsApiKeyInput').value = '';
+  const st = document.getElementById('ttsModalStatus');
+  st.textContent = 'API 키가 삭제되었습니다. 브라우저 TTS로 전환됩니다.';
+  st.className = 'modal-status ok';
+  setTimeout(() => closeTtsSettings(), 1500);
+}
+async function saveTtsSettings() {
+  const key     = document.getElementById('ttsApiKeyInput').value.trim();
+  const voice   = document.getElementById('ttsVoiceSelect').value;
+  const koVoice = document.getElementById('ttsKoVoiceSelect').value;
+  const st      = document.getElementById('ttsModalStatus');
+
+  if (!key) {
+    st.textContent = 'API 키를 입력해 주세요.';
+    st.className   = 'modal-status err';
+    return;
+  }
+  st.textContent = '키 검증 중…';
+  st.className   = 'modal-status';
+
+  const ok = await testGoogleKey(key, voice);
+  if (!ok) {
+    st.textContent = '키가 유효하지 않습니다. 다시 확인해 주세요.';
+    st.className   = 'modal-status err';
+    return;
+  }
+  localStorage.setItem('ttsGoogleKey',     key);
+  localStorage.setItem('ttsGoogleVoice',   voice);
+  localStorage.setItem('ttsGoogleKoVoice', koVoice);
+  tts.googleKey     = key;
+  tts.googleVoice   = voice;
+  tts.googleKoVoice = koVoice;
+  tts.useGoogle     = true;
+  updateEngineBadge();
+  st.textContent = '✓ 저장되었습니다! Google TTS가 활성화됩니다.';
+  st.className   = 'modal-status ok';
+  setTimeout(() => closeTtsSettings(), 1800);
+}
+
+async function testGoogleKey(key, voice) {
+  try {
+    const lang = voice.substring(0, 5); // e.g. en-US
+    const resp = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text: 'Test' },
+          voice: { languageCode: lang, name: voice },
+          audioConfig: { audioEncoding: 'MP3' }
+        })
+      }
+    );
+    return resp.ok;
+  } catch { return false; }
+}
+
+// ── Web Speech 보조 ──
+function ttsLoadVoices() {
+  const all = speechSynthesis.getVoices();
+  tts.voices = all;
+  const pref = (
+    all.find(v => v.lang === 'en-US' && /female|zira|samantha|karen|moira/i.test(v.name)) ||
+    all.find(v => v.lang === 'en-US') ||
+    all.find(v => v.lang.startsWith('en-GB')) ||
+    all.find(v => v.lang.startsWith('en')) ||
+    all[0]
+  );
+  tts.preferredVoice = pref || null;
+}
+ttsLoadVoices();
+if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = ttsLoadVoices;
+}
+
+// ── 열기/닫기 ──
+function ttsOpen() {
+  tts.active   = true;
+  tts.verseIdx = 0;
+  document.getElementById('ttsBar').classList.remove('hidden');
+  ttsUpdateUI();
+  ttsPlay();
+}
+function ttsClose() {
+  ttsStopAll();
+  tts.active  = false;
+  tts.playing = false;
+  document.getElementById('ttsBar').classList.add('hidden');
+  ttsRemoveHighlight();
+}
+function ttsTogglePlay() {
+  if (!tts.active) { ttsOpen(); return; }
+  if (tts.playing) {
+    ttsStopAll();
+    tts.playing = false;
+    ttsUpdateUI();
+  } else {
+    ttsPlay();
+  }
+}
+
+function ttsStopAll() {
+  // Google audio
+  if (tts.audio) {
+    tts.audio.pause();
+    tts.audio.src = '';
+    tts.audio = null;
+  }
+  // Web Speech
+  if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+  tts.utterance = null;
+}
+
+// ── 핵심: 한 절 재생 ──
+async function ttsPlay() {
+  ttsStopAll();
+
+  if (!currentVerses || tts.verseIdx >= currentVerses.length) {
+    tts.playing = false;
+    ttsUpdateUI();
+    return;
+  }
+
+  const verse = currentVerses[tts.verseIdx];
+  ttsHighlightVerse(tts.verseIdx);
+  ttsScrollToVerse(tts.verseIdx);
+  tts.playing = true;
+  ttsUpdateUI();
+
+  if (tts.useGoogle && tts.googleKey) {
+    await ttsPlayGoogle(verse.text);
+  } else {
+    ttsPlayWeb(verse.text);
+  }
+}
+
+// Google Cloud TTS
+async function ttsPlayGoogle(text) {
+  const isKo    = currentLang === 'ko';
+  const voice   = isKo ? tts.googleKoVoice : tts.googleVoice;
+  const lang    = voice.substring(0, 5); // 'ko-KR' or 'en-US' etc.
+
+  // Chirp3 HD는 speakingRate만 지원 (pitch 불가)
+  const isChirp = voice.includes('Chirp3') || voice.includes('Chirp-HD');
+
+  const audioConfig = {
+    audioEncoding: 'MP3',
+    speakingRate: GOOGLE_RATES[tts.speedIdx]
+  };
+  if (!isChirp) audioConfig.pitch = 0.0; // Chirp3 HD는 pitch 미지원
+
+  try {
+    const resp = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${tts.googleKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: lang, name: voice },
+          audioConfig
+        })
+      }
+    );
+    if (!resp.ok) throw new Error('Google TTS API 오류: ' + resp.status);
+    const data  = await resp.json();
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    tts.audio   = audio;
+
+    audio.ontimeupdate = () => {
+      if (audio.duration > 0) {
+        const pct = audio.currentTime / audio.duration * 100;
+        document.getElementById('ttsProgressFill').style.width = pct + '%';
+      }
+    };
+    audio.onended = () => {
+      document.getElementById('ttsProgressFill').style.width = '100%';
+      tts.verseIdx++;
+      if (tts.verseIdx < currentVerses.length) {
+        setTimeout(() => ttsPlay(), 200);
+      } else {
+        tts.playing = false;
+        ttsRemoveHighlight();
+        ttsUpdateUI();
+        showToast('낭독 완료 🎉');
+      }
+    };
+    audio.onerror = () => { ttsPlayWeb(text); };
+    audio.play();
+  } catch (e) {
+    console.warn('Google TTS 오류, 브라우저 TTS로 전환:', e);
+    ttsPlayWeb(text);
+  }
+}
+
+// Web Speech API 폴백
+function ttsPlayWeb(text) {
+  const isKo = currentLang === 'ko';
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang  = isKo ? 'ko-KR' : 'en-US';
+  u.rate  = TTS_SPEEDS[tts.speedIdx];
+  u.pitch = 1.0;
+  if (!isKo && tts.preferredVoice) u.voice = tts.preferredVoice;
+
+  u.onboundary = (e) => {
+    if (e.name === 'word') {
+      const pct = Math.min(100, Math.round(e.charIndex / text.length * 100));
+      document.getElementById('ttsProgressFill').style.width = pct + '%';
+    }
+  };
+  u.onend = () => {
+    document.getElementById('ttsProgressFill').style.width = '100%';
+    tts.verseIdx++;
+    if (tts.verseIdx < currentVerses.length) {
+      setTimeout(() => ttsPlay(), 250);
+    } else {
+      tts.playing = false;
+      ttsRemoveHighlight();
+      ttsUpdateUI();
+      showToast('낭독 완료 🎉');
+    }
+  };
+  u.onerror = (e) => {
+    if (e.error !== 'interrupted' && e.error !== 'canceled') {
+      tts.verseIdx++;
+      if (tts.verseIdx < currentVerses.length) setTimeout(() => ttsPlay(), 200);
+    }
+  };
+  tts.utterance = u;
+  speechSynthesis.speak(u);
+}
+
+// ── 이전/다음 절 ──
+function ttsPrevVerse() {
+  ttsStopAll();
+  tts.verseIdx = Math.max(0, tts.verseIdx - 1);
+  ttsRemoveHighlight();
+  document.getElementById('ttsProgressFill').style.width = '0%';
+  ttsUpdateUI();
+  if (tts.active) ttsPlay();
+}
+function ttsNextVerse() {
+  ttsStopAll();
+  tts.verseIdx = Math.min((currentVerses.length || 1) - 1, tts.verseIdx + 1);
+  ttsRemoveHighlight();
+  document.getElementById('ttsProgressFill').style.width = '0%';
+  ttsUpdateUI();
+  if (tts.active) ttsPlay();
+}
+
+// ── 속도 ──
+function ttsNextSpeed() {
+  tts.speedIdx = (tts.speedIdx + 1) % TTS_SPEEDS.length;
+  document.getElementById('ttsSpeedBtn').textContent = TTS_SPEED_LABELS[tts.speedIdx];
+  if (tts.playing) { ttsStopAll(); tts.playing = true; setTimeout(() => ttsPlay(), 100); }
+}
+
+// ── 진행바 클릭 ──
+function ttsSeekClick(e) {
+  if (!currentVerses || currentVerses.length === 0) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct  = (e.clientX - rect.left) / rect.width;
+  tts.verseIdx = Math.max(0, Math.min(currentVerses.length - 1, Math.floor(pct * currentVerses.length)));
+  document.getElementById('ttsProgressFill').style.width = (pct * 100) + '%';
+  ttsRemoveHighlight();
+  ttsUpdateUI();
+  ttsStopAll();
+  if (tts.active) setTimeout(() => ttsPlay(), 100);
+}
+
+// ── UI 업데이트 ──
+function ttsUpdateUI() {
+  document.getElementById('ttsPlayBtn').textContent = tts.playing ? '⏸' : '▶';
+  if (currentVerses && currentVerses.length > 0 && tts.verseIdx < currentVerses.length) {
+    const v = currentVerses[tts.verseIdx];
+    document.getElementById('ttsVerseInfo').textContent =
+      `v.${v.num} — ${v.text.substring(0, 38)}…`;
+  }
+  if (currentVerses && currentVerses.length > 0 && !tts.playing) {
+    const pct = tts.verseIdx / currentVerses.length * 100;
+    document.getElementById('ttsProgressFill').style.width = pct + '%';
+  }
+}
+
+function ttsHighlightVerse(idx) {
+  ttsRemoveHighlight();
+  const rows = document.querySelectorAll('.verse-row');
+  if (rows[idx]) rows[idx].classList.add('speaking');
+}
+function ttsRemoveHighlight() {
+  document.querySelectorAll('.verse-row.speaking').forEach(r => r.classList.remove('speaking'));
+}
+function ttsScrollToVerse(idx) {
+  const rows = document.querySelectorAll('.verse-row');
+  if (rows[idx]) rows[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// 모달 바깥 클릭시 닫기
+document.getElementById('ttsModal').addEventListener('click', function(e) {
+  if (e.target === this) closeTtsSettings();
+});
+
+loadTtsSettings();
+updateHome();
+
+// Open last reading position immediately on the reading page
+// but don't navigate there automatically
+openChapter(state.currentBook, state.currentChapter);
+
+
+
 </script>
+
 </body>
 </html>
