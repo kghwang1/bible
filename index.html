@@ -356,6 +356,35 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   line-height:1.7;white-space:pre-wrap;
   word-break:break-word;
 }
+
+/* KJV 버튼 */
+.kjv-btn { background:linear-gradient(135deg,rgba(139,26,26,.25),rgba(139,26,26,.1)) !important; border-color:rgba(139,26,26,.5) !important; }
+.kjv-btn.on { background:linear-gradient(135deg,rgba(139,26,26,.5),rgba(139,26,26,.3)) !important; border-color:#8b1a1a !important; color:#ffb8b8 !important; }
+
+/* KJV 화면 */
+#s-kjv { background:#1a1208; }
+.kjv-hdr {
+  background:linear-gradient(135deg,#1a1208,#2d2010,#1a1208);
+  border-bottom:2px solid #b8860b;
+  padding:6px 10px;
+  display:flex;align-items:center;gap:8px;
+  flex-shrink:0;
+}
+.kjv-hdr-title {
+  flex:1;text-align:center;
+  font-family:'Noto Serif KR',serif;font-size:.9rem;
+  color:#d4a017;font-weight:700;
+}
+.kjv-done-btn {
+  background:linear-gradient(160deg,#8b1a1a,#5c1010) !important;
+  box-shadow:0 2px 6px rgba(139,26,26,.4) !important;
+}
+.kjv-frame-wrap {
+  flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;
+}
+.kjv-frame {
+  width:100%;flex:1;border:none;min-height:0;
+}
 </style>
 </head>
 <body>
@@ -368,6 +397,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="plan-select-row">
       <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
       <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
+      <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">📖 KJV<br>영한성경</button>
       <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
     </div>
 
@@ -613,6 +643,20 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
   <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;background:#fff">
     <iframe id="appendixFrame" style="width:100%;flex:1;border:none;background:#fff" src=""></iframe>
+  </div>
+</div>
+
+<!-- KJV 읽기 화면 -->
+<div class="screen" id="s-kjv">
+  <div class="kjv-hdr">
+    <button class="nav-btn" onclick="exitKJV()">← 처음으로</button>
+    <div class="kjv-hdr-title">📖 KJV 영한성경</div>
+    <button class="done-btn unread kjv-done-btn" onclick="kjvMarkDone()">
+      <span>모두<br>읽음</span>
+    </button>
+  </div>
+  <div class="kjv-frame-wrap">
+    <iframe id="kjvFrame" class="kjv-frame" src="kjv-reader.html" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -1333,6 +1377,36 @@ function openAppendixPage(type){
     frame.src = '3_구약왕선지자.html';
   }
   showScreen('s-appendix-content');
+}
+
+// KJV 모드
+let kjvPlan = null; // KJV 읽기 중인 플랜 아이템
+
+function selectKJV(btn){
+  // 다른 버튼 off
+  document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  // KJV 화면으로 이동
+  showScreen('s-kjv');
+}
+
+function exitKJV(){
+  showScreen('s-cover');
+  // 표지 버튼 초기화
+  document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('selBtn1')?.classList.add('on');
+}
+
+function kjvMarkDone(){
+  // KJV 읽음 처리 → 축하페이지
+  // 현재 날짜 기준으로 PLAN에서 오늘 항목 찾기
+  const todayStr = today();
+  const p = PLAN.find(x=>{
+    const d = addDays(parseDate(ST.startDate||todayStr), x.n-1);
+    return fmt(d)===todayStr;
+  }) || PLAN[0];
+  if(p) showCelebration(p.n);
+  else showScreen('s-celebrate');
 }
 
 function showScreen(id){
