@@ -1408,6 +1408,34 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+
+/* KJV 앱 내부 헤더 숨김 (통합앱 헤더 사용) */
+#kjv-app .reading-header { display:none !important; }
+#kjv-app #home { display:none !important; }
+#kjv-app .home-content { display:none !important; }
+#kjv-app .page-header { display:none !important; }
+/* KJV 앱 내부 lang-tabs 위 여백 제거 */
+#kjv-app .lang-tabs { margin-top:0 !important; }
+#kjv-app #reading { top:0 !important; }
+
+
+/* 헤더 재구성 */
+.read-hdr{background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;padding:3px 8px 4px;flex-shrink:0}
+.rh1{display:flex;align-items:center;gap:4px;height:42px}
+.rh1-left{display:flex;gap:3px;flex-shrink:0;align-items:center}
+.rh1-center{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;min-width:0;overflow:hidden;
+}
+.rh1-center .day-tag{font-size:.78rem;color:#6b4d28;font-weight:700}
+.rh1-center h2{font-family:'Noto Serif KR',serif;font-size:1.17rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;margin:0}
+.rh1-right{display:flex;flex-direction:column;gap:2px;flex-shrink:0;align-items:flex-end}
+.done-btn{height:22px;padding:0 5px;border-radius:8px;border:none;cursor:pointer;font-size:.6rem;font-weight:700;line-height:1;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;white-space:nowrap;min-width:52px}
+.rh2{display:flex;align-items:center;gap:5px;height:26px;margin-top:1px}
+.rh2-right{display:flex;gap:4px;margin-left:auto}
+.rh-abtn2{height:22px;padding:0 9px;border-radius:8px;border:1.5px solid rgba(201,168,76,.5);background:rgba(201,168,76,.12);color:#c9a84c;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;transition:all .18s}
+
 </style>
 </head>
 <body>
@@ -1418,7 +1446,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
     <!-- 읽기 계획 선택 -->
     <div class="plan-select-row">
-      <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
+      <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순</button>
       <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
       <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">KJV</button>
       <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
@@ -1484,7 +1512,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div class="read-hdr">
     <div class="rh1">
       <div class="rh1-left">
-        <button class="rh-nbtn" onclick="showScreen('s-cover')">처음으로</button>
+        <button class="rh-nbtn" onclick="showScreen('s-cover')">처음</button>
         <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
       </div>
       <div class="rh1-center">
@@ -1495,13 +1523,16 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
           <span id="cmpTxt">모두읽음</span>
         </button>
-        <button class="rh-abtn" onclick="showScreen('s-appendix')">📚부록</button>
       </div>
     </div>
     <div class="rh2">
       <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
       <span class="font-label" id="fontLabel">기본</span>
       <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
+      <div class="rh2-right">
+        <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
+        <button class="rh-abtn2" onclick="window.open('https://www.godpia.com/read/reading.asp','_blank')">🔊</button>
+      </div>
     </div>
   </div>
   <div class="bible-wrap">
@@ -1671,20 +1702,30 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 <!-- KJV 성경 읽기 화면 -->
 <div class="screen" id="s-kjv-reader">
-  <div class="rh1" style="background:linear-gradient(135deg,#1a1208,#2d2010);border-bottom:2px solid #b8860b;padding:6px 10px;flex-shrink:0">
-    <div class="rh1-left">
-      <button class="rh-nbtn" style="border-color:rgba(184,134,11,.5);color:#d4a017" onclick="closeKJVReader()">처음으로</button>
-      <button class="rh-nbtn" style="border-color:rgba(184,134,11,.5);color:#d4a017" onclick="showScreen('s-list')">목록</button>
+  <div class="read-hdr">
+    <div class="rh1">
+      <div class="rh1-left">
+        <button class="rh-nbtn" onclick="closeKJVReader()">처음</button>
+        <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+      </div>
+      <div class="rh1-center">
+        <div class="day-tag" id="kjvDayTag"></div>
+        <h2 id="kjvReadTitle"></h2>
+      </div>
+      <div class="rh1-right">
+        <button class="done-btn unread" id="kjvCmpBtn" onclick="kjvDoneAndCelebrate()">
+          <span id="kjvCmpTxt">모두읽음</span>
+        </button>
+      </div>
     </div>
-    <div class="rh1-center">
-      <div class="day-tag" id="kjvDayTag" style="color:#b8860b"></div>
-      <h2 id="kjvReadTitle" style="color:#f5f0e8;font-family:'Cinzel',serif;font-size:.85rem"></h2>
-    </div>
-    <div class="rh1-right">
-      <button class="done-btn unread" id="kjvCmpBtn" onclick="kjvDoneAndCelebrate()" style="background:linear-gradient(160deg,#8b1a1a,#5c1010);box-shadow:0 2px 6px rgba(139,26,26,.4)">
-        <span id="kjvCmpTxt">모두읽음</span>
-      </button>
-      <button class="rh-abtn" onclick="showScreen('s-appendix')" style="border-color:rgba(184,134,11,.4);color:#d4a017">📚부록</button>
+    <div class="rh2">
+      <button class="rh-fbtn" onclick="kjvChangeFont(1)">A+</button>
+      <span class="font-label" id="kjvFontLabel">기본</span>
+      <button class="rh-fbtn" onclick="kjvChangeFont(-1)">A-</button>
+      <div class="rh2-right">
+        <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
+        <button class="rh-abtn2" onclick="ttsOpen()">🔊</button>
+      </div>
     </div>
   </div>
   <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;position:relative">
@@ -3006,6 +3047,25 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 // ── KJV 성경 앱 JS (내장) ──
+
+
+// KJV 글자크기 조절
+const KJV_FONT_SIZES = [15, 17, 19, 22, 25, 28];
+let kjvFontIdx = 2; // 기본 19px
+
+function kjvChangeFont(dir){
+  kjvFontIdx = Math.max(0, Math.min(KJV_FONT_SIZES.length-1, kjvFontIdx + dir));
+  const sz = KJV_FONT_SIZES[kjvFontIdx];
+  const labels = ['작게','작게','기본','크게','크게','최대'];
+  const scroll = document.getElementById('verseScroll');
+  if(scroll){
+    scroll.querySelectorAll('.verse-text-ko, .verse-text').forEach(el=>{
+      el.style.fontSize = sz + 'px';
+    });
+  }
+  const lbl = document.getElementById('kjvFontLabel');
+  if(lbl) lbl.textContent = labels[kjvFontIdx];
+}
 
 // KJV 읽기 완료 → 통합앱 축하페이지
 let kjvCurItem = null;
