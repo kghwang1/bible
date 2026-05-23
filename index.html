@@ -1420,7 +1420,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="plan-select-row">
       <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순 읽기</button>
       <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">1년 통독</button>
-      <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">📖KJV<br>영한</button>
+      <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">KJV</button>
       <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
     </div>
 
@@ -2640,14 +2640,9 @@ function selectKJV(btn){
 }
 
 function sendTodayChapterToKJV(){
-  // 오늘 날짜에 해당하는 PLAN 항목 찾기
-  const todayStr = today();
-  let todayPlan = null;
-  for(const p of PLAN){
-    const d = addDays(parseDate(ST.startDate || todayStr), p.n - 1);
-    if(fmt(d) === todayStr){ todayPlan = p; break; }
-  }
-  if(!todayPlan) todayPlan = PLAN[0];
+  // todayIdx로 오늘 항목 찾기
+  const idx = todayIdx(ST.startDate);
+  const todayPlan = PLAN[Math.min(idx, PLAN.length-1)];
 
   // 읽기 범위에서 첫 번째 책/장 추출
   const segs = parseRange(todayPlan.r);
@@ -2683,13 +2678,9 @@ function exitKJV(){
 }
 
 function kjvMarkDone(){
-  // KJV 읽음 처리 → 축하페이지
-  // 현재 날짜 기준으로 PLAN에서 오늘 항목 찾기
-  const todayStr = today();
-  const p = PLAN.find(x=>{
-    const d = addDays(parseDate(ST.startDate||todayStr), x.n-1);
-    return fmt(d)===todayStr;
-  }) || PLAN[0];
+  // todayIdx로 오늘 항목 찾기 (addDays/fmt 불필요)
+  const idx = todayIdx(ST.startDate);
+  const p = PLAN[Math.min(idx, PLAN.length-1)];
   if(p) showCelebration(p.n);
   else showScreen('s-celebrate');
 }
@@ -2736,9 +2727,13 @@ function startReading(){
       const idx=todayIdx(sd);
       const item=PLAN[Math.min(idx,PLAN.length-1)];
       kjvCurItem = item;
-      // 헤더 업데이트
-      const d = addDays(parseDate(sd), item.n-1);
-      document.getElementById('kjvDayTag').textContent = fmtKo(d)+'·제'+item.n+'일';
+      // 헤더 업데이트 (날짜 직접 계산)
+      const sd_date = parseDate(sd);
+      const d = new Date(sd_date);
+      d.setDate(d.getDate() + (item.n - 1));
+      const dayNames = ['일','월','화','수','목','금','토'];
+      const dateStr = (d.getMonth()+1)+'월 '+d.getDate()+'일 ('+dayNames[d.getDay()]+')';
+      document.getElementById('kjvDayTag').textContent = dateStr+'·제'+item.n+'일';
       document.getElementById('kjvReadTitle').textContent = item.r;
       // 오늘 장 열기
       const segs = parseRange(item.r);
@@ -2760,46 +2755,7 @@ function startReading(){
 }
 
 // KJV 읽기 모드로 열기
-function openItemKJV(item){
-  // 상단 헤더 날짜·제목 업데이트
-  const d = addDays(parseDate(ST.startDate), item.n-1);
-  document.getElementById('dayTag').textContent = fmtKo(d)+'·제'+item.n+'일';
-  document.getElementById('readTitle').textContent = item.r;
-  // 읽음 버튼 상태
-  const done = ST.checks[item.n];
-  const btn = document.getElementById('cmpBtn');
-  const txt = document.getElementById('cmpTxt');
-  if(btn) btn.className = 'done-btn '+(done?'already':'unread');
-  if(txt) txt.innerHTML = done?'이미읽음':'모두읽음';
-  // bibleFrame에 KJV 앱 로드
-  const frame = document.getElementById('bibleFrame');
-  // KJV 앱이 이미 로드됐는지 확인
-  const alreadyKjv = frame.src && frame.src.includes('kjv-reader.html');
-  if(!alreadyKjv){
-    frame.src = 'kjv-reader.html';
-  }
-  // 오늘 장 전달
-  const segs = parseRange(item.r);
-  if(segs.length){
-    const abbr = KJV_ABBR[segs[0].bid]||'GEN';
-    const ch = segs[0].ch;
-    function sendMsg(){
-      try{
-        frame.contentWindow.postMessage(
-          {type:'OPEN_CHAPTER', abbr, ch, range: item.r}, '*'
-        );
-      }catch(e){}
-    }
-    if(alreadyKjv){
-      setTimeout(sendMsg, 200);
-    } else {
-      frame.onload = ()=>setTimeout(sendMsg, 300);
-    }
-  }
-  // curItem 설정 (모두읽음 버튼용)
-  curItem = item;
-  showScreen('s-read');
-}
+// openItemKJV: 내장 KJV 방식으로 대체됨
 
 function setFilter(f,btn){
   ST.filter=f; saveST();
