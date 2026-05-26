@@ -53,41 +53,40 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .start-btn{width:100%;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#a07020,#c9a84c);background-size:200%;color:#fff;font-size:1.05rem;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.08em;box-shadow:0 4px 20px rgba(201,168,76,.4);transition:all .3s;position:relative;z-index:2}
 .start-btn:hover{transform:translateY(-2px)}
 .cover-photo{width:92%;max-width:400px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);position:relative;z-index:0}
-.cover-photo img{width:100%;height:22vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
+.cover-photo img{width:100%;height:37.2vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
 
-/* 표지 말씀 구절 */
+/* 표지 말씀 구절 - 사진 좌측 오버랩 */
 .cover-verse-wrap{
-  width:92%;max-width:400px;
-  margin-top:4px;
-  padding:16px 20px 14px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(201,168,76,.28);
-  border-radius:16px;
-  text-align:center;
-  position:relative;
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:52%;
+  padding:14px 12px 14px 16px;
+  background:linear-gradient(90deg,rgba(255,255,255,.55) 70%,transparent 100%);
+  display:flex;flex-direction:column;justify-content:center;
+  text-align:left;
+  z-index:2;
 }
 .cover-verse-deco{
-  font-size:.85rem;color:#c9a84c;
-  margin-bottom:8px;
-  opacity:.7;
-  letter-spacing:6px;
+  font-size:.75rem;color:#8b6010;
+  margin-bottom:6px;
+  opacity:.9;
+  letter-spacing:4px;
 }
 .cover-verse-text{
   font-family:'Noto Serif KR',serif;
-  font-size:.88rem;
-  color:#f5e8c8;
-  line-height:1.9;
-  font-weight:400;
-  letter-spacing:.02em;
+  font-size:.78rem;
+  color:#1a0f04;
+  line-height:1.85;
+  font-weight:700;
+  letter-spacing:.01em;
   word-break:keep-all;
 }
 .cover-verse-ref{
-  margin-top:10px;
-  font-size:.72rem;
-  color:#c9a84c;
-  font-weight:600;
-  letter-spacing:.1em;
-  opacity:.85;
+  margin-top:8px;
+  font-size:.65rem;
+  color:#3a2008;
+  font-weight:700;
+  letter-spacing:.06em;
 }
 
 /* 목록 */
@@ -1549,15 +1548,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <p>사진을 불러오는 중...</p>
       </div>
       <img id="coverPhotoImg" src="" alt="표지 사진" style="display:none">
-    </div>
-
-    <!-- 예수님 말씀 -->
-    <div class="cover-verse-wrap">
-      <div class="cover-verse-deco">✦</div>
-      <p class="cover-verse-text">
-        "나는 길이요 진리요 생명이니<br>나로 말미암지 않고는<br>아버지께로 올 자가 없느니라"
-      </p>
-      <p class="cover-verse-ref">— 요한복음 14:6</p>
+      <!-- 예수님 말씀 오버랩 -->
+      <div class="cover-verse-wrap">
+        <div class="cover-verse-deco">✦</div>
+        <p class="cover-verse-text"></p>
+        <p class="cover-verse-ref"></p>
+      </div>
     </div>
   </div>
 </div>
@@ -3125,6 +3121,7 @@ function initCover(){
   document.getElementById('selBtn'+curPlan).classList.add('on');
   updateEndDate();
   loadCoverPhoto();
+  loadTodayVerse();
 }
 
 // ── 표지 사진 관리 ────────────────────────────────────────
@@ -3158,6 +3155,90 @@ function _applyCoverPhoto(data){
   img.style.display = 'block';
   empty.style.display = 'none';
 }
+
+// ── AI 오늘의 말씀 ────────────────────────────────────────
+async function loadTodayVerse(){
+  const verseText = document.querySelector('.cover-verse-text');
+  const verseRef  = document.querySelector('.cover-verse-ref');
+  if(!verseText || !verseRef) return;
+
+  // 오늘 읽기 범위 구하기
+  const idx = ST.startDate ? todayIdx(ST.startDate) : -1;
+  if(idx < 0){
+    // 시작날짜 미설정 시 기본 구절
+    verseText.innerHTML = '"나는 길이요 진리요 생명이니<br>나로 말미암지 않고는<br>아버지께로 올 자가 없느니라"';
+    verseRef.textContent = '— 요한복음 14:6';
+    return;
+  }
+
+  const plan = PLAN[Math.min(idx, PLAN.length-1)];
+  if(!plan) return;
+  const range = plan.r;
+
+  // 캐시 키: 날짜+플랜번호+범위 해시
+  const t = today();
+  const dateStr = t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate();
+  const cacheKey = 'bv_' + dateStr + '_' + curPlan + '_' + plan.n;
+
+  // 기존 bible_verse_ 캐시 전부 삭제
+  try{
+    const keys = [];
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && (k.startsWith('bible_verse_') || k.startsWith('bv_')) && k !== cacheKey) keys.push(k);
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+  }catch(e){}
+
+  // 오늘 캐시 확인
+  try{
+    const cached = localStorage.getItem(cacheKey);
+    if(cached){
+      const obj = JSON.parse(cached);
+      if(obj.range === range && obj.text){
+        verseText.innerHTML = '"' + obj.text + '"';
+        verseRef.textContent = '— ' + obj.ref;
+        return;
+      } else {
+        localStorage.removeItem(cacheKey);
+      }
+    }
+  }catch(e){}
+
+  // 로딩 표시
+  verseText.innerHTML = '<span style="opacity:.55;font-size:.7rem">오늘의 말씀 불러오는 중...</span>';
+  verseRef.textContent = '(' + range + ')';
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages:[{
+          role: 'user',
+          content: `오늘 성경 읽기 범위는 "${range}"입니다. 이 범위 안에서 가장 널리 알려진 핵심 구절 1개를 선택해 주세요. 다음 JSON 형식으로만 답하세요 (다른 말 없이):\n{"text":"구절 본문 (개역개정)","ref":"책이름 장:절"}`
+        }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.find(b=>b.type==='text')?.text || '';
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const obj = JSON.parse(clean);
+    obj.range = range;
+
+    verseText.innerHTML = '"' + obj.text + '"';
+    verseRef.textContent = '— ' + obj.ref;
+
+    try{ localStorage.setItem(cacheKey, JSON.stringify(obj)); }catch(e){}
+
+  }catch(e){
+    verseText.innerHTML = '"나는 길이요 진리요 생명이니<br>나로 말미암지 않고는<br>아버지께로 올 자가 없느니라"';
+    verseRef.textContent = '— 요한복음 14:6';
+  }
+}
+
 function showToastMsg(msg){
   const t=document.getElementById('toast')||document.getElementById('kjv-toast');
   if(!t) return;
@@ -3228,7 +3309,7 @@ function showFeast(name){
   const el=document.getElementById('feastDisplay');
   el.textContent=name; el.style.display='inline-block';
 }
-function onStartDateChange(){ updateEndDate(); }
+function onStartDateChange(){ updateEndDate(); loadTodayVerse(); }
 function updateEndDate(){
   const s=document.getElementById('startDateInput').value;
   if(!s){ document.getElementById('endDateBadge').textContent='종료 예정일: —'; return; }
