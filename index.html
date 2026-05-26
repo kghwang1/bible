@@ -53,7 +53,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .start-btn{width:100%;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#a07020,#c9a84c);background-size:200%;color:#fff;font-size:1.05rem;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.08em;box-shadow:0 4px 20px rgba(201,168,76,.4);transition:all .3s;position:relative;z-index:2}
 .start-btn:hover{transform:translateY(-2px)}
 .cover-photo{width:92%;max-width:400px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);position:relative;z-index:0}
-.cover-photo img{width:100%;height:37.2vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
+.cover-photo img{width:100%;height:23.4vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
 
 /* 표지 말씀 구절 - 사진 좌측 오버랩 */
 .cover-verse-wrap{
@@ -3157,85 +3157,58 @@ function _applyCoverPhoto(data){
 }
 
 // ── AI 오늘의 말씀 ────────────────────────────────────────
+// ── 오늘의 말씀 (verses.json) ────────────────────────────────────────
+let VERSES_DATA = null;
+
+async function loadVersesData(){
+  if(VERSES_DATA) return VERSES_DATA;
+  try{
+    const res = await fetch('verses.json');
+    VERSES_DATA = await res.json();
+  }catch(e){ VERSES_DATA = []; }
+  return VERSES_DATA;
+}
+
 async function loadTodayVerse(){
   const verseText = document.querySelector('.cover-verse-text');
   const verseRef  = document.querySelector('.cover-verse-ref');
   if(!verseText || !verseRef) return;
 
-  // 오늘 읽기 범위 구하기
-  const idx = ST.startDate ? todayIdx(ST.startDate) : -1;
-  if(idx < 0){
-    // 시작날짜 미설정 시 기본 구절
-    verseText.innerHTML = '"나는 길이요 진리요 생명이니<br>나로 말미암지 않고는<br>아버지께로 올 자가 없느니라"';
-    verseRef.textContent = '— 요한복음 14:6';
+  // startDate 확보
+  let startDate = ST.startDate || '';
+  if(!startDate){
+    try{
+      for(let p=1;p<=2;p++){
+        const s = localStorage.getItem(['','bible_plan1','bible_plan2'][p]);
+        if(s){ const obj=JSON.parse(s); if(obj.startDate){ startDate=obj.startDate; break; } }
+      }
+    }catch(e){}
+  }
+
+  if(!startDate){
+    verseText.innerHTML = '<span style="opacity:.6;font-size:.72rem">시작 날짜를 설정하면<br>오늘의 말씀이 표시됩니다</span>';
+    verseRef.textContent = '';
     return;
   }
 
-  const plan = PLAN[Math.min(idx, PLAN.length-1)];
-  if(!plan) return;
-  const range = plan.r;
-
-  // 캐시 키: 날짜+플랜번호+범위 해시
+  // 오늘 일차 계산
+  const s = parseDate(startDate);
   const t = today();
-  const dateStr = t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate();
-  const cacheKey = 'bv_' + dateStr + '_' + curPlan + '_' + plan.n;
+  const diff = Math.floor((new Date(t.getFullYear(),t.getMonth(),t.getDate()) - new Date(s.getFullYear(),s.getMonth(),s.getDate())) / 864e5);
+  const idx = Math.max(0, Math.min(diff, PLAN.length-1));
+  const plan = PLAN[idx];
+  if(!plan) return;
 
-  // 기존 bible_verse_ 캐시 전부 삭제
-  try{
-    const keys = [];
-    for(let i=0;i<localStorage.length;i++){
-      const k = localStorage.key(i);
-      if(k && (k.startsWith('bible_verse_') || k.startsWith('bv_')) && k !== cacheKey) keys.push(k);
-    }
-    keys.forEach(k => localStorage.removeItem(k));
-  }catch(e){}
+  // verses.json에서 해당 일차 구절 찾기
+  const verses = await loadVersesData();
+  const verse = verses.find(v => v.n === plan.n);
 
-  // 오늘 캐시 확인
-  try{
-    const cached = localStorage.getItem(cacheKey);
-    if(cached){
-      const obj = JSON.parse(cached);
-      if(obj.range === range && obj.text){
-        verseText.innerHTML = '"' + obj.text + '"';
-        verseRef.textContent = '— ' + obj.ref;
-        return;
-      } else {
-        localStorage.removeItem(cacheKey);
-      }
-    }
-  }catch(e){}
-
-  // 로딩 표시
-  verseText.innerHTML = '<span style="opacity:.55;font-size:.7rem">오늘의 말씀 불러오는 중...</span>';
-  verseRef.textContent = '(' + range + ')';
-
-  try{
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 200,
-        messages:[{
-          role: 'user',
-          content: `오늘 성경 읽기 범위는 "${range}"입니다. 이 범위 안에서 가장 널리 알려진 핵심 구절 1개를 선택해 주세요. 다음 JSON 형식으로만 답하세요 (다른 말 없이):\n{"text":"구절 본문 (개역개정)","ref":"책이름 장:절"}`
-        }]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content?.find(b=>b.type==='text')?.text || '';
-    const clean = raw.replace(/```json|```/g,'').trim();
-    const obj = JSON.parse(clean);
-    obj.range = range;
-
-    verseText.innerHTML = '"' + obj.text + '"';
-    verseRef.textContent = '— ' + obj.ref;
-
-    try{ localStorage.setItem(cacheKey, JSON.stringify(obj)); }catch(e){}
-
-  }catch(e){
-    verseText.innerHTML = '"나는 길이요 진리요 생명이니<br>나로 말미암지 않고는<br>아버지께로 올 자가 없느니라"';
-    verseRef.textContent = '— 요한복음 14:6';
+  if(verse){
+    verseText.innerHTML = '"' + verse.text + '"';
+    verseRef.textContent = '— ' + verse.ref;
+  } else {
+    verseText.innerHTML = '<span style="opacity:.6;font-size:.72rem">(' + plan.r + ')</span>';
+    verseRef.textContent = '';
   }
 }
 
