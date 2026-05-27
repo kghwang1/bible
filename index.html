@@ -3538,20 +3538,28 @@ function showCelebration(n){
 async function loadSharedPrayer(){
   const celPrayer = document.getElementById('celPrayerContent');
   const celSection = document.getElementById('celPrayerSection');
-  const setText = (t) => {
-    if(!celPrayer) return;
-    if(t && t.trim()){
-      celPrayer.textContent = t;
-      if(celSection) celSection.style.display = 'block';
-    } else {
-      if(celSection) celSection.style.display = 'none';
-    }
-  };
-  // 캐시 먼저 표시
-  setText(localStorage.getItem('bible_prayer_cache') || '');
-  // 기도문.txt 최신 내용 불러오기
-  const text = await loadSharedPrayerFile();
-  setText(text);
+  if(!celPrayer || !celSection) return;
+
+  const groupName = (getGroupName() || '').trim();
+
+  if(groupName === '생명수'){
+    // 생명수 목장: 기도문.txt 불러오기
+    const setText = (t) => {
+      if(t && t.trim()){
+        celPrayer.textContent = t;
+        celSection.style.display = 'block';
+      } else {
+        celSection.style.display = 'none';
+      }
+    };
+    setText(localStorage.getItem('bible_prayer_cache') || '');
+    const text = await loadSharedPrayerFile();
+    setText(text);
+  } else {
+    // 그 외 목장: 고정 문구
+    celPrayer.innerHTML = '<span style="font-size:1.275rem;line-height:2;text-align:center;display:block;">선교지와<br>목장식구 위해<br>함께 기도합니다. 아멘</span>';
+    celSection.style.display = 'block';
+  }
 }
 function goNext(){
   const idx=PLAN.findIndex(x=>x.n===curN);
