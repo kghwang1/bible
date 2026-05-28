@@ -58,14 +58,16 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .cover-photo-empty span{font-size:1.5rem;opacity:.5}
 .cover-photo-empty p{font-size:.72rem;color:#c9a84c;opacity:.6;margin:0}
 
-/* 표지 말씀 구절 - 사진 아래 독립 카드 */
+/* 표지 말씀 구절 - 사진 좌측 오버랩 */
 .cover-verse-wrap{
-  width:92%;max-width:400px;
-  padding:14px 16px 12px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(201,168,76,.28);
-  border-radius:16px;
-  text-align:center;
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:55%;
+  padding:12px 10px 12px 14px;
+  background:linear-gradient(90deg,rgba(0,0,0,.65) 60%,transparent 100%);
+  display:flex;flex-direction:column;justify-content:center;
+  text-align:left;
+  z-index:2;
 }
 .cover-verse-deco{
   font-size:.75rem;color:#8b6010;
@@ -75,19 +77,21 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 }
 .cover-verse-text{
   font-family:'Noto Serif KR',serif;
-  font-size:.936rem;
-  color:#f5e8c8;
+  font-size:.82rem;
+  color:#fff;
   line-height:1.85;
-  font-weight:500;
+  font-weight:700;
   letter-spacing:.01em;
   word-break:keep-all;
+  text-shadow:0 1px 3px rgba(0,0,0,.8);
 }
 .cover-verse-ref{
-  margin-top:8px;
-  font-size:.78rem;
-  color:#c9a84c;
-  font-weight:600;
+  margin-top:6px;
+  font-size:.68rem;
+  color:#e8c97a;
+  font-weight:700;
   letter-spacing:.06em;
+  text-shadow:0 1px 2px rgba(0,0,0,.8);
 }
 
 /* 목록 */
@@ -1593,13 +1597,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         alt="표지 사진"
         style="display:block"
         onerror="this.style.display='none';document.getElementById('coverPhotoEmpty').style.display='flex'">
-    </div>
-
-    <!-- 오늘의 말씀 (사진 아래 독립 표시) -->
-    <div class="cover-verse-wrap" id="coverVerseBox">
-      <div class="cover-verse-deco">✦</div>
-      <p class="cover-verse-text"></p>
-      <p class="cover-verse-ref"></p>
+      <!-- 오늘의 말씀 오버랩 -->
+      <div class="cover-verse-wrap" id="coverVerseBox">
+        <div class="cover-verse-deco">✦</div>
+        <p class="cover-verse-text"></p>
+        <p class="cover-verse-ref"></p>
+      </div>
     </div>
   </div>
 </div>
@@ -3194,8 +3197,9 @@ function initCover(){
   updateEndDate();
   loadCoverPhoto();
   loadTodayVerse();
-  // 버전 드롭다운 초기값
-  curVer = ST.ver || 'GAE';
+  // 버전 드롭다운 초기값 - 별도 저장된 버전 우선
+  try{ const sv = localStorage.getItem('bible_curVer'); if(sv) curVer = sv; else curVer = ST.ver || 'GAE'; }
+  catch(e){ curVer = ST.ver || 'GAE'; }
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
@@ -3529,6 +3533,8 @@ document.addEventListener('click', function(e){
 
 function selectVerCoverDrop(ver, label){
   curVer = ver; ST.ver = ver; saveST();
+  // 별도 키에도 저장 (플랜 변경에 무관하게 유지)
+  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
   document.getElementById('verDropLabel').textContent = label;
   document.getElementById('verDrop').style.display='none';
   updateVerTopBtn();
