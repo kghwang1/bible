@@ -1532,6 +1532,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <div id="verDrop" style="display:none;position:fixed;z-index:9999;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5);min-width:140px">
           <button type="button" onclick="selectVerCoverDrop('GAE','개역개정')"  class="drop-item">개역개정</button>
           <button type="button" onclick="selectVerCoverDrop('SAENEW','새번역')" class="drop-item">새번역</button>
+          <button type="button" onclick="selectVerCoverDrop('NIV','NIV 영어')"  class="drop-item">NIV 영어</button>
           <button type="button" onclick="selectVerCoverDrop('KJH','KJV 한글')"  class="drop-item">KJV 한글</button>
           <button type="button" onclick="selectVerCoverDrop('KJV','KJV 영어')"  class="drop-item">KJV 영어</button>
         </div>
@@ -2924,7 +2925,7 @@ function openBibleDirect(){
   hideKJVInline();
 
   // 버전 텍스트 업데이트
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('verDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || '개역개정';
 
@@ -3203,7 +3204,7 @@ function initCover(){
   // 버전 드롭다운 초기값 - 별도 저장된 버전 우선
   try{ const sv = localStorage.getItem('bible_curVer'); if(sv) curVer = sv; else curVer = ST.ver || 'GAE'; }
   catch(e){ curVer = ST.ver || 'GAE'; }
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
   // 플랜 드롭다운 초기값
@@ -3457,7 +3458,7 @@ function openItem(n){
   document.getElementById('dayTag').textContent=tag;
   document.getElementById('readTitle').textContent=p.r;
   // 상단 버전 표시 업데이트
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('verDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || '개역개정';
   // KJV 인라인 숨김
@@ -3498,7 +3499,7 @@ function expandNums(str,max){
 }
 // 읽기 화면 상단에서 버전 순환 (탭할 때마다 다음 버전)
 function cycleVer(){
-  const order = ['GAE','SAENEW','KJH'];  // KJV영어는 표지에서만
+  const order = ['GAE','SAENEW','NIV','KJH'];  // KJV영어는 표지에서만
   const idx = order.indexOf(curVer);
   const next = order[(idx+1) % order.length];
   curVer = next; ST.ver = next; saveST();
@@ -3556,7 +3557,7 @@ function selectPlanDrop(n, label){
   document.getElementById('readerInput').value    = ST.reader    || '';
   updateEndDate();
   curVer = ST.ver || 'GAE';
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   document.getElementById('verDropLabel').textContent = verLabels[curVer] || '개역개정';
   updateVerTopBtn();
 }
@@ -3575,7 +3576,7 @@ function selectVerCover(ver, btn){
 function updateVerTopBtn(){
   const btn = document.getElementById('verToggleBtn');
   if(!btn) return;
-  const labels = {'GAE':'개역','SAENEW':'새번역','KJH':'KJV한글','KJV':'KJV영어'};
+  const labels = {'GAE':'개역','SAENEW':'새번역','NIV':'NIV','KJH':'KJV한글','KJV':'KJV영어'};
   btn.textContent = labels[curVer] || '개역';
   btn.style.color = curVer==='SAENEW'?'#7ecbff': curVer==='KJH'?'#ffd27a': curVer==='KJV'?'#ff9e7a':'';
   btn.style.borderColor = btn.style.color;
@@ -3620,6 +3621,10 @@ function godpiaUrl(bid,ch){
   if(curVer==='SAENEW'){
     // 새번역: godpia saenew
     return 'https://www.godpia.com/read/reading.asp?ver=saenew&vol='+vol+'&chap='+ch;
+  }
+  if(curVer==='NIV'){
+    // NIV 영어: godpia niv
+    return 'https://www.godpia.com/read/reading.asp?ver=niv&vol='+vol+'&chap='+ch;
   }
   // 기본: 개역개정
   return 'https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+ch;
@@ -4055,7 +4060,7 @@ function _showKJVDirectBar(){
   if(bar) bar.style.display = 'flex';
   const hdr = document.getElementById('kjvReadHdr');
   if(hdr) hdr.style.display = 'none';
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('kjvVerDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || 'KJV';
   const rh = document.getElementById('kjvReadingHeader');
