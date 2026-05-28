@@ -14,10 +14,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .screen.active{display:flex}
 
 /* 표지 */
-#s-cover{background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);overflow-y:auto;align-items:center}
+#s-cover{background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);overflow-y:auto;overflow-x:hidden;align-items:center;display:flex;flex-direction:column}
 #s-cover::-webkit-scrollbar{width:4px}
 #s-cover::-webkit-scrollbar-thumb{background:#c9a84c;border-radius:6px}
-.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:20px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;position:relative;z-index:1;overflow:visible}
+.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:20px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;position:relative;z-index:1;flex-shrink:0}
 .cover-title{font-family:'Noto Serif KR',serif;font-size:1.55rem;font-weight:900;color:#e8c97a;letter-spacing:.04em;text-shadow:0 2px 12px rgba(201,168,76,.3)}
 .cover-subtitle{font-size:.75rem;color:#a07850;letter-spacing:.06em}
 
@@ -1522,7 +1522,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px">
           <span id="verDropLabel">개역개정</span><span style="font-size:.65rem;opacity:.7">▼</span>
         </button>
-        <div id="verDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5)">
+        <div id="verDrop" style="display:none;position:fixed;z-index:9999;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5);min-width:140px">
           <button type="button" onclick="selectVerCoverDrop('GAE','개역개정')"  class="drop-item">개역개정</button>
           <button type="button" onclick="selectVerCoverDrop('SAENEW','새번역')" class="drop-item">새번역</button>
           <button type="button" onclick="selectVerCoverDrop('KJH','KJV 한글')"  class="drop-item">KJV 한글</button>
@@ -1537,7 +1537,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px">
           <span id="planDropLabel">연대순</span><span style="font-size:.65rem;opacity:.7">▼</span>
         </button>
-        <div id="planDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5)">
+        <div id="planDrop" style="display:none;position:fixed;z-index:9999;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5);min-width:120px">
           <button type="button" onclick="selectPlanDrop(1,'연대순')" class="drop-item">연대순</button>
           <button type="button" onclick="selectPlanDrop(2,'성경순')" class="drop-item">성경순</button>
         </div>
@@ -1584,11 +1584,15 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     </div>
 
     <div class="cover-photo" id="coverPhotoWrap">
-      <div class="cover-photo-empty" id="coverPhotoEmpty">
+      <div class="cover-photo-empty" id="coverPhotoEmpty" style="display:none">
         <span>📷</span>
         <p>사진을 불러오는 중...</p>
       </div>
-      <img id="coverPhotoImg" src="" alt="표지 사진" style="display:none">
+      <img id="coverPhotoImg"
+        src="https://kghwang1.github.io/bible/coimage.jpg"
+        alt="표지 사진"
+        style="display:block"
+        onerror="this.style.display='none';document.getElementById('coverPhotoEmpty').style.display='flex'">
     </div>
 
     <!-- 오늘의 말씀 (사진 아래 독립 표시) -->
@@ -3240,7 +3244,7 @@ let VERSES_DATA = null;
 async function loadVersesData(){
   if(VERSES_DATA) return VERSES_DATA;
   try{
-    const res = await fetch('verses.json');
+    const res = await fetch('https://kghwang1.github.io/bible/verses.json');
     VERSES_DATA = await res.json();
   }catch(e){ VERSES_DATA = []; }
   return VERSES_DATA;
@@ -3507,9 +3511,17 @@ function cycleVer(){
 function toggleDrop(id){
   const el = document.getElementById(id);
   const isOpen = el.style.display !== 'none';
-  // 모든 드롭다운 닫기
   ['verDrop','planDrop'].forEach(d=>{ document.getElementById(d).style.display='none'; });
-  if(!isOpen) el.style.display='block';
+  if(!isOpen){
+    // 버튼 위치 계산해서 드롭다운 위치 설정
+    const btnId = id==='verDrop' ? 'verDropBtn' : 'planDropBtn';
+    const btn = document.getElementById(btnId);
+    const rect = btn.getBoundingClientRect();
+    el.style.top = (rect.bottom + 4) + 'px';
+    el.style.left = rect.left + 'px';
+    el.style.width = rect.width + 'px';
+    el.style.display = 'block';
+  }
 }
 // 드롭다운 외부 클릭 시 닫기
 document.addEventListener('click', function(e){
