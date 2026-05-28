@@ -58,40 +58,43 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .cover-photo-empty span{font-size:1.5rem;opacity:.5}
 .cover-photo-empty p{font-size:.72rem;color:#c9a84c;opacity:.6;margin:0}
 
-/* 표지 말씀 구절 - 사진 좌측 오버랩 */
+/* 표지 말씀 구절 - 사진 하단 카드 */
 .cover-verse-wrap{
-  position:absolute;
-  left:0;top:0;bottom:0;
-  width:55%;
-  padding:12px 10px 12px 14px;
-  background:linear-gradient(90deg,rgba(0,0,0,.65) 60%,transparent 100%);
-  display:flex;flex-direction:column;justify-content:center;
-  text-align:left;
-  z-index:2;
+  width:92%;
+  max-width:400px;
+  margin-top:12px;
+  padding:16px 18px;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(139,96,16,.08));
+  border:1px solid rgba(201,168,76,.35);
+  border-radius:14px;
+  box-shadow:0 4px 18px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  z-index:1;
 }
 .cover-verse-deco{
-  font-size:.75rem;color:#8b6010;
-  margin-bottom:6px;
+  font-size:.7rem;color:#e8c97a;
+  margin-bottom:10px;
   opacity:.9;
-  letter-spacing:4px;
+  letter-spacing:3px;
+  font-weight:700;
 }
 .cover-verse-text{
   font-family:'Noto Serif KR',serif;
-  font-size:.82rem;
-  color:#fff;
-  line-height:1.85;
-  font-weight:700;
+  font-size:.95rem;
+  color:#fdf3dc;
+  line-height:1.9;
+  font-weight:600;
   letter-spacing:.01em;
   word-break:keep-all;
-  text-shadow:0 1px 3px rgba(0,0,0,.8);
+  text-shadow:0 1px 2px rgba(0,0,0,.4);
 }
 .cover-verse-ref{
-  margin-top:6px;
-  font-size:.68rem;
+  margin-top:10px;
+  font-size:.78rem;
   color:#e8c97a;
   font-weight:700;
   letter-spacing:.06em;
-  text-shadow:0 1px 2px rgba(0,0,0,.8);
 }
 
 /* 목록 */
@@ -1597,12 +1600,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         alt="표지 사진"
         style="display:block"
         onerror="this.style.display='none';document.getElementById('coverPhotoEmpty').style.display='flex'">
-      <!-- 오늘의 말씀 오버랩 -->
-      <div class="cover-verse-wrap" id="coverVerseBox">
-        <div class="cover-verse-deco">✦</div>
-        <p class="cover-verse-text" id="coverVerseText"></p>
-        <p class="cover-verse-ref" id="coverVerseRef"></p>
-      </div>
+    </div>
+    <!-- 오늘의 말씀 (사진 하단) -->
+    <div class="cover-verse-wrap" id="coverVerseBox">
+      <div class="cover-verse-deco">✦ 오늘의 말씀 ✦</div>
+      <p class="cover-verse-text" id="coverVerseText"></p>
+      <p class="cover-verse-ref" id="coverVerseRef"></p>
     </div>
   </div>
 </div>
@@ -3266,8 +3269,13 @@ async function loadTodayVerse(){
   }
 
   if(!startDate){
-    verseText.innerHTML = '<span style="opacity:.6;font-size:.72rem">시작 날짜를 설정하면<br>오늘의 말씀이 표시됩니다</span>';
-    verseRef.textContent = '';
+    // 시작일 미설정 시 1일차 말씀을 기본 표시
+    const verses0 = await loadVersesData();
+    const v0 = verses0.find(v => v.n === 1) || verses0[0];
+    if(v0){
+      verseText.innerHTML = '"' + v0.text + '"';
+      verseRef.textContent = '— ' + v0.ref;
+    }
     return;
   }
 
@@ -3922,7 +3930,70 @@ function _kjvInlineRender(verses, lang){
     row.appendChild(num); row.appendChild(txt);
     list.appendChild(row);
   });
+
+  // 장 이동 안내 + 완료 버튼
+  const nav = document.createElement('div');
+  nav.style.cssText='margin-top:24px;padding:18px 0 30px;text-align:center;border-top:1px solid #d4c5a9';
+  nav.innerHTML = `
+    <div style="font-size:.8rem;color:#a08b5a;margin-bottom:12px;font-family:'Noto Sans KR',sans-serif">← 좌우로 밀어서 장 이동 →</div>
+    <div style="display:flex;gap:8px;justify-content:center;font-family:'Noto Sans KR',sans-serif">
+      <button onclick="kjvInlineGoPrev()" style="background:#e8dcc0;color:#3a2a10;border:1px solid #d4c5a9;border-radius:18px;padding:8px 18px;font-size:.85rem;font-weight:700;cursor:pointer">← 이전 장</button>
+      <button onclick="kjvInlineGoNext()" style="background:#c9a84c;color:#1a1208;border:none;border-radius:18px;padding:8px 18px;font-size:.85rem;font-weight:700;cursor:pointer">다음 장 →</button>
+    </div>`;
+  list.appendChild(nav);
 }
+
+// KJV 인라인 장 이동
+function kjvInlineGoNext(){
+  const book = ALL_BOOKS.find(b => b.abbr === _kjvInlineAbbr);
+  if(!book) return;
+  if(_kjvInlineCh < book.chapters){
+    loadKJVInlineDirect(_kjvInlineAbbr, _kjvInlineCh + 1);
+  } else {
+    const idx = ALL_BOOKS.findIndex(b => b.abbr === _kjvInlineAbbr);
+    if(idx < ALL_BOOKS.length - 1){
+      loadKJVInlineDirect(ALL_BOOKS[idx + 1].abbr, 1);
+    } else {
+      showToast('마지막 장입니다');
+    }
+  }
+}
+function kjvInlineGoPrev(){
+  if(_kjvInlineCh > 1){
+    loadKJVInlineDirect(_kjvInlineAbbr, _kjvInlineCh - 1);
+  } else {
+    const idx = ALL_BOOKS.findIndex(b => b.abbr === _kjvInlineAbbr);
+    if(idx > 0){
+      const prev = ALL_BOOKS[idx - 1];
+      loadKJVInlineDirect(prev.abbr, prev.chapters);
+    } else {
+      showToast('첫 장입니다');
+    }
+  }
+}
+
+// KJV 인라인 스크롤 영역에 swipe 핸들러 1회 부착
+(function attachKjvInlineSwipe(){
+  function bind(){
+    const sc = document.getElementById('kjvInlineScroll');
+    if(!sc || sc._kjvSwipeBound) { if(!sc) setTimeout(bind, 300); return; }
+    sc._kjvSwipeBound = true;
+    let sx=0, sy=0;
+    sc.addEventListener('touchstart', e => {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, {passive:true});
+    sc.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5){
+        if(dx < 0) kjvInlineGoNext();
+        else kjvInlineGoPrev();
+      }
+    }, {passive:true});
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+})();
 
 function kjvInlineSwitchLang(lang){
   _kjvInlineLang = lang;
