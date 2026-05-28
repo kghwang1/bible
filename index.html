@@ -1638,6 +1638,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           </button>
         </div>
         <div class="rh-bot-right">
+          <button class="rh-abtn2" id="verToggleBtn" onclick="toggleSaenew()" style="font-size:.65rem;padding:3px 7px;">개역</button>
           <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
         </div>
       </div>
@@ -3122,6 +3123,19 @@ function initCover(){
   updateEndDate();
   loadCoverPhoto();
   loadTodayVerse();
+  // 새번역 버튼 초기 상태
+  const vBtn = document.getElementById('verToggleBtn');
+  if(vBtn){
+    if(curVer === 'SAENEW'){
+      vBtn.textContent = '새번역';
+      vBtn.style.color = '#7ecbff';
+      vBtn.style.borderColor = '#7ecbff';
+    } else {
+      vBtn.textContent = '개역';
+      vBtn.style.color = '';
+      vBtn.style.borderColor = '';
+    }
+  }
 }
 
 // ── 표지 사진 관리 ────────────────────────────────────────
@@ -3417,6 +3431,28 @@ function expandNums(str,max){
   return r;
 }
 // 성경 버전 선택
+function toggleSaenew(){
+  const btn = document.getElementById('verToggleBtn');
+  if(curVer === 'SAENEW'){
+    curVer = 'GAE'; ST.ver = 'GAE';
+    btn.textContent = '개역';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  } else {
+    curVer = 'SAENEW'; ST.ver = 'SAENEW';
+    btn.textContent = '새번역';
+    btn.style.color = '#7ecbff';
+    btn.style.borderColor = '#7ecbff';
+  }
+  saveST();
+  // 현재 보고 있는 성경 새로 로드
+  const frame = document.getElementById('bibleFrame');
+  if(frame && frame.src && frame.src !== 'about:blank'){
+    const url = godpiaUrl(state.currentBook, state.currentChapter);
+    frame.src = url;
+  }
+}
+
 function selectVer(ver, btn){
   curVer = ver;
   ST.ver = ver;
@@ -3426,6 +3462,20 @@ function selectVer(ver, btn){
 }
 
 // 버전별 성경 URL 생성
+// 대한성서공회 새번역 책 코드 (대문자)
+const BSK_VOL = {
+  1:'GEN',2:'EXO',3:'LEV',4:'NUM',5:'DEU',6:'JOS',7:'JDG',8:'RUT',
+  9:'1SA',10:'2SA',11:'1KI',12:'2KI',13:'1CH',14:'2CH',15:'EZR',
+  16:'NEH',17:'EST',18:'JOB',19:'PSA',20:'PRO',21:'ECC',22:'SNG',
+  23:'ISA',24:'JER',25:'LAM',26:'EZK',27:'DAN',28:'HOS',29:'JOL',
+  30:'AMO',31:'OBA',32:'JON',33:'MIC',34:'NAM',35:'HAB',36:'ZEP',
+  37:'HAG',38:'ZEC',39:'MAL',40:'MAT',41:'MRK',42:'LUK',43:'JHN',
+  44:'ACT',45:'ROM',46:'1CO',47:'2CO',48:'GAL',49:'EPH',50:'PHP',
+  51:'COL',52:'1TH',53:'2TH',54:'1TI',55:'2TI',56:'TIT',57:'PHM',
+  58:'HEB',59:'JAS',60:'1PE',61:'2PE',62:'1JN',63:'2JN',64:'3JN',
+  65:'JUD',66:'REV'
+};
+
 function godpiaUrl(bid,ch){
   const vol=GODPIA_VOL[bid]||'gen';
 
@@ -3433,11 +3483,14 @@ function godpiaUrl(bid,ch){
     return 'https://www.godpia.com/read/reading.asp?ver=kjh&vol='+vol+'&chap='+ch;
   }
   if(curVer==='KJV'){
-    // 영어 KJV — YouVersion (bible.com)
     const kjvCode=YOUVER_CODE[bid]||'GEN';
     return 'https://www.bible.com/bible/1/'+kjvCode+'.'+ch+'.KJV';
   }
-  // 기본: 개역개정 (ver=gae 명시 → 로그인 없이 TTS 포함 전체 기능 작동)
+  if(curVer==='SAENEW'){
+    const bvol=BSK_VOL[bid]||'GEN';
+    return 'https://www.bskorea.or.kr/bible/korbibReadpage.php?version=SAENEW&book='+bvol+'&chap='+ch;
+  }
+  // 기본: 개역개정
   return 'https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+ch;
 }
 function loadBible(p){
