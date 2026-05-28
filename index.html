@@ -1692,7 +1692,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div id="kjvInlineTabs" style="display:flex;background:#f5f0e8;border-bottom:2px solid #d4c5a9;flex-shrink:0;align-items:center">
         <button id="kjvTabKo" onclick="kjvInlineSwitchLang('ko')" style="flex:1;padding:9px 4px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;border:none;background:transparent;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">한글 KJV</button>
         <button id="kjvTabEn" onclick="kjvInlineSwitchLang('en')" style="flex:1;padding:9px 4px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;border:none;background:transparent;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">English KJV</button>
-        <button onclick="kjvInlineTTS()" style="padding:6px 14px;font-size:1.2rem;border:none;background:transparent;cursor:pointer;color:#c9a84c" title="읽어주기">🔊</button>
       </div>
       <div id="kjvInlineScroll" style="flex:1;overflow-y:auto;padding:16px 14px;min-height:0"></div>
       <!-- TTS 바 (KJV 전용 위치) -->
@@ -3206,28 +3205,25 @@ function initCover(){
 const DEFAULT_COVER_URL = 'https://kghwang1.github.io/bible/coimage.jpg';
 
 function loadCoverPhoto(){
+  const img = document.getElementById('coverPhotoImg');
+  const empty = document.getElementById('coverPhotoEmpty');
+  img.style.display = 'none';
+  empty.style.display = 'flex';
   try{
     const data = localStorage.getItem('bible_cover_photo');
     if(data){
-      _applyCoverPhoto(data);
-    } else {
-      const img = document.getElementById('coverPhotoImg');
-      const empty = document.getElementById('coverPhotoEmpty');
-      // 먼저 빈 상태 유지
-      img.style.display = 'none';
-      empty.style.display = 'flex';
-      // 로드 성공 시에만 이미지 표시
-      img.onload = function(){
-        img.style.display = 'block';
-        empty.style.display = 'none';
-      };
-      img.onerror = function(){
-        img.style.display = 'none';
-        empty.style.display = 'flex';
-      };
-      img.src = DEFAULT_COVER_URL + '?t=' + Date.now();
+      img.onload = function(){ img.style.display='block'; empty.style.display='none'; };
+      img.onerror = function(){ img.style.display='none'; empty.style.display='flex'; };
+      img.src = data;
+      return;
     }
   }catch(e){}
+  // 날짜 기반 캐시 우회 (매일 새로 로드)
+  const today = new Date();
+  const dateStr = today.getFullYear()+''+(today.getMonth()+1)+''+today.getDate();
+  img.onload = function(){ img.style.display='block'; empty.style.display='none'; };
+  img.onerror = function(){ img.style.display='none'; empty.style.display='flex'; };
+  img.src = DEFAULT_COVER_URL + '?v=' + dateStr;
 }
 function _applyCoverPhoto(data){
   const img = document.getElementById('coverPhotoImg');
@@ -3891,7 +3887,6 @@ function _kjvInlineRender(verses, lang){
 
   scroll.innerHTML = `
     <div style="font-size:1.15rem;font-weight:700;color:#3a2a10;text-align:center;margin-top:50px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #d4c5a9;font-family:'Noto Sans KR',sans-serif">${titleText}</div>
-    <div style="text-align:right;margin-bottom:10px"><button onclick="kjvInlineTTS()" style="background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);border-radius:16px;padding:4px 12px;font-size:.85rem;cursor:pointer;color:#8b6010">🔊 읽어주기</button></div>
     <div id="kjvVerseList"></div>`;
 
   if(!verses || verses.length===0){
