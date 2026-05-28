@@ -1649,12 +1649,15 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div id="biblePicker" style="display:none;position:absolute;left:0;right:0;bottom:0;z-index:19;background:#fff;flex-direction:column;overflow:hidden">
     <!-- 탭 바 -->
     <div style="display:flex;border-bottom:2px solid #e0d5c5;flex-shrink:0">
-      <button id="bpTabOT" onclick="bpShowTab('OT')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">구약</button>
+      <button id="bpTabVER" onclick="bpShowTab('VER')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">버전</button>
       <button id="bpTabNT" onclick="bpShowTab('NT')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">신약</button>
-      <button id="bpTabCH" onclick="bpShowTab('CH')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">장 선택</button>
+      <button id="bpTabOT" onclick="bpShowTab('OT')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">구약</button>
+      <button id="bpTabCH" onclick="bpShowTab('CH')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">장</button>
     </div>
+    <!-- 버전 선택 -->
+    <div id="bpVER" style="flex:1;overflow-y:auto;padding:12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-content:start"></div>
     <!-- 책 목록 (구약) -->
-    <div id="bpOT" style="flex:1;overflow-y:auto;padding:10px 8px;display:grid;grid-template-columns:1fr 1fr;gap:7px"></div>
+    <div id="bpOT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr;gap:7px"></div>
     <!-- 책 목록 (신약) -->
     <div id="bpNT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr;gap:7px"></div>
     <!-- 장 목록 -->
@@ -2836,8 +2839,9 @@ function selectPlan(n, btn){
   document.getElementById('startDateInput').value = ST.startDate || '';
   document.getElementById('readerInput').value    = ST.reader    || '';
   updateEndDate();
-  // 버전 버튼 상태 복원
-  curVer = ST.ver || 'GAE';
+  // 버전 버튼 상태 복원 (버전은 플랜과 무관하게 마지막 선택값 유지)
+  try{ const sv = localStorage.getItem('bible_curVer'); curVer = sv || ST.ver || 'GAE'; }
+  catch(e){ curVer = ST.ver || 'GAE'; }
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   const vBtn = document.getElementById('verBtn-'+curVer);
   if(vBtn) vBtn.classList.add('on');
@@ -2929,12 +2933,12 @@ function openBibleDirect(){
   const vd = document.getElementById('verDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || '개역개정';
 
-  // 구절선택 보드 먼저 열기 (모든 버전 공통)
+  // 구절선택 보드 먼저 열기 (버전은 표지 선택값 유지, 신약 탭부터)
   bpInit();
   const picker = document.getElementById('biblePicker');
   picker.style.top = '44px';
   picker.style.display = 'flex';
-  bpShowTab('OT');
+  bpShowTab('NT');
 }
 
 // ── TTS 성경 듣기 ──────────────────────────────────────
@@ -3005,15 +3009,55 @@ function bpInit(){
 }
 
 function bpShowTab(tab){
+  document.getElementById('bpVER').style.display=(tab==='VER')?'grid':'none';
   document.getElementById('bpOT').style.display=(tab==='OT')?'grid':'none';
   document.getElementById('bpNT').style.display=(tab==='NT')?'grid':'none';
   document.getElementById('bpCH').style.display=(tab==='CH')?'block':'none';
-  ['OT','NT','CH'].forEach(t=>{
+  ['VER','NT','OT','CH'].forEach(t=>{
     const btn=document.getElementById('bpTab'+t);
+    if(!btn) return;
     const on=(t===tab);
     btn.style.color=on?'#3a5ea8':'#999';
     btn.style.borderBottom=on?'3px solid #3a5ea8':'3px solid transparent';
   });
+  if(tab==='VER') bpRenderVersions();
+}
+
+// 버전 선택 패널 렌더링
+function bpRenderVersions(){
+  const wrap=document.getElementById('bpVER');
+  if(!wrap) return;
+  const vers=[
+    ['GAE','개역개정'],['SAENEW','새번역'],
+    ['NIV','NIV 영어'],['KJH','KJV 한글'],['KJV','KJV 영어']
+  ];
+  wrap.innerHTML='';
+  vers.forEach(([v,label])=>{
+    const btn=document.createElement('button');
+    btn.textContent=label;
+    const on=(curVer===v);
+    Object.assign(btn.style,{padding:'13px 6px',fontSize:'.92rem',fontFamily:"'Noto Sans KR',sans-serif",
+      border:'1.5px solid '+(on?'#3a5ea8':'#ddd'),borderRadius:'10px',
+      background:on?'#3a5ea8':'#fff',color:on?'#fff':'#222',fontWeight:'700',cursor:'pointer'});
+    btn.onclick=()=>bpSelectVersion(v);
+    wrap.appendChild(btn);
+  });
+}
+
+// 보드에서 버전 선택 → curVer 변경, 책 선택 탭으로 이동
+function bpSelectVersion(ver){
+  curVer = ver; ST.ver = ver; saveST();
+  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
+  // 상단 버전 라벨/버튼 동기화
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vdLabel = document.getElementById('verDropLabel');
+  if(vdLabel) vdLabel.textContent = verLabels[ver] || '개역개정';
+  const vdBtn = document.getElementById('verDisplayBtn');
+  if(vdBtn) vdBtn.textContent = verLabels[ver] || '개역개정';
+  if(typeof updateVerTopBtn==='function') updateVerTopBtn();
+  bpRenderVersions();
+  // 버전 선택 후 자연스럽게 신약/구약 선택으로 안내 (신약 먼저)
+  bpShowTab('NT');
 }
 
 function bpSelectBook(bid){
@@ -3173,7 +3217,32 @@ function kjvMarkDone(){
   else showScreen('s-celebrate');
 }
 
+// 모든 소리 정지: 앱 TTS + godpia iframe 내장 오디오
+function stopAllAudio(){
+  // 1) 앱 TTS 정지
+  try{
+    if(typeof ttsStopAll === 'function') ttsStopAll();
+    if(typeof tts === 'object' && tts){ tts.playing = false; tts.active = false; }
+    if(typeof ttsUpdateUI === 'function') ttsUpdateUI();
+  }catch(e){}
+  // 2) godpia iframe 내장 오디오 정지 (iframe 내부는 외부 제어 불가 → src 비움)
+  ['bibleFrame','appendixFrame'].forEach(fid=>{
+    const f = document.getElementById(fid);
+    if(f && f.src && f.src !== 'about:blank'){
+      f.dataset.lastSrc = f.src;   // 필요 시 복원용
+      f.src = 'about:blank';
+    }
+  });
+}
+
 function showScreen(id){
+  // 본문 화면(s-read/s-kjv-reader)을 떠날 때 모든 소리 정지
+  const cur = document.querySelector('.screen.active');
+  const curId = cur ? cur.id : '';
+  const leavingReader = (curId==='s-read' || curId==='s-kjv-reader') && id!==curId;
+  if(leavingReader || id==='s-cover' || id==='s-list'){
+    stopAllAudio();
+  }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='s-cover') initCover();
@@ -3503,6 +3572,7 @@ function cycleVer(){
   const idx = order.indexOf(curVer);
   const next = order[(idx+1) % order.length];
   curVer = next; ST.ver = next; saveST();
+  try{ localStorage.setItem('bible_curVer', next); }catch(e){}
   // 표지 버튼 상태 동기화
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   const vBtn = document.getElementById('verBtn-'+next);
@@ -3556,7 +3626,9 @@ function selectPlanDrop(n, label){
   document.getElementById('startDateInput').value = ST.startDate || '';
   document.getElementById('readerInput').value    = ST.reader    || '';
   updateEndDate();
-  curVer = ST.ver || 'GAE';
+  // 버전은 플랜과 무관하게 마지막 선택값 유지
+  try{ const sv = localStorage.getItem('bible_curVer'); curVer = sv || ST.ver || 'GAE'; }
+  catch(e){ curVer = ST.ver || 'GAE'; }
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   document.getElementById('verDropLabel').textContent = verLabels[curVer] || '개역개정';
   updateVerTopBtn();
@@ -3567,6 +3639,7 @@ function selectVerCover(ver, btn){
   curVer = ver;
   ST.ver = ver;
   saveST();
+  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   // 읽기 화면 상단 버튼 표시 업데이트
@@ -3587,6 +3660,7 @@ function selectVer(ver, btn){
   curVer = ver;
   ST.ver = ver;
   saveST();
+  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   if(btn) btn.classList.add('on');
   updateVerTopBtn();
@@ -4168,6 +4242,13 @@ const PAGES = ['home','books','reading','vocab'];
 let currentPage = 'home';
 
 function showPage(name) {
+  // reading(본문)을 떠날 때 TTS 정지
+  if(currentPage === 'reading' && name !== 'reading'){
+    try{ if(typeof ttsStopAll==='function') ttsStopAll();
+      if(typeof tts==='object'&&tts){ tts.playing=false; tts.active=false; }
+      if(typeof ttsUpdateUI==='function') ttsUpdateUI();
+    }catch(e){}
+  }
   const prev = document.getElementById(currentPage);
   const next = document.getElementById(name);
   const forward = PAGES.indexOf(name) >= PAGES.indexOf(currentPage);
