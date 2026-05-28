@@ -17,7 +17,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 #s-cover{background:radial-gradient(ellipse at 40% 30%,#3d2510 0%,#1a0e05 100%);overflow-y:auto;align-items:center}
 #s-cover::-webkit-scrollbar{width:4px}
 #s-cover::-webkit-scrollbar-thumb{background:#c9a84c;border-radius:6px}
-.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:20px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;position:relative;z-index:1}
+.cover-wrap{width:100%;max-width:480px;margin:0 auto;padding:20px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;position:relative;z-index:1;overflow:visible}
 .cover-title{font-family:'Noto Serif KR',serif;font-size:1.55rem;font-weight:900;color:#e8c97a;letter-spacing:.04em;text-shadow:0 2px 12px rgba(201,168,76,.3)}
 .cover-subtitle{font-size:.75rem;color:#a07850;letter-spacing:.06em}
 
@@ -52,19 +52,20 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .today-val{font-size:.9rem;color:#f5e8c8;font-family:'Noto Serif KR',serif;font-weight:600}
 .start-btn{width:100%;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#a07020,#c9a84c);background-size:200%;color:#fff;font-size:1.05rem;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.08em;box-shadow:0 4px 20px rgba(201,168,76,.4);transition:all .3s;position:relative;z-index:2}
 .start-btn:hover{transform:translateY(-2px)}
-.cover-photo{width:92%;max-width:400px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);position:relative;z-index:0}
+.cover-photo{width:92%;max-width:400px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);position:relative;z-index:1}
 .cover-photo img{width:100%;height:23.4vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
+.cover-photo-empty{width:100%;min-height:23.4vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(201,168,76,.06);border-radius:14px}
+.cover-photo-empty span{font-size:1.5rem;opacity:.5}
+.cover-photo-empty p{font-size:.72rem;color:#c9a84c;opacity:.6;margin:0}
 
-/* 표지 말씀 구절 - 사진 좌측 오버랩 */
+/* 표지 말씀 구절 - 사진 아래 독립 카드 */
 .cover-verse-wrap{
-  position:absolute;
-  left:0;top:0;bottom:0;
-  width:52%;
-  padding:14px 12px 14px 16px;
-  background:linear-gradient(90deg,rgba(255,255,255,.55) 70%,transparent 100%);
-  display:flex;flex-direction:column;justify-content:center;
-  text-align:left;
-  z-index:2;
+  width:92%;max-width:400px;
+  padding:14px 16px 12px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(201,168,76,.28);
+  border-radius:16px;
+  text-align:center;
 }
 .cover-verse-deco{
   font-size:.75rem;color:#8b6010;
@@ -75,17 +76,17 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .cover-verse-text{
   font-family:'Noto Serif KR',serif;
   font-size:.936rem;
-  color:#1a0f04;
+  color:#f5e8c8;
   line-height:1.85;
-  font-weight:700;
+  font-weight:500;
   letter-spacing:.01em;
   word-break:keep-all;
 }
 .cover-verse-ref{
   margin-top:8px;
   font-size:.78rem;
-  color:#3a2008;
-  font-weight:700;
+  color:#c9a84c;
+  font-weight:600;
   letter-spacing:.06em;
 }
 
@@ -347,13 +348,24 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 /* 성경 버전 선택 */
 .ver-label{font-size:.65rem;color:#c9a84c;font-weight:700;letter-spacing:.1em;width:100%;text-align:left;margin-bottom:-4px}
-.ver-select-row{display:flex;gap:8px;width:100%}
+.ver-select-row{display:flex;gap:5px;width:100%}
+.drop-item{
+  width:100%;padding:11px 14px;background:transparent;
+  border:none;border-bottom:1px solid rgba(201,168,76,.15);
+  color:#f5e8c8;font-family:'Noto Sans KR',sans-serif;
+  font-size:.82rem;font-weight:600;text-align:left;cursor:pointer;
+  transition:background .15s;
+}
+.drop-item:last-child{border-bottom:none}
+.drop-item:active{background:rgba(201,168,76,.2)}
 .ver-sel-btn{
-  flex:1;padding:8px 4px;border-radius:14px;
+  flex:1;padding:10px 2px;border-radius:14px;
   border:2px solid rgba(201,168,76,.3);background:rgba(255,255,255,.05);
   color:rgba(245,232,200,.65);font-family:'Noto Sans KR',sans-serif;
-  cursor:pointer;transition:all .25s;font-weight:700;font-size:.75rem;
+  cursor:pointer;transition:all .25s;font-weight:700;font-size:.72rem;
   text-align:center;line-height:1.4;
+  min-height:44px;touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(201,168,76,.3);
 }
 .ver-sel-btn.on{
   background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));
@@ -1450,6 +1462,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 /* KJV 앱 내부 헤더 숨김 (통합앱 헤더 사용) */
 #kjv-app .reading-header { display:none !important; }
+#kjvWrapDirect ~ div #reading .lang-tabs { margin-top: 0; }
+.kjv-direct-mode #reading .lang-tabs { padding-top: 44px; }
 #kjv-app #home { display:none !important; }
 #kjv-app .home-content { display:none !important; }
 #kjv-app .page-header { display:none !important; }
@@ -1498,12 +1512,39 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
-    <!-- 읽기 계획 선택 -->
-    <div class="plan-select-row">
-      <button class="plan-sel-btn on" id="selBtn1" onclick="selectPlan(1,this)">연대순</button>
-      <button class="plan-sel-btn" id="selBtn2" onclick="selectPlan(2,this)">성경순</button>
-      <button class="plan-sel-btn kjv-btn" id="selBtnKjv" onclick="selectKJV(this)">KJV</button>
-      <button class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')">부록</button>
+    <!-- 메뉴: 버전 / 읽는방법 / 부록 -->
+    <div class="plan-select-row" style="gap:8px">
+
+      <!-- 버전 드롭다운 -->
+      <div style="position:relative;flex:1" id="verDropWrap">
+        <button type="button" class="plan-sel-btn on" id="verDropBtn"
+          onclick="toggleDrop('verDrop')"
+          style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px">
+          <span id="verDropLabel">개역개정</span><span style="font-size:.65rem;opacity:.7">▼</span>
+        </button>
+        <div id="verDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5)">
+          <button type="button" onclick="selectVerCoverDrop('GAE','개역개정')"  class="drop-item">개역개정</button>
+          <button type="button" onclick="selectVerCoverDrop('SAENEW','새번역')" class="drop-item">새번역</button>
+          <button type="button" onclick="selectVerCoverDrop('KJH','KJV 한글')"  class="drop-item">KJV 한글</button>
+          <button type="button" onclick="selectVerCoverDrop('KJV','KJV 영어')"  class="drop-item">KJV 영어</button>
+        </div>
+      </div>
+
+      <!-- 읽는방법 드롭다운 -->
+      <div style="position:relative;flex:1" id="planDropWrap">
+        <button type="button" class="plan-sel-btn on" id="planDropBtn"
+          onclick="toggleDrop('planDrop')"
+          style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px">
+          <span id="planDropLabel">연대순</span><span style="font-size:.65rem;opacity:.7">▼</span>
+        </button>
+        <div id="planDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5)">
+          <button type="button" onclick="selectPlanDrop(1,'연대순')" class="drop-item">연대순</button>
+          <button type="button" onclick="selectPlanDrop(2,'성경순')" class="drop-item">성경순</button>
+        </div>
+      </div>
+
+      <!-- 부록 -->
+      <button type="button" class="plan-sel-btn" id="selBtnApp" onclick="showScreen('s-appendix')" style="flex:1">부록</button>
     </div>
 
     <div class="input-card">
@@ -1538,7 +1579,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       </div>
     </div>
     <div style="display:flex;gap:10px;width:100%">
-      <button class="start-btn" style="width:50%" onclick="startReading()">✝ 매일일기</button>
+      <button class="start-btn" style="width:50%" onclick="startReading()"><span style="font-size:1.1em;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9)) drop-shadow(0 0 8px rgba(0,0,0,.8))">🔊</span> 매일읽기</button>
       <button class="start-btn" style="width:50%;background:linear-gradient(135deg,#2a6040,#1a4028,#2a6040)" onclick="openBibleDirect()">📖 성경</button>
     </div>
 
@@ -1548,12 +1589,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <p>사진을 불러오는 중...</p>
       </div>
       <img id="coverPhotoImg" src="" alt="표지 사진" style="display:none">
-      <!-- 예수님 말씀 오버랩 -->
-      <div class="cover-verse-wrap">
-        <div class="cover-verse-deco">✦</div>
-        <p class="cover-verse-text"></p>
-        <p class="cover-verse-ref"></p>
-      </div>
+    </div>
+
+    <!-- 오늘의 말씀 (사진 아래 독립 표시) -->
+    <div class="cover-verse-wrap" id="coverVerseBox">
+      <div class="cover-verse-deco">✦</div>
+      <p class="cover-verse-text"></p>
+      <p class="cover-verse-ref"></p>
     </div>
   </div>
 </div>
@@ -1587,10 +1629,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen" id="s-read">
   <!-- 성경 직접보기 상단 바 -->
   <div id="bibleWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:6px 10px;background:rgba(20,20,20,0.82);backdrop-filter:blur(6px)">
-    <button onclick="closeBibleDirect()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:18px;padding:5px 13px;font-size:.72rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap">✕ 닫기</button>
-    <button id="bsPickBtn" onclick="toggleBiblePicker()" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:18px;padding:5px 13px;font-size:.8rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;flex:1;text-align:center;font-weight:700">📖 성경·장 선택</button>
-    <button onclick="adjustBibleOffset(-15)" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:14px;padding:5px 11px;font-size:.8rem;cursor:pointer">▲</button>
-    <button onclick="adjustBibleOffset(15)" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:14px;padding:5px 11px;font-size:.8rem;cursor:pointer">▼</button>
+    <button onclick="closeBibleDirect()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:18px;padding:5px 13px;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700">처음으로</button>
+    <span id="verDisplayBtn" style="color:#e8c97a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">개역개정</span>
+    <button id="bsPickBtn" onclick="toggleBiblePicker()" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절이동</button>
   </div>
 
   <!-- 성경 선택 패널 (앱 내장) -->
@@ -1638,7 +1679,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           </button>
         </div>
         <div class="rh-bot-right">
-          <button class="rh-abtn2" id="verToggleBtn" onclick="toggleSaenew()" style="font-size:.65rem;padding:3px 7px;">개역</button>
           <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
         </div>
       </div>
@@ -1646,6 +1686,18 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
   <div class="bible-wrap" style="position:relative">
     <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
+    <!-- KJV 내장 뷰어 (KJV/KJH 버전일 때 표시) -->
+    <div id="kjvInlineWrap" style="display:none;position:absolute;inset:0;overflow:hidden;background:#f5f0e8;display:flex;flex-direction:column;z-index:1">
+      <!-- 한글/영어 탭 + TTS 버튼 -->
+      <div id="kjvInlineTabs" style="display:flex;background:#f5f0e8;border-bottom:2px solid #d4c5a9;flex-shrink:0;align-items:center">
+        <button id="kjvTabKo" onclick="kjvInlineSwitchLang('ko')" style="flex:1;padding:9px 4px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;border:none;background:transparent;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">한글 KJV</button>
+        <button id="kjvTabEn" onclick="kjvInlineSwitchLang('en')" style="flex:1;padding:9px 4px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;border:none;background:transparent;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">English KJV</button>
+        <button onclick="kjvInlineTTS()" style="padding:6px 14px;font-size:1.2rem;border:none;background:transparent;cursor:pointer;color:#c9a84c" title="읽어주기">🔊</button>
+      </div>
+      <div id="kjvInlineScroll" style="flex:1;overflow-y:auto;padding:16px 14px;min-height:0"></div>
+      <!-- TTS 바 (KJV 전용 위치) -->
+      <div id="kjvTtsSlot" style="flex-shrink:0"></div>
+    </div>
   </div>
 </div>
 
@@ -1811,7 +1863,14 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 <!-- KJV 성경 읽기 화면 -->
 <div class="screen" id="s-kjv-reader">
-  <div class="read-hdr">
+  <!-- 성경 버튼으로 진입 시 통합 상단바 -->
+  <div id="kjvWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:6px 10px;background:rgba(20,20,20,0.82);backdrop-filter:blur(6px)">
+    <button onclick="closeKJVDirect()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:18px;padding:5px 13px;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700">처음으로</button>
+    <span id="kjvVerDisplayBtn" style="color:#e8c97a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">KJV 한글</span>
+    <button onclick="kjvOpenBookPicker()" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절이동</button>
+  </div>
+
+  <div class="read-hdr" id="kjvReadHdr">
     <div class="rh-grid">
       <div class="rh-col-left">
         <div class="rh-top-left">
@@ -1894,7 +1953,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
   <!-- ══ READING ══ -->
   <div class="page hidden" id="reading">
-    <div class="reading-header">
+    <div class="reading-header" id="kjvReadingHeader">
       <button class="back-btn" onclick="showPage('books')">←</button>
       <div class="reading-loc">
         <div class="reading-loc-main" id="readingLocMain">Genesis 1</div>
@@ -2741,7 +2800,7 @@ const KJH_BOOK_ABBR = {
 // 계획별 독립 저장소 키
 const SK = {1:'bible_plan1', 2:'bible_plan2'};
 let curPlan = 1;
-const curVer = 'GAE'; // 개역개정 고정
+let curVer = 'GAE'; // 개역개정 기본값
 let ST = {checks:{},reader:'',startDate:'',filter:'all',ver:'GAE'};
 let PLAN = PLAN_DATA[1];
 let curN = 0, fontIdx = 1;
@@ -2770,9 +2829,9 @@ function selectPlan(n, btn){
   // 버전 버튼 상태 복원
   curVer = ST.ver || 'GAE';
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
-  const vMap = {'GAE':'verBtn1','KJH':'verBtn2','KJV':'verBtn3'};
-  const vBtn = document.getElementById(vMap[curVer]);
+  const vBtn = document.getElementById('verBtn-'+curVer);
   if(vBtn) vBtn.classList.add('on');
+  updateVerTopBtn();
 }
 
 function today(){ return new Date(); }
@@ -2844,21 +2903,28 @@ function sendTodayChapterToKJV(){
 }
 
 function openBibleDirect(){
-  // 성경 직접보기: s-read 화면을 헤더 숨김 모드로 열기
   window._bibleDirectMode = true;
   showScreen('s-read');
   document.getElementById('s-read').classList.add('direct-mode');
-  // 헤더 숨기기, 오버레이 표시
   document.querySelector('#s-read .read-hdr').style.display='none';
   document.getElementById('bibleWrapDirect').style.display='flex';
-  // 선택 보드 바로 열기 (창세기 1장은 보드에서 선택 후 로드)
+
+  // 이전 본문 비우기 (버전이 바뀌었을 수 있으므로)
+  const frame = document.getElementById('bibleFrame');
+  frame.src = 'about:blank';
+  hideKJVInline();
+
+  // 버전 텍스트 업데이트
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vd = document.getElementById('verDisplayBtn');
+  if(vd) vd.textContent = verLabels[curVer] || '개역개정';
+
+  // 구절선택 보드 먼저 열기 (모든 버전 공통)
   bpInit();
   const picker = document.getElementById('biblePicker');
   picker.style.top = '44px';
   picker.style.display = 'flex';
   bpShowTab('OT');
-  const bsPickBtn = document.getElementById('bsPickBtn');
-  if(bsPickBtn) bsPickBtn.style.background = 'rgba(80,140,255,0.5)';
 }
 
 // ── TTS 성경 듣기 ──────────────────────────────────────
@@ -2968,30 +3034,32 @@ function bpSelectBook(bid){
 
 function bpGoChapter(bid,ch){
   _curBid = bid; _curCh = ch;
-  const vol=GODPIA_VOL[bid]||'gen';
-  const url='https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+ch+'&_t='+Date.now();
-  const frame=document.getElementById('bibleFrame');
 
-  if(window._bibleDirectMode){
-    // 성경 직접보기 모드: offsetDirect 사용
-    frame.onload=function(){ onFrameLoadDirect(frame); };
-  } else {
-    // 일반 읽기 모드: 선택보드→이동이므로 2번(스피커)부터 보임
-    _lastOffset = OFFSET_FROM_PICKER;
-    frame.onload=function(){ onFrameLoad(frame, OFFSET_FROM_PICKER); };
-  }
-  frame.src=url;
-
-  // 선택 보드 닫기
   document.getElementById('biblePicker').style.display='none';
   const bsPickBtn=document.getElementById('bsPickBtn');
   if(bsPickBtn) bsPickBtn.style.background='rgba(255,255,255,0.18)';
-  // 본문 페이지 상단 제목 업데이트
   const bookName = BP_BOOKS_KO[bid] || '';
   const titleEl = document.getElementById('readTitle');
   const dayTagEl = document.getElementById('dayTag');
   if(titleEl) titleEl.textContent = bookName + ' ' + ch + '장';
   if(dayTagEl) dayTagEl.textContent = '성경 직접 찾기';
+
+  if(curVer==='KJV' || curVer==='KJH'){
+    // 내장 KJV 뷰어로 로드
+    const abbr = KJV_ABBR[bid] || 'GEN';
+    loadKJVInlineDirect(abbr, ch);
+    return;
+  }
+
+  const url = godpiaUrl(bid, ch) + '&_t='+Date.now();
+  const frame=document.getElementById('bibleFrame');
+  if(window._bibleDirectMode){
+    frame.onload=function(){ onFrameLoadDirect(frame); };
+  } else {
+    _lastOffset = OFFSET_FROM_PICKER;
+    frame.onload=function(){ onFrameLoad(frame, OFFSET_FROM_PICKER); };
+  }
+  frame.src=url;
 }
 
 function toggleBiblePicker(){
@@ -3123,19 +3191,15 @@ function initCover(){
   updateEndDate();
   loadCoverPhoto();
   loadTodayVerse();
-  // 새번역 버튼 초기 상태
-  const vBtn = document.getElementById('verToggleBtn');
-  if(vBtn){
-    if(curVer === 'SAENEW'){
-      vBtn.textContent = '새번역';
-      vBtn.style.color = '#7ecbff';
-      vBtn.style.borderColor = '#7ecbff';
-    } else {
-      vBtn.textContent = '개역';
-      vBtn.style.color = '';
-      vBtn.style.borderColor = '';
-    }
-  }
+  // 버전 드롭다운 초기값
+  curVer = ST.ver || 'GAE';
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vl = document.getElementById('verDropLabel');
+  if(vl) vl.textContent = verLabels[curVer] || '개역개정';
+  // 플랜 드롭다운 초기값
+  const pl = document.getElementById('planDropLabel');
+  if(pl) pl.textContent = curPlan===2 ? '성경순' : '연대순';
+  updateVerTopBtn();
 }
 
 // ── 표지 사진 관리 ────────────────────────────────────────
@@ -3145,20 +3209,23 @@ function loadCoverPhoto(){
   try{
     const data = localStorage.getItem('bible_cover_photo');
     if(data){
-      // 사용자가 직접 선택한 사진 우선
       _applyCoverPhoto(data);
     } else {
-      // 기본 GitHub 표지 사진 로드
       const img = document.getElementById('coverPhotoImg');
       const empty = document.getElementById('coverPhotoEmpty');
-      img.src = DEFAULT_COVER_URL;
-      img.style.display = 'block';
-      empty.style.display = 'none';
+      // 먼저 빈 상태 유지
+      img.style.display = 'none';
+      empty.style.display = 'flex';
+      // 로드 성공 시에만 이미지 표시
+      img.onload = function(){
+        img.style.display = 'block';
+        empty.style.display = 'none';
+      };
       img.onerror = function(){
-        // 이미지 로드 실패 시 빈 상태로 복귀
         img.style.display = 'none';
         empty.style.display = 'flex';
       };
+      img.src = DEFAULT_COVER_URL + '?t=' + Date.now();
     }
   }catch(e){}
 }
@@ -3316,37 +3383,10 @@ function startReading(){
     if(sd!==ST.startDate){ ST.checks={}; PLAN.forEach(p=>ST.checks[p.n]=false); }
     ST.startDate=sd; ST.reader=rd; saveST();
 
-    // KJV 선택 여부 확인
-    const kjvBtn = document.getElementById('selBtnKjv');
-    if(kjvBtn && kjvBtn.classList.contains('on')){
-      // KJV: 내장 KJV 화면으로 이동
-      const idx=todayIdx(sd);
-      const item=PLAN[Math.min(idx,PLAN.length-1)];
-      kjvCurItem = item;
-      // 헤더 업데이트 (날짜 직접 계산)
-      const sd_date = parseDate(sd);
-      const d = new Date(sd_date);
-      d.setDate(d.getDate() + (item.n - 1));
-      const dayNames = ['일','월','화','수','목','금','토'];
-      const dateStr = (d.getMonth()+1)+'월 '+d.getDate()+'일 ('+dayNames[d.getDay()]+')';
-      document.getElementById('kjvDayTag').textContent = dateStr+'·제'+item.n+'일';
-      document.getElementById('kjvReadTitle').textContent = item.r;
-      // 오늘 장 열기
-      const segs = parseRange(item.r);
-      if(segs.length){
-        const abbr = KJV_ABBR[segs[0].bid]||'GEN';
-        const ch = segs[0].ch;
-        showScreen('s-kjv-reader');
-        setTimeout(()=>{ openChapter(abbr, ch); showPage('reading'); }, 200);
-      } else {
-        showScreen('s-kjv-reader');
-      }
-    } else {
-      // 개역개정/기본: 기존 방식
-      const idx=todayIdx(sd);
-      const item=PLAN[Math.min(idx,PLAN.length-1)];
-      renderList(); openItem(item.n);
-    }
+    const idx=todayIdx(sd);
+    const item=PLAN[Math.min(idx,PLAN.length-1)];
+    // 모든 버전: 목록→읽기 방식으로 통일
+    renderList(); openItem(item.n);
   }catch(err){ alert('오류: '+err.message); }
 }
 
@@ -3394,8 +3434,27 @@ function openItem(n){
   const p=PLAN.find(x=>x.n===n); if(!p) return;
   const d=nthDate(ST.startDate,p.n-1);
   let tag=d?(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+WEEKDAYS[d.getDay()]+') · 제'+p.n+'일':'제 '+p.n+'일';
+
+  if(curVer==='KJV' || curVer==='KJH'){
+    document.getElementById('dayTag').textContent=tag;
+    document.getElementById('readTitle').textContent=p.r;
+    const verLabels = {'KJH':'KJV 한글','KJV':'KJV 영어'};
+    const vd = document.getElementById('verDisplayBtn');
+    if(vd) vd.textContent = verLabels[curVer] || 'KJV';
+    updateDoneBtn(); showScreen('s-read');
+    // KJV 내장 뷰어 로드
+    loadKJVInline(p);
+    return;
+  }
+
   document.getElementById('dayTag').textContent=tag;
   document.getElementById('readTitle').textContent=p.r;
+  // 상단 버전 표시 업데이트
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vd = document.getElementById('verDisplayBtn');
+  if(vd) vd.textContent = verLabels[curVer] || '개역개정';
+  // KJV 인라인 숨김
+  hideKJVInline();
   updateDoneBtn(); showScreen('s-read'); loadBible(p);
 }
 function updateDoneBtn(){
@@ -3430,50 +3489,104 @@ function expandNums(str,max){
   });
   return r;
 }
-// 성경 버전 선택
-function toggleSaenew(){
-  const btn = document.getElementById('verToggleBtn');
-  if(curVer === 'SAENEW'){
-    curVer = 'GAE'; ST.ver = 'GAE';
-    btn.textContent = '개역';
-    btn.style.color = '';
-    btn.style.borderColor = '';
-  } else {
-    curVer = 'SAENEW'; ST.ver = 'SAENEW';
-    btn.textContent = '새번역';
-    btn.style.color = '#7ecbff';
-    btn.style.borderColor = '#7ecbff';
-  }
-  saveST();
-  // 현재 보고 있는 성경 새로 로드
-  const frame = document.getElementById('bibleFrame');
-  if(frame && frame.src && frame.src !== 'about:blank'){
-    const url = godpiaUrl(state.currentBook, state.currentChapter);
-    frame.src = url;
+// 읽기 화면 상단에서 버전 순환 (탭할 때마다 다음 버전)
+function cycleVer(){
+  const order = ['GAE','SAENEW','KJH'];  // KJV영어는 표지에서만
+  const idx = order.indexOf(curVer);
+  const next = order[(idx+1) % order.length];
+  curVer = next; ST.ver = next; saveST();
+  // 표지 버튼 상태 동기화
+  document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
+  const vBtn = document.getElementById('verBtn-'+next);
+  if(vBtn) vBtn.classList.add('on');
+  updateVerTopBtn();
+  // 현재 읽고 있는 성경 다시 로드
+  if(curN){
+    const p = PLAN.find(x=>x.n===curN);
+    if(p) loadBible(p);
   }
 }
 
-function selectVer(ver, btn){
+// 드롭다운 토글
+function toggleDrop(id){
+  const el = document.getElementById(id);
+  const isOpen = el.style.display !== 'none';
+  // 모든 드롭다운 닫기
+  ['verDrop','planDrop'].forEach(d=>{ document.getElementById(d).style.display='none'; });
+  if(!isOpen) el.style.display='block';
+}
+// 드롭다운 외부 클릭 시 닫기
+document.addEventListener('click', function(e){
+  if(!e.target.closest('#verDropWrap') && !e.target.closest('#planDropWrap')){
+    ['verDrop','planDrop'].forEach(d=>{
+      const el=document.getElementById(d); if(el) el.style.display='none';
+    });
+  }
+});
+
+function selectVerCoverDrop(ver, label){
+  curVer = ver; ST.ver = ver; saveST();
+  document.getElementById('verDropLabel').textContent = label;
+  document.getElementById('verDrop').style.display='none';
+  updateVerTopBtn();
+}
+
+function selectPlanDrop(n, label){
+  curPlan = n; PLAN = PLAN_DATA[n]; ST = loadST(n);
+  document.getElementById('planDropLabel').textContent = label;
+  document.getElementById('planDrop').style.display='none';
+  document.getElementById('startDateInput').value = ST.startDate || '';
+  document.getElementById('readerInput').value    = ST.reader    || '';
+  updateEndDate();
+  curVer = ST.ver || 'GAE';
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  document.getElementById('verDropLabel').textContent = verLabels[curVer] || '개역개정';
+  updateVerTopBtn();
+}
+
+// 표지 버전 선택 (기존 호환)
+function selectVerCover(ver, btn){
   curVer = ver;
   ST.ver = ver;
   saveST();
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+  // 읽기 화면 상단 버튼 표시 업데이트
+  updateVerTopBtn();
+}
+
+function updateVerTopBtn(){
+  const btn = document.getElementById('verToggleBtn');
+  if(!btn) return;
+  const labels = {'GAE':'개역','SAENEW':'새번역','KJH':'KJV한글','KJV':'KJV영어'};
+  btn.textContent = labels[curVer] || '개역';
+  btn.style.color = curVer==='SAENEW'?'#7ecbff': curVer==='KJH'?'#ffd27a': curVer==='KJV'?'#ff9e7a':'';
+  btn.style.borderColor = btn.style.color;
+}
+
+// 성경 버전 선택 (공통)
+function selectVer(ver, btn){
+  curVer = ver;
+  ST.ver = ver;
+  saveST();
+  document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  updateVerTopBtn();
 }
 
 // 버전별 성경 URL 생성
 // 대한성서공회 새번역 책 코드 (대문자)
 const BSK_VOL = {
-  1:'GEN',2:'EXO',3:'LEV',4:'NUM',5:'DEU',6:'JOS',7:'JDG',8:'RUT',
-  9:'1SA',10:'2SA',11:'1KI',12:'2KI',13:'1CH',14:'2CH',15:'EZR',
-  16:'NEH',17:'EST',18:'JOB',19:'PSA',20:'PRO',21:'ECC',22:'SNG',
-  23:'ISA',24:'JER',25:'LAM',26:'EZK',27:'DAN',28:'HOS',29:'JOL',
-  30:'AMO',31:'OBA',32:'JON',33:'MIC',34:'NAM',35:'HAB',36:'ZEP',
-  37:'HAG',38:'ZEC',39:'MAL',40:'MAT',41:'MRK',42:'LUK',43:'JHN',
-  44:'ACT',45:'ROM',46:'1CO',47:'2CO',48:'GAL',49:'EPH',50:'PHP',
-  51:'COL',52:'1TH',53:'2TH',54:'1TI',55:'2TI',56:'TIT',57:'PHM',
-  58:'HEB',59:'JAS',60:'1PE',61:'2PE',62:'1JN',63:'2JN',64:'3JN',
-  65:'JUD',66:'REV'
+  1:'gen',2:'exo',3:'lev',4:'num',5:'deu',6:'jos',7:'jdg',8:'rut',
+  9:'1sa',10:'2sa',11:'1ki',12:'2ki',13:'1ch',14:'2ch',15:'ezr',
+  16:'neh',17:'est',18:'job',19:'psa',20:'pro',21:'ecc',22:'sng',
+  23:'isa',24:'jer',25:'lam',26:'ezk',27:'dan',28:'hos',29:'jol',
+  30:'amo',31:'oba',32:'jon',33:'mic',34:'nam',35:'hab',36:'zep',
+  37:'hag',38:'zec',39:'mal',40:'mat',41:'mrk',42:'luk',43:'jhn',
+  44:'act',45:'rom',46:'1co',47:'2co',48:'gal',49:'eph',50:'php',
+  51:'col',52:'1th',53:'2th',54:'1ti',55:'2ti',56:'tit',57:'phm',
+  58:'heb',59:'jas',60:'1pe',61:'2pe',62:'1jn',63:'2jn',64:'3jn',
+  65:'jud',66:'rev'
 };
 
 function godpiaUrl(bid,ch){
@@ -3483,12 +3596,13 @@ function godpiaUrl(bid,ch){
     return 'https://www.godpia.com/read/reading.asp?ver=kjh&vol='+vol+'&chap='+ch;
   }
   if(curVer==='KJV'){
+    // KJV 영어: 내장 KJV (이 함수는 호출되지 않음, openItem에서 처리)
     const kjvCode=YOUVER_CODE[bid]||'GEN';
     return 'https://www.bible.com/bible/1/'+kjvCode+'.'+ch+'.KJV';
   }
   if(curVer==='SAENEW'){
-    const bvol=BSK_VOL[bid]||'GEN';
-    return 'https://www.bskorea.or.kr/bible/korbibReadpage.php?version=SAENEW&book='+bvol+'&chap='+ch;
+    // 새번역: godpia saenew
+    return 'https://www.godpia.com/read/reading.asp?ver=saenew&vol='+vol+'&chap='+ch;
   }
   // 기본: 개역개정
   return 'https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+ch;
@@ -3498,7 +3612,7 @@ function loadBible(p){
   if(!segs.length) return;
   _curBid = segs[0].bid;
   _curCh  = segs[0].ch;
-  _lastOffset = OFFSET; // 표지→이동: 4번(본문)부터
+  _lastOffset = OFFSET;
   const frame=document.getElementById('bibleFrame');
   const url=godpiaUrl(segs[0].bid,segs[0].ch)+'&_t='+Date.now();
   frame.onload = function(){ onFrameLoad(frame, OFFSET); };
@@ -3517,12 +3631,22 @@ function onFrameLoad(frame, offsetOverride){
   frame.style.marginTop='-'+adj+'px';
   frame.style.height='calc(100% + '+adj+'px)';
 }
+const KJV_FONT_SIZES = ['0.78rem','0.88rem','1.0rem','1.12rem','1.28rem'];
+
 function changeFont(dir){
   fontIdx=Math.max(0,Math.min(4,fontIdx+dir));
   document.getElementById('fontLabel').textContent=FONT_LABELS[fontIdx];
   try{localStorage.setItem('bible_fi',fontIdx);}catch(e){}
   const frame=document.getElementById('bibleFrame');
   onFrameLoad(frame, _lastOffset);
+  // KJV 인라인 글자크기 적용
+  const scroll = document.getElementById('kjvInlineScroll');
+  if(scroll && document.getElementById('kjvInlineWrap').style.display!=='none'){
+    const size = KJV_FONT_SIZES[fontIdx] || '0.95rem';
+    scroll.querySelectorAll('span:last-child').forEach(el=>{
+      el.style.fontSize = size;
+    });
+  }
 }
 function markDone(){
   if(!curN) return;
@@ -3652,29 +3776,18 @@ async function doShare(){
 document.addEventListener('DOMContentLoaded',()=>{
   ST = loadST(1);
   try{fontIdx=parseInt(localStorage.getItem('bible_fi')||'1');}catch(e){}
+  // KJV abbr→bid 역매핑 초기화
+  Object.entries(KJV_ABBR).forEach(([bid,abbr])=>{ KJV_ABBR_INV[abbr]=Number(bid); });
   initCover();
 });
 
 
 // ── KJV 성경 앱 JS (내장) ──
 
-
-// KJV 글자크기 조절
-const KJV_FONT_SIZES = [15, 17, 19, 22, 25, 28];
-let kjvFontIdx = 2; // 기본 19px
-
+// KJV 글자크기 조절 (kjvChangeFont는 이전 s-kjv-reader용 - 현재는 changeFont로 통합)
+let kjvFontIdx = 2;
 function kjvChangeFont(dir){
-  kjvFontIdx = Math.max(0, Math.min(KJV_FONT_SIZES.length-1, kjvFontIdx + dir));
-  const sz = KJV_FONT_SIZES[kjvFontIdx];
-  const labels = ['작게','작게','기본','크게','크게','최대'];
-  const scroll = document.getElementById('verseScroll');
-  if(scroll){
-    scroll.querySelectorAll('.verse-text-ko, .verse-text').forEach(el=>{
-      el.style.fontSize = sz + 'px';
-    });
-  }
-  const lbl = document.getElementById('kjvFontLabel');
-  if(lbl) lbl.textContent = labels[kjvFontIdx];
+  changeFont(dir); // 통합 함수 사용
 }
 
 // KJV 읽기 완료 → 통합앱 축하페이지
@@ -3690,8 +3803,205 @@ function kjvDoneAndCelebrate(){
 }
 
 
+// ── KJV 인라인 뷰어 ──────────────────────────────────────
+let _kjvInlineLang = 'ko'; // 현재 언어
+let _kjvInlineKo = [], _kjvInlineEn = [];
+let _kjvInlineAbbr = '', _kjvInlineCh = 1;
+
+function loadKJVInline(p){
+  const segs = parseRange(p.r);
+  if(!segs.length) return;
+  const abbr = KJV_ABBR[segs[0].bid] || 'GEN';
+  const ch = segs[0].ch;
+  loadKJVInlineDirect(abbr, ch);
+}
+
+function loadKJVInlineDirect(abbr, ch){
+  _kjvInlineAbbr = abbr; _kjvInlineCh = ch;
+
+  // bibleFrame 숨기고 KJV 인라인 표시
+  document.getElementById('bibleFrame').style.display = 'none';
+  const wrap = document.getElementById('kjvInlineWrap');
+  wrap.style.display = 'flex';
+
+  // 탭 메뉴: 두 버전 모두 숨김 (버전 고정)
+  const tabs = document.getElementById('kjvInlineTabs');
+  tabs.style.display = 'none';
+  if(curVer === 'KJH'){
+    _kjvInlineLang = 'ko';
+  } else {
+    _kjvInlineLang = 'en';
+  }
+
+  const scroll = document.getElementById('kjvInlineScroll');
+  // 로딩 중에도 제목 먼저 표시
+  const koNameLoad = _kjvAbbrToKo(abbr);
+  const bookLoad = ALL_BOOKS.find(b => b.abbr === abbr);
+  const enNameLoad = bookLoad ? bookLoad.name : abbr;
+  const titleLoad = (curVer==='KJH') ? koNameLoad+' '+ch+'장' : enNameLoad+' Chapter '+ch;
+  scroll.innerHTML = `
+    <div style="font-size:1.15rem;font-weight:700;color:#3a2a10;text-align:center;margin-top:50px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #d4c5a9;font-family:'Noto Sans KR',sans-serif">${titleLoad}</div>
+    <div style="padding:20px;text-align:center;color:#999">불러오는 중...</div>`;
+
+  const book = ALL_BOOKS.find(b => b.abbr === abbr);
+  if(!book) return;
+
+  const langs = curVer==='KJH' ? ['koreankjv'] : ['kjv','koreankjv'];
+  const fetches = langs.map(l => fetchKjvChapter(book.name, ch, l));
+
+  Promise.all(fetches).then(results => {
+    if(curVer==='KJH'){
+      _kjvInlineKo = results[0];
+      _kjvInlineEn = [];
+      currentVerses = _kjvInlineKo;
+      _kjvInlineRender(_kjvInlineKo, 'ko');
+    } else {
+      _kjvInlineEn = results[0];
+      _kjvInlineKo = results[1] || [];
+      currentVerses = _kjvInlineEn;
+      _kjvInlineRender(_kjvInlineEn, 'en');
+    }
+    tts.verseIdx = 0;
+  }).catch(()=>{
+    scroll.innerHTML = '<div style="padding:20px;text-align:center;color:#c00">로드 실패. 인터넷 연결을 확인하세요.</div>';
+  });
+}
+
+// KJV abbr → bid 역매핑
+const KJV_ABBR_INV = {};
+// (KJV_ABBR 선언 후 초기화는 DOMContentLoaded에서)
+
+function _kjvAbbrToKo(abbr){
+  // 즉석 계산 (초기화 여부 무관)
+  const entry = Object.entries(KJV_ABBR).find(([,v])=>v===abbr);
+  const bid = entry ? Number(entry[0]) : null;
+  return bid ? (KJH_BOOK[bid] || abbr) : abbr;
+}
+
+function _kjvInlineRender(verses, lang){
+  const scroll = document.getElementById('kjvInlineScroll');
+
+  // 제목 먼저 표시 (데이터 로드 전)
+  const koName = _kjvAbbrToKo(_kjvInlineAbbr);
+  const bookObj = ALL_BOOKS.find(b => b.abbr === _kjvInlineAbbr);
+  const enName = bookObj ? bookObj.name : _kjvInlineAbbr;
+  const titleText = lang==='ko'
+    ? koName + ' ' + _kjvInlineCh + '장'
+    : enName + ' Chapter ' + _kjvInlineCh;
+
+  scroll.innerHTML = `
+    <div style="font-size:1.15rem;font-weight:700;color:#3a2a10;text-align:center;margin-top:50px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #d4c5a9;font-family:'Noto Sans KR',sans-serif">${titleText}</div>
+    <div style="text-align:right;margin-bottom:10px"><button onclick="kjvInlineTTS()" style="background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);border-radius:16px;padding:4px 12px;font-size:.85rem;cursor:pointer;color:#8b6010">🔊 읽어주기</button></div>
+    <div id="kjvVerseList"></div>`;
+
+  if(!verses || verses.length===0){
+    document.getElementById('kjvVerseList').innerHTML = '<div style="padding:20px;text-align:center;color:#999">내용을 불러올 수 없습니다.<br><small>인터넷 연결을 확인하세요.</small></div>';
+    return;
+  }
+
+  // 절 렌더링
+  const list = document.getElementById('kjvVerseList');
+  verses.forEach(v => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:10px;margin-bottom:12px;font-family:"Noto Sans KR",sans-serif';
+    const num = document.createElement('span');
+    num.style.cssText = 'color:#c9a84c;font-weight:700;font-size:.85rem;min-width:20px;padding-top:2px;flex-shrink:0';
+    num.textContent = v.num;
+    const txt = document.createElement('span');
+    const fontSize = KJV_FONT_SIZES[fontIdx] || '0.95rem';
+    txt.style.cssText = `color:#2a1a08;font-size:${fontSize};line-height:1.75`;
+    txt.textContent = v.text;
+    row.appendChild(num); row.appendChild(txt);
+    list.appendChild(row);
+  });
+}
+
+function kjvInlineSwitchLang(lang){
+  _kjvInlineLang = lang;
+  _kjvInlineUpdateTabs();
+  if(lang==='ko'){
+    currentVerses = _kjvInlineKo;
+    _kjvInlineRender(_kjvInlineKo, 'ko');
+  } else {
+    currentVerses = _kjvInlineEn;
+    _kjvInlineRender(_kjvInlineEn, 'en');
+  }
+  tts.verseIdx = 0;
+  if(tts.active){ ttsStopAll(); tts.playing=false; ttsUpdateUI(); }
+}
+
+function _kjvInlineUpdateTabs(){
+  const ko = document.getElementById('kjvTabKo');
+  const en = document.getElementById('kjvTabEn');
+  if(!ko||!en) return;
+  ko.style.color = _kjvInlineLang==='ko' ? '#3a5ea8' : '#999';
+  ko.style.borderBottom = _kjvInlineLang==='ko' ? '3px solid #3a5ea8' : '3px solid transparent';
+  en.style.color = _kjvInlineLang==='en' ? '#3a5ea8' : '#999';
+  en.style.borderBottom = _kjvInlineLang==='en' ? '3px solid #3a5ea8' : '3px solid transparent';
+}
+
+function kjvInlineTTS(){
+  if(!currentVerses || currentVerses.length===0){
+    alert('본문을 먼저 불러오세요.'); return;
+  }
+  // ttsBar를 KJV 인라인 하단 슬롯으로 이동
+  const bar = document.getElementById('ttsBar');
+  const slot = document.getElementById('kjvTtsSlot');
+  if(bar && slot && !slot.contains(bar)){
+    slot.appendChild(bar);
+  }
+  tts.verseIdx = 0;
+  ttsOpen();
+}
+
+function hideKJVInline(){
+  document.getElementById('bibleFrame').style.display = '';
+  const wrap = document.getElementById('kjvInlineWrap');
+  if(wrap) wrap.style.display = 'none';
+  // ttsBar를 s-kjv-reader 원래 위치로 복원
+  const bar = document.getElementById('ttsBar');
+  const kjvReader = document.getElementById('s-kjv-reader');
+  if(bar && kjvReader && !kjvReader.contains(bar)){
+    kjvReader.appendChild(bar);
+  }
+  if(tts && tts.active) ttsClose();
+}
+
 function closeKJVReader(){
   showScreen('s-cover');
+}
+
+function _showKJVDirectBar(){
+  const bar = document.getElementById('kjvWrapDirect');
+  if(bar) bar.style.display = 'flex';
+  const hdr = document.getElementById('kjvReadHdr');
+  if(hdr) hdr.style.display = 'none';
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vd = document.getElementById('kjvVerDisplayBtn');
+  if(vd) vd.textContent = verLabels[curVer] || 'KJV';
+  const rh = document.getElementById('kjvReadingHeader');
+  if(rh) rh.style.display = 'none';
+  // lang-tabs에 상단 여백 추가 (상단바 높이만큼)
+  const lt = document.querySelector('#reading .lang-tabs');
+  if(lt) lt.style.paddingTop = '44px';
+}
+
+function closeKJVDirect(){
+  const bar = document.getElementById('kjvWrapDirect');
+  if(bar) bar.style.display = 'none';
+  const hdr = document.getElementById('kjvReadHdr');
+  if(hdr) hdr.style.display = '';
+  const rh = document.getElementById('kjvReadingHeader');
+  if(rh) rh.style.display = '';
+  const lt = document.querySelector('#reading .lang-tabs');
+  if(lt) lt.style.paddingTop = '';
+  showScreen('s-cover');
+}
+
+function kjvOpenBookPicker(){
+  showPage('books');
+  // 버전에 맞게 책 목록 다시 렌더링
+  renderBooks();
 }
 
 // ══════════════════════════════════════════════
@@ -3830,6 +4140,12 @@ function renderBooks() {
   const container = document.getElementById('booksScroll');
   container.innerHTML = '';
 
+  // KJV 한글 버전이면 한글 이름 사용
+  const useKorean = (curVer === 'KJH');
+  // abbr → bid 역매핑
+  const abbrToBid = {};
+  Object.entries(KJV_ABBR).forEach(([bid, abbr]) => { abbrToBid[abbr] = Number(bid); });
+
   books.forEach(book => {
     const readCount = Array.from({length: book.chapters}, (_,i) =>
       state.readChapters[`${book.abbr}_${i+1}`] ? 1 : 0
@@ -3838,9 +4154,13 @@ function renderBooks() {
     const block = document.createElement('div');
     block.className = 'book-block';
 
+    // 책 이름: KJH면 한글, KJV면 영어
+    const bid = abbrToBid[book.abbr];
+    const displayName = useKorean && bid && KJH_BOOK[bid] ? KJH_BOOK[bid] : book.name;
+
     const nameDiv = document.createElement('div');
     nameDiv.className = 'book-name';
-    nameDiv.innerHTML = `<span>${book.name}</span>
+    nameDiv.innerHTML = `<span>${displayName}</span>
       <span class="read-pct">${readCount > 0 ? readCount + '/' + book.chapters + ' 읽음' : ''}</span>`;
     block.appendChild(nameDiv);
 
@@ -4706,14 +5026,27 @@ async function testGoogleKey(key, voice) {
 function ttsLoadVoices() {
   const all = speechSynthesis.getVoices();
   tts.voices = all;
+  // 영어: Microsoft Neural > Google > 기타 고음질 순
   const pref = (
-    all.find(v => v.lang === 'en-US' && /female|zira|samantha|karen|moira/i.test(v.name)) ||
-    all.find(v => v.lang === 'en-US') ||
-    all.find(v => v.lang.startsWith('en-GB')) ||
+    all.find(v => /en-US/i.test(v.lang) && /microsoft.*aria|microsoft.*jenny|microsoft.*guy/i.test(v.name)) ||
+    all.find(v => /en-US/i.test(v.lang) && /microsoft/i.test(v.name)) ||
+    all.find(v => /en-US/i.test(v.lang) && /google/i.test(v.name)) ||
+    all.find(v => /en-GB/i.test(v.lang) && /google/i.test(v.name)) ||
+    all.find(v => /en-US/i.test(v.lang) && /female|zira|samantha|karen|moira/i.test(v.name)) ||
+    all.find(v => /en-US/i.test(v.lang)) ||
+    all.find(v => /en-GB/i.test(v.lang)) ||
     all.find(v => v.lang.startsWith('en')) ||
     all[0]
   );
   tts.preferredVoice = pref || null;
+  // 한국어: Microsoft Neural > Google > 기타
+  const koPref = (
+    all.find(v => /ko-KR/i.test(v.lang) && /microsoft/i.test(v.name)) ||
+    all.find(v => /ko-KR/i.test(v.lang) && /google/i.test(v.name)) ||
+    all.find(v => /ko-KR/i.test(v.lang)) ||
+    all.find(v => v.lang.startsWith('ko'))
+  );
+  tts.preferredKoVoice = koPref || null;
 }
 ttsLoadVoices();
 if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
@@ -4842,12 +5175,14 @@ async function ttsPlayGoogle(text) {
 
 // Web Speech API 폴백
 function ttsPlayWeb(text) {
-  const isKo = currentLang === 'ko';
+  const isKo = currentLang === 'ko' || (_kjvInlineLang === 'ko' && document.getElementById('kjvInlineWrap')?.style.display !== 'none');
   const u = new SpeechSynthesisUtterance(text);
   u.lang  = isKo ? 'ko-KR' : 'en-US';
   u.rate  = TTS_SPEEDS[tts.speedIdx];
   u.pitch = 1.0;
-  if (!isKo && tts.preferredVoice) u.voice = tts.preferredVoice;
+  u.volume = 1.0;
+  if (isKo && tts.preferredKoVoice) u.voice = tts.preferredKoVoice;
+  else if (!isKo && tts.preferredVoice) u.voice = tts.preferredVoice;
 
   u.onboundary = (e) => {
     if (e.name === 'word') {
