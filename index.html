@@ -1600,8 +1600,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <!-- 오늘의 말씀 오버랩 -->
       <div class="cover-verse-wrap" id="coverVerseBox">
         <div class="cover-verse-deco">✦</div>
-        <p class="cover-verse-text"></p>
-        <p class="cover-verse-ref"></p>
+        <p class="cover-verse-text" id="coverVerseText"></p>
+        <p class="cover-verse-ref" id="coverVerseRef"></p>
       </div>
     </div>
   </div>
@@ -3250,8 +3250,8 @@ async function loadVersesData(){
 }
 
 async function loadTodayVerse(){
-  const verseText = document.querySelector('.cover-verse-text');
-  const verseRef  = document.querySelector('.cover-verse-ref');
+  const verseText = document.getElementById('coverVerseText');
+  const verseRef  = document.getElementById('coverVerseRef');
   if(!verseText || !verseRef) return;
 
   // startDate 확보
