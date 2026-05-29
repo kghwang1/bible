@@ -53,48 +53,50 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .start-btn{width:100%;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#a07020,#c9a84c);background-size:200%;color:#fff;font-size:1.05rem;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.08em;box-shadow:0 4px 20px rgba(201,168,76,.4);transition:all .3s;position:relative;z-index:2}
 .start-btn:hover{transform:translateY(-2px)}
 .cover-photo{width:92%;max-width:400px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);position:relative;z-index:1}
-.cover-photo img{width:100%;height:23.4vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
-.cover-photo-empty{width:100%;min-height:23.4vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(201,168,76,.06);border-radius:14px}
+.cover-photo img{width:100%;height:27vh;object-fit:cover;object-position:center 20%;display:block;opacity:.88;filter:brightness(1.15)}
+.cover-photo-empty{width:100%;min-height:27vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(201,168,76,.06);border-radius:14px}
 .cover-photo-empty span{font-size:1.5rem;opacity:.5}
 .cover-photo-empty p{font-size:.72rem;color:#c9a84c;opacity:.6;margin:0}
 
-/* 표지 말씀 구절 - 사진 하단 카드 */
+/* 표지 말씀 구절 - 사진 좌측 오버랩 */
 .cover-verse-wrap{
-  width:92%;
-  max-width:400px;
-  margin-top:12px;
-  padding:16px 18px;
-  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(139,96,16,.08));
-  border:1px solid rgba(201,168,76,.35);
-  border-radius:14px;
-  box-shadow:0 4px 18px rgba(0,0,0,.35);
-  display:flex;flex-direction:column;align-items:center;
-  text-align:center;
-  z-index:1;
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:62%;
+  padding:12px 12px 12px 16px;
+  background:linear-gradient(90deg, rgba(20,12,4,.82) 0%, rgba(20,12,4,.7) 70%, transparent 100%);
+  display:flex; flex-direction:column; justify-content:center;
+  text-align:left;
+  z-index:2;
 }
 .cover-verse-deco{
-  font-size:.7rem;color:#e8c97a;
-  margin-bottom:10px;
-  opacity:.9;
-  letter-spacing:3px;
+  font-size:.62rem; color:#e8c97a;
+  margin-bottom:7px;
+  opacity:.95;
+  letter-spacing:2px;
   font-weight:700;
 }
 .cover-verse-text{
   font-family:'Noto Serif KR',serif;
-  font-size:.95rem;
-  color:#fdf3dc;
-  line-height:1.9;
+  font-size:.8rem;
+  color:#fff;
+  line-height:1.6;
   font-weight:600;
   letter-spacing:.01em;
   word-break:keep-all;
-  text-shadow:0 1px 2px rgba(0,0,0,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.9);
+  display:-webkit-box;
+  -webkit-line-clamp:6;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 .cover-verse-ref{
-  margin-top:10px;
-  font-size:.78rem;
+  margin-top:7px;
+  font-size:.68rem;
   color:#e8c97a;
   font-weight:700;
-  letter-spacing:.06em;
+  letter-spacing:.04em;
+  text-shadow:0 1px 2px rgba(0,0,0,.9);
 }
 
 /* 목록 */
@@ -1519,7 +1521,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
-    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 12-40</div>
+    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 13-20</div>
     <!-- 메뉴: 버전 / 읽는방법 / 부록 -->
     <div class="plan-select-row" style="gap:8px">
 
@@ -1602,12 +1604,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         alt="표지 사진"
         style="display:block"
         onerror="this.style.display='none';document.getElementById('coverPhotoEmpty').style.display='flex'">
-    </div>
-    <!-- 오늘의 말씀 (사진 하단) -->
-    <div class="cover-verse-wrap" id="coverVerseBox">
-      <div class="cover-verse-deco">✦ 오늘의 말씀 ✦</div>
-      <p class="cover-verse-text" id="coverVerseText"></p>
-      <p class="cover-verse-ref" id="coverVerseRef"></p>
+      <!-- 오늘의 말씀 (사진 좌측 오버랩) -->
+      <div class="cover-verse-wrap" id="coverVerseBox">
+        <div class="cover-verse-deco">✦ 오늘의 말씀 ✦</div>
+        <p class="cover-verse-text" id="coverVerseText"></p>
+        <p class="cover-verse-ref" id="coverVerseRef"></p>
+      </div>
     </div>
   </div>
 </div>
@@ -3695,7 +3697,25 @@ const BSK_VOL = {
 };
 
 function godpiaUrl(bid,ch){
-  const vol=GODPIA_VOL[bid]||'gen';
+  let vol=GODPIA_VOL[bid]||'gen';
+  // NIV(영어)는 일부 책의 vol 코드가 한글본과 다름 → 보정
+  if(curVer==='NIV'){
+    const NIV_VOL_FIX={
+      22:'sng',    // 아가 (Song)
+      26:'ezk',    // 에스겔
+      29:'jol',    // 요엘
+      32:'jnh',    // 요나
+      34:'nam',    // 나훔
+      41:'mrk',    // 마가복음 (godpia 확인)
+      42:'luke',   // 누가복음
+      43:'john',   // 요한복음
+      59:'jas',    // 야고보서
+      62:'1jn',    // 요한1서
+      63:'2jn',    // 요한2서
+      64:'3jn'     // 요한3서
+    };
+    if(NIV_VOL_FIX[bid]) vol=NIV_VOL_FIX[bid];
+  }
 
   if(curVer==='KJH'){
     return 'https://www.godpia.com/read/reading.asp?ver=kjh&vol='+vol+'&chap='+ch;
