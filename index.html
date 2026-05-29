@@ -1519,7 +1519,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
-    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 11-48</div>
+    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 12-40</div>
     <!-- 메뉴: 버전 / 읽는방법 / 부록 -->
     <div class="plan-select-row" style="gap:8px">
 
@@ -3267,7 +3267,7 @@ function initCover(){
   document.getElementById('startDateInput').value = ST.startDate || '';
   document.getElementById('readerInput').value    = ST.reader    || '';
   document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('selBtn'+curPlan).classList.add('on');
+  document.getElementById('selBtn'+curPlan)?.classList.add('on');
   updateEndDate();
   loadCoverPhoto();
   loadTodayVerse();
@@ -3277,12 +3277,6 @@ function initCover(){
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
-  // 빌드스탬프 줄에 진단 정보 병기 (저장값 확인용)
-  try{
-    let saved=null; try{ saved=localStorage.getItem('bible_curVer'); }catch(e){ saved='LS차단'; }
-    const bs=document.getElementById('buildStamp');
-    if(bs) bs.textContent='수정11-48 저장='+(saved===null?'없음':saved)+' 복원='+curVer;
-  }catch(e){}
   // 플랜 드롭다운 초기값
   const pl = document.getElementById('planDropLabel');
   if(pl) pl.textContent = curPlan===2 ? '성경순' : '연대순';
@@ -3636,12 +3630,6 @@ function selectVerCoverDrop(ver, label){
   const vd = document.getElementById('verDrop');
   if(vd) vd.style.display='none';
   updateVerTopBtn();
-  // 선택 직후 저장 결과 즉시 확인
-  try{
-    let chk=null; try{ chk=localStorage.getItem('bible_curVer'); }catch(e){ chk='LS차단'; }
-    const bs=document.getElementById('buildStamp');
-    if(bs) bs.textContent='선택='+ver+' → 즉시읽기='+(chk===null?'저장실패':chk);
-  }catch(e){}
 }
 
 function selectPlanDrop(n, label){
