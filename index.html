@@ -1519,6 +1519,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
+    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 11:36</div>
     <!-- 메뉴: 버전 / 읽는방법 / 부록 -->
     <div class="plan-select-row" style="gap:8px">
 
@@ -3271,23 +3272,11 @@ function initCover(){
   loadCoverPhoto();
   loadTodayVerse();
   // 버전 드롭다운 초기값 - 별도 저장된 버전 우선
-  let _dv=null;
-  try{ _dv = localStorage.getItem('bible_curVer'); if(_dv) curVer = _dv; else curVer = ST.ver || 'GAE'; }
+  try{ const sv = localStorage.getItem('bible_curVer'); if(sv) curVer = sv; else curVer = ST.ver || 'GAE'; }
   catch(e){ curVer = ST.ver || 'GAE'; }
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
-  // ▼ 진단 배지 (확인 후 제거) ▼
-  try{
-    let d=document.getElementById('verDiagBadge');
-    if(!d){ d=document.createElement('div'); d.id='verDiagBadge';
-      d.style.cssText='position:fixed;left:6px;bottom:6px;z-index:99999;background:rgba(0,0,0,.88);color:#7fffa0;font-size:11px;padding:5px 8px;border-radius:7px;font-family:monospace';
-      d.onclick=function(){ this.style.display='none'; };
-      document.body.appendChild(d); }
-    let allKeys=''; try{ allKeys = Object.keys(localStorage).join(','); }catch(e){ allKeys='접근불가'; }
-    d.textContent='저장된버전='+(_dv===null?'(없음)':_dv)+' | 복원='+curVer+' | 키들:'+allKeys;
-  }catch(e){}
-  // ▲ 진단 배지 끝 ▲
   // 플랜 드롭다운 초기값
   const pl = document.getElementById('planDropLabel');
   if(pl) pl.textContent = curPlan===2 ? '성경순' : '연대순';
@@ -3641,12 +3630,6 @@ function selectVerCoverDrop(ver, label){
   const vd = document.getElementById('verDrop');
   if(vd) vd.style.display='none';
   updateVerTopBtn();
-  // 진단: 방금 저장한 값을 즉시 다시 읽어 표시
-  try{
-    const check = localStorage.getItem('bible_curVer');
-    let d=document.getElementById('verDiagBadge');
-    if(d) d.textContent='방금선택='+ver+' → 다시읽기='+(check===null?'저장실패!':check);
-  }catch(e){}
 }
 
 function selectPlanDrop(n, label){
