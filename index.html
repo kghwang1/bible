@@ -3271,11 +3271,23 @@ function initCover(){
   loadCoverPhoto();
   loadTodayVerse();
   // 버전 드롭다운 초기값 - 별도 저장된 버전 우선
-  try{ const sv = localStorage.getItem('bible_curVer'); if(sv) curVer = sv; else curVer = ST.ver || 'GAE'; }
+  let _dv=null;
+  try{ _dv = localStorage.getItem('bible_curVer'); if(_dv) curVer = _dv; else curVer = ST.ver || 'GAE'; }
   catch(e){ curVer = ST.ver || 'GAE'; }
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
+  // ▼ 진단 배지 (확인 후 제거) ▼
+  try{
+    let d=document.getElementById('verDiagBadge');
+    if(!d){ d=document.createElement('div'); d.id='verDiagBadge';
+      d.style.cssText='position:fixed;left:6px;bottom:6px;z-index:99999;background:rgba(0,0,0,.88);color:#7fffa0;font-size:11px;padding:5px 8px;border-radius:7px;font-family:monospace';
+      d.onclick=function(){ this.style.display='none'; };
+      document.body.appendChild(d); }
+    let allKeys=''; try{ allKeys = Object.keys(localStorage).join(','); }catch(e){ allKeys='접근불가'; }
+    d.textContent='저장된버전='+(_dv===null?'(없음)':_dv)+' | 복원='+curVer+' | 키들:'+allKeys;
+  }catch(e){}
+  // ▲ 진단 배지 끝 ▲
   // 플랜 드롭다운 초기값
   const pl = document.getElementById('planDropLabel');
   if(pl) pl.textContent = curPlan===2 ? '성경순' : '연대순';
@@ -3603,20 +3615,38 @@ function toggleDrop(id){
 }
 // 드롭다운 외부 클릭 시 닫기
 document.addEventListener('click', function(e){
-  if(!e.target.closest('#verDropWrap') && !e.target.closest('#planDropWrap')){
-    ['verDrop','planDrop'].forEach(d=>{
-      const el=document.getElementById(d); if(el) el.style.display='none';
-    });
+  // 드롭다운 자체(항목 포함) 또는 래퍼 안을 클릭한 경우는 닫지 않음
+  if(e.target.closest('#verDropWrap') || e.target.closest('#planDropWrap')
+     || e.target.closest('#verDrop') || e.target.closest('#planDrop')){
+    return;
   }
+  ['verDrop','planDrop'].forEach(d=>{
+    const el=document.getElementById(d); if(el) el.style.display='none';
+  });
 });
 
 function selectVerCoverDrop(ver, label){
-  curVer = ver; ST.ver = ver; saveST();
-  // 별도 키에도 저장 (플랜 변경에 무관하게 유지)
-  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
-  document.getElementById('verDropLabel').textContent = label;
-  document.getElementById('verDrop').style.display='none';
+  curVer = ver;
+  if(typeof ST !== 'object' || !ST) ST = {checks:{},reader:'',startDate:'',filter:'all'};
+  ST.ver = ver;
+  try{ saveST(); }catch(e){}
+  // 별도 키에도 저장 (플랜 변경/재로딩에 무관하게 유지)
+  try{
+    localStorage.setItem('bible_curVer', ver);
+  }catch(e){}
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const txt = label || verLabels[ver] || '개역개정';
+  const vl = document.getElementById('verDropLabel');
+  if(vl) vl.textContent = txt;
+  const vd = document.getElementById('verDrop');
+  if(vd) vd.style.display='none';
   updateVerTopBtn();
+  // 진단: 방금 저장한 값을 즉시 다시 읽어 표시
+  try{
+    const check = localStorage.getItem('bible_curVer');
+    let d=document.getElementById('verDiagBadge');
+    if(d) d.textContent='방금선택='+ver+' → 다시읽기='+(check===null?'저장실패!':check);
+  }catch(e){}
 }
 
 function selectPlanDrop(n, label){
