@@ -1521,7 +1521,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen active" id="s-cover">
   <div class="cover-wrap">
     <div class="cover-title" id="coverTitle">목장 성경 읽기</div>
-    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 13-20</div>
+    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-05-29 14-20</div>
     <!-- 메뉴: 버전 / 읽는방법 / 부록 -->
     <div class="plan-select-row" style="gap:8px">
 
@@ -2717,13 +2717,13 @@ const BNAME_KO = {
 const GODPIA_VOL = {
   1:'gen',2:'exo',3:'lev',4:'num',5:'deu',6:'jos',7:'jdg',8:'rut',
   9:'1sa',10:'2sa',11:'1ki',12:'2ki',13:'1ch',14:'2ch',15:'ezr',
-  16:'neh',17:'est',18:'job',19:'psa',20:'pro',21:'ecc',22:'son',
-  23:'isa',24:'jer',25:'lam',26:'eze',27:'dan',28:'hos',29:'joe',
-  30:'amo',31:'oba',32:'jon',33:'mic',34:'nah',35:'hab',36:'zep',
-  37:'hag',38:'zec',39:'mal',40:'mat',41:'mar',42:'luk',43:'jhn',
+  16:'neh',17:'est',18:'job',19:'psa',20:'pro',21:'ecc',22:'sng',
+  23:'isa',24:'jer',25:'lam',26:'ezk',27:'dan',28:'hos',29:'jol',
+  30:'amo',31:'oba',32:'jnh',33:'mic',34:'nam',35:'hab',36:'zep',
+  37:'hag',38:'zec',39:'mal',40:'mat',41:'mrk',42:'luk',43:'jhn',
   44:'act',45:'rom',46:'1co',47:'2co',48:'gal',49:'eph',50:'php',
   51:'col',52:'1th',53:'2th',54:'1ti',55:'2ti',56:'tit',57:'phm',
-  58:'heb',59:'jam',60:'1pe',61:'2pe',62:'1jo',63:'2jo',64:'3jo',
+  58:'heb',59:'jas',60:'1pe',61:'2pe',62:'1jn',63:'2jn',64:'3jn',
   65:'jud',66:'rev'
 };
 
@@ -3698,21 +3698,11 @@ const BSK_VOL = {
 
 function godpiaUrl(bid,ch){
   let vol=GODPIA_VOL[bid]||'gen';
-  // NIV(영어)는 일부 책의 vol 코드가 한글본과 다름 → 보정
+  // NIV(영어)는 누가복음만 한글본과 vol 코드가 다름 → 보정
+  // (요한복음 등 나머지는 GODPIA_VOL 공통 코드로 한글본·NIV 모두 정상)
   if(curVer==='NIV'){
     const NIV_VOL_FIX={
-      22:'sng',    // 아가 (Song)
-      26:'ezk',    // 에스겔
-      29:'jol',    // 요엘
-      32:'jnh',    // 요나
-      34:'nam',    // 나훔
-      41:'mrk',    // 마가복음 (godpia 확인)
-      42:'luke',   // 누가복음
-      43:'john',   // 요한복음
-      59:'jas',    // 야고보서
-      62:'1jn',    // 요한1서
-      63:'2jn',    // 요한2서
-      64:'3jn'     // 요한3서
+      42:'luke'    // 누가복음
     };
     if(NIV_VOL_FIX[bid]) vol=NIV_VOL_FIX[bid];
   }
