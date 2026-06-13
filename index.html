@@ -200,17 +200,16 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 /* 목록 */
 #s-list{background:#160e04}
-.list-header{background:linear-gradient(135deg,#221508,#3a2510,#221508);border-bottom:2px solid #c9a84c;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.hdr-cross{font-size:20px;color:#c9a84c}
-.hdr-info{flex:1;min-width:0}
-.hdr-info h1{font-family:'Noto Serif KR',serif;font-size:.95rem;color:#e8c97a;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hdr-info p{font-size:.6rem;color:#8b5e2a;margin-top:1px}
-.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
-.prog-label{font-size:.6rem;color:#c9a84c;font-weight:600}
-.prog-bar{width:100px;height:5px;background:rgba(255,255,255,.12);border-radius:8px;overflow:hidden}
+.list-header{background:linear-gradient(135deg,#221508,#3a2510,#221508);border-bottom:2px solid #c9a84c;padding:10px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lh-left{flex:0 0 auto}
+.lh-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0}
+.lh-ver{font-size:.94rem;color:#e8c97a;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.04em;line-height:1.3}
+.lh-plan{font-size:.81rem;color:#a07840;font-weight:600;letter-spacing:.04em;line-height:1.3}
+.lh-right{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.prog-label{font-size:.78rem;color:#c9a84c;font-weight:600}
+.prog-bar{width:80px;height:5px;background:rgba(255,255,255,.12);border-radius:8px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#e8c97a);border-radius:8px;transition:width .6s}
-.hdr-btn-row{display:flex;gap:5px}
-.hdr-btn{font-size:.62rem;color:#c9a84c;cursor:pointer;border:1px solid rgba(201,168,76,.4);border-radius:12px;padding:3px 8px;background:transparent;white-space:nowrap}
+.hdr-btn{font-size:.81rem;color:#c9a84c;cursor:pointer;border:1px solid rgba(201,168,76,.4);border-radius:12px;padding:5px 12px;background:transparent;white-space:nowrap}
 .list-filter{padding:7px 13px;background:#f7eed6;border-bottom:1px solid #eedcb0;display:flex;gap:6px;align-items:center;flex-shrink:0}
 .list-filter span{font-size:.65rem;color:#6b4d28;font-weight:600}
 .f-btn{padding:4px 11px;border-radius:20px;border:1px solid #c9a84c;background:#fff;color:#5c3d1e;font-size:.65rem;cursor:pointer;transition:all .18s;font-weight:500}
@@ -1599,6 +1598,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 /* 버튼 공통 */
 .done-btn{height:26px;padding:0 7px;border-radius:8px;border:none;cursor:pointer;font-size:.65rem;font-weight:700;line-height:1;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;white-space:nowrap;min-width:54px}
 .rh-abtn2{height:24px;padding:0 9px;border-radius:8px;border:1.5px solid rgba(201,168,76,.5);background:rgba(201,168,76,.12);color:#c9a84c;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;transition:all .18s}
+.rh-ver-label{font-size:.88rem;color:#8b5e2a;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.02em;white-space:nowrap}
 
 
 /* KJV 장 제목 */
@@ -1752,17 +1752,16 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 목록 -->
 <div class="screen" id="s-list">
   <div class="list-header">
-    <div class="hdr-cross">✝</div>
-    <div class="hdr-info">
-      <h1 id="listTitle">성경읽기</h1>
-      <p id="listSubtitle">생명수 목장</p>
+    <div class="lh-left">
+      <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
     </div>
-    <div class="hdr-right">
+    <div class="lh-center">
+      <span class="lh-ver" id="listVerLabel">개역개정</span>
+      <span class="lh-plan" id="listPlanLabel">연대순 읽기</span>
+    </div>
+    <div class="lh-right">
       <div class="prog-label" id="progLabel">0 / 365</div>
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-      <div class="hdr-btn-row">
-        <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
-      </div>
     </div>
   </div>
   <div class="list-filter">
@@ -1778,7 +1777,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen" id="s-read">
   <!-- 성경 직접보기 상단 바 -->
   <div id="bibleWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:6px 10px;background:rgba(20,20,20,0.82);backdrop-filter:blur(6px)">
-    <button onclick="closeBibleDirect()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:18px;padding:5px 13px;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700">처음으로</button>
+    <button onclick="closeBibleDirect()" class="hdr-btn">🏠 처음으로</button>
     <span id="verDisplayBtn" style="color:#e8c97a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">개역개정</span>
     <button id="bsPickBtn" onclick="toggleBiblePicker()" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절이동</button>
   </div>
@@ -1809,13 +1808,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <!-- 왼쪽: 위=처음·목록, 아래=A+기본A- -->
       <div class="rh-col-left">
         <div class="rh-top-left">
-          <button class="rh-nbtn" onclick="showScreen('s-cover')">처음</button>
-          <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+          <button class="hdr-btn" onclick="showScreen('s-cover')" style="color:#5c3d1e;border-color:rgba(92,61,30,.45)">🏠 처음으로</button>
         </div>
         <div class="rh-bot-left">
-          <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
-          <span class="font-label" id="fontLabel">기본</span>
-          <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
+          <span class="rh-ver-label" id="rhVerLabel">개역개정</span>
         </div>
       </div>
       <!-- 중앙: 날짜+제목 전체 높이 상하중앙 -->
@@ -1823,7 +1819,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <div class="day-tag" id="dayTag"></div>
         <h2 id="readTitle"></h2>
       </div>
-      <!-- 오른쪽: 위=이미읽음, 아래=부록·스피커 -->
+      <!-- 오른쪽: 위=이미읽음, 아래=글자크기 -->
       <div class="rh-col-right">
         <div class="rh-top-right">
           <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
@@ -1831,7 +1827,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           </button>
         </div>
         <div class="rh-bot-right">
-          <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
+          <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
+          <span class="font-label" id="fontLabel">기본</span>
+          <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
         </div>
       </div>
     </div>
@@ -1855,7 +1853,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 부록 -->
 <div class="screen" id="s-appendix">
   <div class="appendix-hdr">
-    <button class="nav-btn" onclick="showScreen('s-cover')">✕ 닫기</button>
+    <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
     <div class="appendix-title">✝ 부록</div>
   </div>
   <div class="appendix-body">
@@ -1895,7 +1893,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div class="appendix-hdr">
     <button class="nav-btn" onclick="showScreen('s-appendix')">← 부록</button>
     <div class="appendix-title">🗺 성경 지도</div>
-    <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
+    <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
   </div>
   <div class="map-list-body">
 
@@ -2005,7 +2003,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div class="appendix-hdr">
     <button class="nav-btn" onclick="showScreen('s-appendix')">← 부록</button>
     <div class="appendix-title" id="appendixContentTitle">—</div>
-    <button class="nav-btn" onclick="showScreen('s-cover')">처음으로</button>
+    <button class="hdr-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
   </div>
   <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;background:#fff">
     <iframe id="appendixFrame" style="width:100%;flex:1;border:none;background:#fff" src=""></iframe>
@@ -2016,7 +2014,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <div class="screen" id="s-kjv-reader">
   <!-- 성경 버튼으로 진입 시 통합 상단바 -->
   <div id="kjvWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:6px 10px;background:rgba(20,20,20,0.82);backdrop-filter:blur(6px)">
-    <button onclick="closeKJVDirect()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:18px;padding:5px 13px;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700">처음으로</button>
+    <button onclick="closeKJVDirect()" class="hdr-btn">🏠 처음으로</button>
     <span id="kjvVerDisplayBtn" style="color:#e8c97a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">KJV 한글</span>
     <button onclick="kjvOpenBookPicker()" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절이동</button>
   </div>
@@ -2025,13 +2023,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="rh-grid">
       <div class="rh-col-left">
         <div class="rh-top-left">
-          <button class="rh-nbtn" onclick="closeKJVReader()">처음</button>
-          <button class="rh-nbtn" onclick="showScreen('s-list')">목록</button>
+          <button class="hdr-btn" onclick="closeKJVReader()" style="color:#5c3d1e;border-color:rgba(92,61,30,.45)">🏠 처음으로</button>
         </div>
         <div class="rh-bot-left">
-          <button class="rh-fbtn" onclick="kjvChangeFont(1)">A+</button>
-          <span class="font-label" id="kjvFontLabel">기본</span>
-          <button class="rh-fbtn" onclick="kjvChangeFont(-1)">A-</button>
+          <span class="rh-ver-label" id="kjvRhVerLabel">KJV 한글</span>
         </div>
       </div>
       <div class="rh-col-center">
@@ -2045,8 +2040,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           </button>
         </div>
         <div class="rh-bot-right">
-          <button class="rh-abtn2" onclick="showScreen('s-appendix')">부록</button>
-          <button class="rh-abtn2" onclick="ttsOpen()">🔊</button>
+          <button class="rh-fbtn" onclick="kjvChangeFont(1)">A+</button>
+          <span class="font-label" id="kjvFontLabel">기본</span>
+          <button class="rh-fbtn" onclick="kjvChangeFont(-1)">A-</button>
         </div>
       </div>
     </div>
@@ -2282,7 +2278,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="cel-prayer-content" id="celPrayerContent">—</div>
     </div>
     <div class="cel-btns">
-      <button class="cel-btn" onclick="showScreen('s-cover')">처음으로</button>
+      <button class="cel-btn" onclick="showScreen('s-cover')">🏠 처음으로</button>
       <button class="cel-btn" onclick="showScreen('s-list')">목록으로</button>
       <button class="cel-btn next" onclick="goNext()">다음 읽기 →</button>
     </div>
@@ -3655,8 +3651,14 @@ function renderList(){
   const tidx=ST.startDate?todayIdx(ST.startDate):0;
   const todayN=PLAN[Math.min(tidx,PLAN.length-1)].n;
   const planName=curPlan===1?'연대순 읽기':'성경순 읽기';
-  document.getElementById('listTitle').textContent=planName;
-  document.getElementById('listSubtitle').textContent = getGroupName() + (ST.reader ? ' · '+ST.reader : '');
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vEl = document.getElementById('listVerLabel');
+  if(vEl) vEl.textContent = verLabels[curVer] || '개역개정';
+  const pEl = document.getElementById('listPlanLabel');
+  if(pEl) pEl.textContent = (curPlan===2?'성경순':'연대순') + ' 읽기';
+  // 구 ID 호환 (있으면 업데이트)
+  const lt=document.getElementById('listTitle'); if(lt) lt.textContent=planName;
+  const ls=document.getElementById('listSubtitle'); if(ls) ls.textContent='';
   const items=PLAN.filter(p=>ST.filter==='done'?ST.checks[p.n]:ST.filter==='unread'?!ST.checks[p.n]:true);
   document.getElementById('planList').innerHTML=items.map(p=>{
     const d=nthDate(ST.startDate,p.n-1);
@@ -3884,11 +3886,18 @@ function selectVerCover(ver, btn){
 
 function updateVerTopBtn(){
   const btn = document.getElementById('verToggleBtn');
-  if(!btn) return;
-  const labels = {'GAE':'개역','SAENEW':'새번역','HDM':'현대인','NIV':'NIV','KJH':'KJV한글','KJV':'KJV영어'};
-  btn.textContent = labels[curVer] || '개역';
-  btn.style.color = curVer==='SAENEW'?'#7ecbff': curVer==='KJH'?'#ffd27a': curVer==='KJV'?'#ff9e7a':'';
-  btn.style.borderColor = btn.style.color;
+  const labels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const shortLabels = {'GAE':'개역','SAENEW':'새번역','HDM':'현대인','NIV':'NIV','KJH':'KJV한글','KJV':'KJV영어'};
+  if(btn){
+    btn.textContent = shortLabels[curVer] || '개역';
+    btn.style.color = curVer==='SAENEW'?'#7ecbff': curVer==='KJH'?'#ffd27a': curVer==='KJV'?'#ff9e7a':'';
+    btn.style.borderColor = btn.style.color;
+  }
+  // 읽기 화면 좌측 버전 라벨 동기화
+  const rvl = document.getElementById('rhVerLabel');
+  if(rvl) rvl.textContent = labels[curVer] || '개역개정';
+  const kjvRvl = document.getElementById('kjvRhVerLabel');
+  if(kjvRvl) kjvRvl.textContent = labels[curVer] || '개역개정';
 }
 
 // 성경 버전 선택 (공통) — 설정 버전
