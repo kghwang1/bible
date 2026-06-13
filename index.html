@@ -258,7 +258,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   z-index:9999;
   background:rgba(255,255,255,.22);color:#fff;
   border:1.5px solid rgba(255,255,255,.55);border-radius:10px;
-  padding:5px 12px;font-size:.78rem;font-weight:700;
+  padding:6px 13px;font-size:.86rem;font-weight:700;
   font-family:'Noto Sans KR',sans-serif;cursor:pointer;
   white-space:nowrap;
 }
@@ -3819,10 +3819,12 @@ function openBareRead(){
   if(p){
     const segs = parseRange(p.r);
     if(segs && segs.length){
-      url = godpiaUrl(segs[0].bid, segs[0].ch) + '&_t=' + Date.now();
+      // 읽기는 항상 개역개정(gae) 고정
+      const vol = GODPIA_VOL[segs[0].bid] || 'gen';
+      url = 'https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+segs[0].ch+'&_t='+Date.now();
     }
   }
-  if(!url) url = godpiaUrl(1, 1) + '&_t=' + Date.now();
+  if(!url) url = 'https://www.godpia.com/read/reading.asp?ver=gae&vol=gen&chap=1&_t='+Date.now();
   document.getElementById('bareReadFrame').src = url;
   // position:fixed 화면이므로 showScreen 대신 직접 표시
   document.getElementById('s-bare-read').style.display = 'flex';
