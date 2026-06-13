@@ -235,6 +235,34 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .item-done-mark{font-size:.68rem;color:#3a7050;font-weight:700;flex-shrink:0}
 .item-arrow{font-size:11px;color:#a07850;flex-shrink:0}
 
+/* 읽기 (bare) 화면 */
+#s-bare-read{
+  position:fixed;inset:0;z-index:500;
+  background:#1a4a8a;display:flex;flex-direction:column;
+}
+#s-bare-read[style*="display:none"]{display:none!important}
+/* godpia 상단 네비(약 60px)를 위로 밀어 숨김 */
+.bare-read-clip{
+  flex:1;overflow:hidden;position:relative;
+}
+.bare-read-frame{
+  width:100%;
+  height:calc(100% + 68px);
+  border:none;display:block;
+  margin-top:-68px;   /* godpia nav 숨김 */
+}
+/* [홈으로] — 성경읽기 파란 바 안, 텍스트 우측 */
+.bare-home-btn{
+  position:absolute;
+  top:20px;left:148px;   /* 파란 바 수직 중앙, '성경 읽기' 글자 오른쪽 */
+  z-index:9999;
+  background:rgba(255,255,255,.22);color:#fff;
+  border:1.5px solid rgba(255,255,255,.55);border-radius:10px;
+  padding:5px 12px;font-size:.78rem;font-weight:700;
+  font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+  white-space:nowrap;
+}
+
 /* 읽기 */
 #s-read{background:#f0ede6}
 
@@ -1664,10 +1692,11 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <!-- 버전 안내 -->
     <p style="font-size:.74rem;color:#a08840;margin:-4px 0 0;letter-spacing:.02em">성경버전은 ⚙ 설정에서 바꿀 수 있습니다</p>
 
-    <!-- 행2: 성경책 / 부록 -->
-    <div style="display:flex;gap:10px;width:70%;margin-top:24px">
-      <button class="start-btn" style="width:50%;background:linear-gradient(135deg,#2a6040,#1a4028,#2a6040)" onclick="openBibleDirect()">📖 성경책</button>
-      <button type="button" class="start-btn" style="width:50%;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" id="selBtnApp" onclick="showScreen('s-appendix')">📚 부록</button>
+    <!-- 행2: 성경책 / 읽기 / 부록 -->
+    <div style="display:flex;gap:8px;width:70%;margin-top:24px">
+      <button class="start-btn" style="flex:1;padding:9px;background:linear-gradient(135deg,#2a6040,#1a4028,#2a6040)" onclick="openBibleDirect()">성경책</button>
+      <button class="start-btn" style="flex:1;padding:9px;background:linear-gradient(135deg,#4a3080,#2a1860,#4a3080)" onclick="openBareRead()">🔊 읽기</button>
+      <button type="button" class="start-btn" style="flex:1;padding:9px;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" id="selBtnApp" onclick="showScreen('s-appendix')">📚 부록</button>
     </div>
 
     <!-- 하단 교회 -->
@@ -1746,6 +1775,14 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     </div>
 
     <button type="button" class="set-done-btn" onclick="closeSettings()">완료</button>
+  </div>
+</div>
+
+<!-- 읽기 (bare) 화면 -->
+<div class="screen" id="s-bare-read" style="display:none">
+  <div class="bare-read-clip">
+    <button class="bare-home-btn" onclick="closeBareRead()">🏠 홈으로</button>
+    <iframe id="bareReadFrame" class="bare-read-frame" src="about:blank" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -3773,6 +3810,28 @@ function cycleVer(){
 
 // 드롭다운 토글
 // ⚙ 설정 모달 열기/닫기
+// 🔊 읽기 (bare mode) — 오늘 본문을 헤더 없이 표시
+function openBareRead(){
+  const idx = todayIdx(ST.startDate);
+  const n = (idx >= 0 && idx < PLAN.length) ? PLAN[idx].n : 1;
+  const p = PLAN.find(x => x.n === n) || PLAN[0];
+  let url;
+  if(p){
+    const segs = parseRange(p.r);
+    if(segs && segs.length){
+      url = godpiaUrl(segs[0].bid, segs[0].ch) + '&_t=' + Date.now();
+    }
+  }
+  if(!url) url = godpiaUrl(1, 1) + '&_t=' + Date.now();
+  document.getElementById('bareReadFrame').src = url;
+  // position:fixed 화면이므로 showScreen 대신 직접 표시
+  document.getElementById('s-bare-read').style.display = 'flex';
+}
+function closeBareRead(){
+  document.getElementById('bareReadFrame').src = 'about:blank';
+  document.getElementById('s-bare-read').style.display = 'none';
+}
+
 function openSettings(){
   // 설정 열기 전 현재 저장값으로 모든 필드 동기화
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
