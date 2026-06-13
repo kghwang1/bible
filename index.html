@@ -160,8 +160,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   inset:0;
   padding:14px 18px;
   background:linear-gradient(180deg, rgba(20,12,4,.52) 0%, rgba(20,12,4,.36) 45%, rgba(20,12,4,.62) 100%);
-  display:flex; flex-direction:column; justify-content:center; align-items:center;
-  text-align:center;
+  display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
+  text-align:left;
   z-index:2;
 }
 .cover-verse-deco{
@@ -1657,8 +1657,11 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       </div>
     </div>
 
+    <!-- 버전 안내 -->
+    <p style="font-size:.74rem;color:#a08840;margin:-4px 0 0;letter-spacing:.02em">성경버전은 ⚙ 설정에서 바꿀 수 있습니다</p>
+
     <!-- 행2: 성경책 / 부록 -->
-    <div style="display:flex;gap:10px;width:70%">
+    <div style="display:flex;gap:10px;width:70%;margin-top:24px">
       <button class="start-btn" style="width:50%;background:linear-gradient(135deg,#2a6040,#1a4028,#2a6040)" onclick="openBibleDirect()">📖 성경책</button>
       <button type="button" class="start-btn" style="width:50%;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" id="selBtnApp" onclick="showScreen('s-appendix')">📚 부록</button>
     </div>
@@ -1691,6 +1694,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         <div id="verDrop" style="display:none;position:fixed;z-index:9999;background:#2a1f0e;border:1px solid rgba(201,168,76,.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5);min-width:140px">
           <button type="button" onclick="selectVerCoverDrop('GAE','개역개정')"  class="drop-item">개역개정</button>
           <button type="button" onclick="selectVerCoverDrop('SAENEW','새번역')" class="drop-item">새번역</button>
+          <button type="button" onclick="selectVerCoverDrop('HDM','현대인의성경')" class="drop-item">현대인의성경</button>
           <button type="button" onclick="selectVerCoverDrop('NIV','NIV 영어')"  class="drop-item">NIV 영어</button>
           <button type="button" onclick="selectVerCoverDrop('KJH','KJV 한글')"  class="drop-item">KJV 한글</button>
           <button type="button" onclick="selectVerCoverDrop('KJV','KJV 영어')"  class="drop-item">KJV 영어</button>
@@ -2972,8 +2976,8 @@ function selectPlan(n, btn){
   document.getElementById('readerInput').value    = ST.reader    || DEF_READER;
   updateEndDate();
   // 버전 버튼 상태 복원 (버전은 플랜과 무관하게 마지막 선택값 유지)
-  try{ const sv = localStorage.getItem('bible_curVer'); curVer = sv || ST.ver || 'GAE'; }
-  catch(e){ curVer = ST.ver || 'GAE'; }
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
+  catch(e){ curVer = 'GAE'; }
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   const vBtn = document.getElementById('verBtn-'+curVer);
   if(vBtn) vBtn.classList.add('on');
@@ -3062,7 +3066,7 @@ function openBibleDirect(){
   hideKJVInline();
 
   // 버전 텍스트 업데이트
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('verDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || '개역개정';
 
@@ -3161,7 +3165,7 @@ function bpRenderVersions(){
   const wrap=document.getElementById('bpVER');
   if(!wrap) return;
   const vers=[
-    ['GAE','개역개정'],['SAENEW','새번역'],
+    ['GAE','개역개정'],['SAENEW','새번역'],['HDM','현대인의성경'],
     ['NIV','NIV 영어'],['KJH','KJV 한글'],['KJV','KJV 영어']
   ];
   wrap.innerHTML='';
@@ -3177,19 +3181,22 @@ function bpRenderVersions(){
   });
 }
 
-// 보드에서 버전 선택 → curVer 변경, 책 선택 탭으로 이동
+// 보드에서 버전 선택 → curVer 변경 (런타임 전용, 설정값 변경 안 함)
 function bpSelectVersion(ver){
-  curVer = ver; ST.ver = ver; saveST();
-  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
+  curVer = ver;  // 저장 안 함 — 재시작 시 설정값으로 복원됨
   // 상단 버전 라벨/버튼 동기화
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vdLabel = document.getElementById('verDropLabel');
   if(vdLabel) vdLabel.textContent = verLabels[ver] || '개역개정';
   const vdBtn = document.getElementById('verDisplayBtn');
   if(vdBtn) vdBtn.textContent = verLabels[ver] || '개역개정';
   if(typeof updateVerTopBtn==='function') updateVerTopBtn();
   bpRenderVersions();
-  // 버전 선택 후 자연스럽게 신약/구약 선택으로 안내 (신약 먼저)
+  // 이미 로드된 장이 있으면 새 버전으로 즉시 갱신
+  if(_curBid && _curCh){
+    bpGoChapter(_curBid, _curCh);
+    return;
+  }
   bpShowTab('NT');
 }
 
@@ -3279,16 +3286,17 @@ function openBiblePickerFromHeader(){
     });
     const selBtn = document.getElementById('bpBook'+_curBid);
     if(selBtn){ selBtn.style.background='#3a5ea8'; selBtn.style.color='#fff'; selBtn.style.borderColor='#3a5ea8'; }
-    // 장 목록 생성 (현재 장 강조)
-    const maxCh = BP_CHAPS[_curBid] || 1;
-    document.getElementById('bpBookLabel').textContent = BP_BOOKS_KO[_curBid] + ' — 장 선택';
+    // 장 목록 생성 (현재 장 강조) — bid를 값으로 고정
+    const snapBid = _curBid;
+    const maxCh = BP_CHAPS[snapBid] || 1;
+    document.getElementById('bpBookLabel').textContent = BP_BOOKS_KO[snapBid] + ' — 장 선택';
     const grid = document.getElementById('bpChGrid');
     grid.innerHTML = '';
     for(let c=1; c<=maxCh; c++){
       const cb = document.createElement('button');
       cb.textContent = c;
       const ch = c;
-      cb.onclick = () => bpGoChapter(_curBid, ch);
+      cb.onclick = () => bpGoChapter(snapBid, ch);
       const isCur = (c === _curCh);
       Object.assign(cb.style,{
         padding:'10px 4px', fontSize:'.88rem', fontFamily:"'Noto Sans KR',sans-serif",
@@ -3404,9 +3412,9 @@ function initCover(){
   loadCoverPhoto();
   loadTodayVerse();
   // 버전 드롭다운 초기값 - 별도 저장된 버전 우선
-  try{ const sv = localStorage.getItem('bible_curVer'); if(sv) curVer = sv; else curVer = ST.ver || 'GAE'; }
-  catch(e){ curVer = ST.ver || 'GAE'; }
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
+  catch(e){ curVer = 'GAE'; }
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
   // 플랜 드롭다운 초기값
@@ -3588,29 +3596,25 @@ function resetChecks(){
 }
 // 설정의 모든 값을 기본값으로 되돌리기
 function resetSettings(){
-  if(!confirm('설정의 모든 값을 기본값으로 되돌릴까요?\n(버전·읽는방법·시작날짜·목장명·이름·읽음기록)')) return;
-  // 두 플랜의 읽음 기록 모두 초기화
+  if(!confirm('설정의 모든 값을 기본값으로 되돌릴까요?\n(읽는방법·시작날짜·목장명·이름·읽음기록)')) return;
+  // 두 플랜의 읽음 기록 모두 초기화 (버전은 유지)
+  const keepVer = curVer;
   [1,2].forEach(n=>{
-    const blank = {checks:{},reader:DEF_READER,startDate:todayISO(),filter:'all',ver:'GAE'};
+    const blank = {checks:{},reader:DEF_READER,startDate:todayISO(),filter:'all',ver:keepVer};
     PLAN_DATA[n].forEach(p=>blank.checks[p.n]=false);
     try{ localStorage.setItem(SK[n], JSON.stringify(blank)); }catch(e){}
   });
-  // 현재 상태도 기본값으로
+  // 현재 상태도 기본값으로 (버전 제외)
   curPlan = 2; PLAN = PLAN_DATA[2]; ST = loadST(2);
-  curVer = 'GAE';
-  try{ localStorage.setItem('bible_curVer','GAE'); }catch(e){}
   try{ localStorage.setItem('bible_group', DEF_GROUP); }catch(e){}
   // 화면 갱신
   document.getElementById('startDateInput').value = todayISO();
   document.getElementById('readerInput').value    = DEF_READER;
   document.getElementById('groupInput').value     = DEF_GROUP;
-  const vl=document.getElementById('verDropLabel'); if(vl) vl.textContent='개역개정';
   const pl=document.getElementById('planDropLabel'); if(pl) pl.textContent='성경순';
   updateCoverTitle();
   updateEndDate();
-  try{ updateVerTopBtn(); }catch(e){}
-  try{ loadTodayVerse(); }catch(e){}
-  alert('모든 설정과 읽음 기록이 기본값으로 초기화되었습니다.');
+  alert('읽음 기록과 설정이 초기화되었습니다.\n(버전은 유지됩니다)');
 }
 function startReading(){
   try{
@@ -3672,6 +3676,15 @@ function openItem(n){
   const d=nthDate(ST.startDate,p.n-1);
   let tag=d?(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+WEEKDAYS[d.getDay()]+') · 제'+p.n+'일':'제 '+p.n+'일';
 
+  // 성경직접보기 모드 잔여물 정리
+  window._bibleDirectMode = false;
+  const ov=document.getElementById('bibleWrapDirect');
+  if(ov) ov.style.display='none';
+  const hdr=document.querySelector('#s-read .read-hdr');
+  if(hdr) hdr.style.display='';
+  document.getElementById('s-read')?.classList.remove('direct-mode');
+  document.getElementById('biblePicker').style.display='none';
+
   if(curVer==='KJV' || curVer==='KJH'){
     document.getElementById('dayTag').textContent=tag;
     document.getElementById('readTitle').textContent=p.r;
@@ -3687,7 +3700,7 @@ function openItem(n){
   document.getElementById('dayTag').textContent=tag;
   document.getElementById('readTitle').textContent=p.r;
   // 상단 버전 표시 업데이트
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('verDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || '개역개정';
   // KJV 인라인 숨김
@@ -3726,13 +3739,12 @@ function expandNums(str,max){
   });
   return r;
 }
-// 읽기 화면 상단에서 버전 순환 (탭할 때마다 다음 버전)
+// 읽기 화면 상단에서 버전 순환 (탭할 때마다 다음 버전) — 런타임 전용
 function cycleVer(){
-  const order = ['GAE','SAENEW','NIV','KJH'];  // KJV영어는 표지에서만
+  const order = ['GAE','SAENEW','HDM','NIV','KJH'];  // KJV영어는 표지에서만
   const idx = order.indexOf(curVer);
-  const next = order[(idx+1) % order.length];
-  curVer = next; ST.ver = next; saveST();
-  try{ localStorage.setItem('bible_curVer', next); }catch(e){}
+  const next = order[(idx < 0 ? 0 : idx+1) % order.length];
+  curVer = next;  // 저장 안 함 — 재시작 시 설정값으로 복원됨
   // 표지 버튼 상태 동기화
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   const vBtn = document.getElementById('verBtn-'+next);
@@ -3802,17 +3814,18 @@ function selectVerCoverDrop(ver, label){
   if(typeof ST !== 'object' || !ST) ST = {checks:{},reader:'',startDate:'',filter:'all'};
   ST.ver = ver;
   try{ saveST(); }catch(e){}
-  // 별도 키에도 저장 (플랜 변경/재로딩에 무관하게 유지)
-  try{
-    localStorage.setItem('bible_curVer', ver);
-  }catch(e){}
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  // 설정 버전 키에 저장 (앱 재시작 시 이 값으로 복원)
+  try{ localStorage.setItem('bible_settings_ver', ver); }catch(e){}
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const txt = label || verLabels[ver] || '개역개정';
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = txt;
   const vd = document.getElementById('verDrop');
   if(vd) vd.style.display='none';
   updateVerTopBtn();
+  // 사용 중이라면 현재 열린 성경도 새 설정 버전으로 즉시 갱신
+  if(curN){ const p=PLAN.find(x=>x.n===curN); if(p) loadBible(p); }
+  else if(_curBid && _curCh){ bpGoChapter(_curBid, _curCh); }
 }
 
 function selectPlanDrop(n, label){
@@ -3823,40 +3836,39 @@ function selectPlanDrop(n, label){
   document.getElementById('readerInput').value    = ST.reader    || DEF_READER;
   updateEndDate();
   // 버전은 플랜과 무관하게 마지막 선택값 유지
-  try{ const sv = localStorage.getItem('bible_curVer'); curVer = sv || ST.ver || 'GAE'; }
-  catch(e){ curVer = ST.ver || 'GAE'; }
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
+  catch(e){ curVer = 'GAE'; }
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   document.getElementById('verDropLabel').textContent = verLabels[curVer] || '개역개정';
   updateVerTopBtn();
 }
 
-// 표지 버전 선택 (기존 호환)
+// 표지 버전 선택 (기존 호환) — 설정 버전
 function selectVerCover(ver, btn){
   curVer = ver;
   ST.ver = ver;
   saveST();
-  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
+  try{ localStorage.setItem('bible_settings_ver', ver); }catch(e){}
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  // 읽기 화면 상단 버튼 표시 업데이트
   updateVerTopBtn();
 }
 
 function updateVerTopBtn(){
   const btn = document.getElementById('verToggleBtn');
   if(!btn) return;
-  const labels = {'GAE':'개역','SAENEW':'새번역','NIV':'NIV','KJH':'KJV한글','KJV':'KJV영어'};
+  const labels = {'GAE':'개역','SAENEW':'새번역','HDM':'현대인','NIV':'NIV','KJH':'KJV한글','KJV':'KJV영어'};
   btn.textContent = labels[curVer] || '개역';
   btn.style.color = curVer==='SAENEW'?'#7ecbff': curVer==='KJH'?'#ffd27a': curVer==='KJV'?'#ff9e7a':'';
   btn.style.borderColor = btn.style.color;
 }
 
-// 성경 버전 선택 (공통)
+// 성경 버전 선택 (공통) — 설정 버전
 function selectVer(ver, btn){
   curVer = ver;
   ST.ver = ver;
   saveST();
-  try{ localStorage.setItem('bible_curVer', ver); }catch(e){}
+  try{ localStorage.setItem('bible_settings_ver', ver); }catch(e){}
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   if(btn) btn.classList.add('on');
   updateVerTopBtn();
@@ -3899,6 +3911,10 @@ function godpiaUrl(bid,ch){
   if(curVer==='SAENEW'){
     // 새번역: godpia saenew
     return 'https://www.godpia.com/read/reading.asp?ver=saenew&vol='+vol+'&chap='+ch;
+  }
+  if(curVer==='HDM'){
+    // 현대인의성경: godpia hyun
+    return 'https://www.godpia.com/read/reading.asp?ver=hyun&vol='+vol+'&chap='+ch;
   }
   if(curVer==='NIV'){
     // NIV 영어: godpia niv
@@ -4341,7 +4357,7 @@ function _showKJVDirectBar(){
   if(bar) bar.style.display = 'flex';
   const hdr = document.getElementById('kjvReadHdr');
   if(hdr) hdr.style.display = 'none';
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('kjvVerDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || 'KJV';
   const rh = document.getElementById('kjvReadingHeader');
