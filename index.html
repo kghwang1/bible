@@ -3582,7 +3582,15 @@ function showFeast(name){
   const el=document.getElementById('feastDisplay');
   el.textContent=name; el.style.display='inline-block';
 }
-function onStartDateChange(){ updateEndDate(); loadTodayVerse(); }
+function onStartDateChange(){
+  const sd = document.getElementById('startDateInput').value;
+  if(sd && sd !== ST.startDate){
+    // 날짜가 바뀌면 읽음 기록 리셋 후 저장
+    ST.startDate = sd;
+    saveST();
+  }
+  updateEndDate(); loadTodayVerse();
+}
 function updateEndDate(){
   const s=document.getElementById('startDateInput').value;
   if(!s){ document.getElementById('endDateBadge').textContent='종료 예정일: —'; return; }
@@ -3760,6 +3768,20 @@ function cycleVer(){
 // 드롭다운 토글
 // ⚙ 설정 모달 열기/닫기
 function openSettings(){
+  // 설정 열기 전 현재 저장값으로 모든 필드 동기화
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const vl = document.getElementById('verDropLabel');
+  if(vl) vl.textContent = verLabels[curVer] || '개역개정';
+  const pl = document.getElementById('planDropLabel');
+  if(pl) pl.textContent = curPlan === 2 ? '성경순' : '연대순';
+  const si = document.getElementById('startDateInput');
+  if(si) si.value = ST.startDate || todayISO();
+  const ri = document.getElementById('readerInput');
+  if(ri) ri.value = ST.reader || DEF_READER;
+  const gi = document.getElementById('groupInput');
+  if(gi) gi.value = getGroupName();
+  updateEndDate();
+
   const h=document.getElementById('settingsHint'); if(h) h.style.display='none';
   const o=document.getElementById('settingsOverlay');
   if(o) o.classList.add('show');
