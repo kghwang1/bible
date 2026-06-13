@@ -2948,10 +2948,10 @@ const KJH_BOOK_ABBR = {
 const SK = {1:'bible_plan1', 2:'bible_plan2'};
 const DEF_GROUP  = '로마';   // 기본 목장명
 const DEF_READER = '브리스'; // 기본 이름
-let curPlan = 2;             // 기본 읽는방법: 성경순
+let curPlan = 1;             // 기본 읽는방법: 연대순
 let curVer = 'GAE'; // 개역개정 기본값
 let ST = {checks:{},reader:'',startDate:'',filter:'all',ver:'GAE'};
-let PLAN = PLAN_DATA[2];
+let PLAN = PLAN_DATA[1];
 let curN = 0, fontIdx = 1;
 let _curBid = 1, _curCh = 1; // 현재 보고 있는 성경 책/장 추적
 const FONT_LABELS = ['소','기본','중','대','특대'];
@@ -3613,13 +3613,13 @@ function resetSettings(){
     try{ localStorage.setItem(SK[n], JSON.stringify(blank)); }catch(e){}
   });
   // 현재 상태도 기본값으로 (버전 제외)
-  curPlan = 2; PLAN = PLAN_DATA[2]; ST = loadST(2);
+  curPlan = 1; PLAN = PLAN_DATA[1]; ST = loadST(1);
   try{ localStorage.setItem('bible_group', DEF_GROUP); }catch(e){}
   // 화면 갱신
   document.getElementById('startDateInput').value = todayISO();
   document.getElementById('readerInput').value    = DEF_READER;
   document.getElementById('groupInput').value     = DEF_GROUP;
-  const pl=document.getElementById('planDropLabel'); if(pl) pl.textContent='성경순';
+  const pl=document.getElementById('planDropLabel'); if(pl) pl.textContent='연대순';
   updateCoverTitle();
   updateEndDate();
   alert('읽음 기록과 설정이 초기화되었습니다.\n(버전은 유지됩니다)');
@@ -3852,6 +3852,8 @@ function selectVerCoverDrop(ver, label){
 
 function selectPlanDrop(n, label){
   curPlan = n; PLAN = PLAN_DATA[n]; ST = loadST(n);
+  // 읽는방법 저장 (재시작 시 복원)
+  try{ localStorage.setItem('bible_cur_plan', String(n)); }catch(e){}
   document.getElementById('planDropLabel').textContent = label;
   document.getElementById('planDrop').style.display='none';
   document.getElementById('startDateInput').value = ST.startDate || todayISO();
@@ -4112,6 +4114,8 @@ async function doShare(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // 읽는방법 복원 (저장값 우선, 없으면 기본 연대순=1)
+  try{ const sp=localStorage.getItem('bible_cur_plan'); if(sp) curPlan=parseInt(sp)||1; }catch(e){}
   ST = loadST(curPlan);
   PLAN = PLAN_DATA[curPlan];
   try{fontIdx=parseInt(localStorage.getItem('bible_fi')||'1');}catch(e){}
