@@ -1877,7 +1877,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         </div>
         <div class="rh-bot-right">
           <button class="rh-fbtn" onclick="changeFont(1)">A+</button>
-          <span class="font-label" id="fontLabel">기본</span>
           <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
         </div>
       </div>
@@ -2090,7 +2089,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         </div>
         <div class="rh-bot-right">
           <button class="rh-fbtn" onclick="kjvChangeFont(1)">A+</button>
-          <span class="font-label" id="kjvFontLabel">기본</span>
           <button class="rh-fbtn" onclick="kjvChangeFont(-1)">A-</button>
         </div>
       </div>
@@ -4061,7 +4059,7 @@ const KJV_FONT_SIZES = ['0.78rem','0.88rem','1.0rem','1.12rem','1.28rem'];
 
 function changeFont(dir){
   fontIdx=Math.max(0,Math.min(4,fontIdx+dir));
-  document.getElementById('fontLabel').textContent=FONT_LABELS[fontIdx];
+  {const _fl=document.getElementById('fontLabel'); if(_fl) _fl.textContent=FONT_LABELS[fontIdx];}
   try{localStorage.setItem('bible_fi',fontIdx);}catch(e){}
   const frame=document.getElementById('bibleFrame');
   onFrameLoad(frame, _lastOffset);
