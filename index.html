@@ -107,6 +107,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 }
 .cover-today .today-label{font-size:.66rem}
 .cover-today .today-val{font-size:.92rem}
+.cover-verplan{font-size:.74rem;color:#c9a84c;font-weight:700;font-family:'Noto Serif KR',serif;letter-spacing:.04em}
 
 /* 표지 보조 버튼(부록 등) */
 .cover-sub-btn{
@@ -1666,10 +1667,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-06-13</div>
 
     <!-- 오늘 날짜 -->
-    <div class="cover-today">
-      <span class="today-label">📅 오늘</span>
-      <span class="today-val" id="todayDisplay">—</span>
-      <span id="feastDisplay" style="font-size:.72rem;color:#e8c97a;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);border-radius:10px;padding:2px 8px;display:none"></span>
+    <div class="cover-today" style="flex-direction:column;gap:5px">
+      <div class="cover-verplan" id="coverVerPlan">개역개정 · 연대순</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
+        <span class="today-label">📅 오늘</span>
+        <span class="today-val" id="todayDisplay">—</span>
+        <span id="feastDisplay" style="font-size:.72rem;color:#e8c97a;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);border-radius:10px;padding:2px 8px;display:none"></span>
+      </div>
     </div>
 
     <!-- 행1: 매일읽기 / 목록 -->
@@ -3447,10 +3451,15 @@ function showScreen(id){
 }
 
 function initCover(){
+  // ① 먼저 설정값(버전·읽기방법) 복원
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
+  catch(e){ curVer = 'GAE'; }
+  try{ const sp = localStorage.getItem('bible_cur_plan'); if(sp){ curPlan = parseInt(sp)||1; PLAN = PLAN_DATA[curPlan]; } }catch(e){}
+
+  // ② 화면 그리기
   document.getElementById('todayDisplay').textContent = fmtKo(today());
   updateFeastDisplay();
   document.getElementById('groupInput').value = getGroupName();
-  updateCoverTitle();
   document.getElementById('startDateInput').value = ST.startDate || todayISO();
   document.getElementById('readerInput').value    = ST.reader    || DEF_READER;
   document.querySelectorAll('.plan-sel-btn').forEach(b=>b.classList.remove('on'));
@@ -3458,16 +3467,15 @@ function initCover(){
   updateEndDate();
   loadCoverPhoto();
   loadTodayVerse();
-  // 버전 드롭다운 초기값 - 별도 저장된 버전 우선
-  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
-  catch(e){ curVer = 'GAE'; }
+  // 버전/플랜 드롭다운 라벨
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
   if(vl) vl.textContent = verLabels[curVer] || '개역개정';
-  // 플랜 드롭다운 초기값
   const pl = document.getElementById('planDropLabel');
   if(pl) pl.textContent = curPlan===2 ? '성경순' : '연대순';
   updateVerTopBtn();
+  // ③ 마지막에 표지 제목·버전·방법 표시 (복원된 값 반영)
+  updateCoverTitle();
 }
 
 // ── 표지 사진 관리 ────────────────────────────────────────
@@ -3572,8 +3580,15 @@ function saveReaderName(){ try{ ST.reader=(document.getElementById('readerInput'
 function updateCoverTitle(){
   const val = (document.getElementById('groupInput').value||'').trim();
   const el = document.getElementById('coverTitle');
-  if(!el) return;
-  el.textContent = val ? val + ' 목장 성경읽기' : '목장 성경 읽기';
+  if(el) el.textContent = val ? val + ' 목장 성경읽기' : '목장 성경 읽기';
+  // 버전 · 읽기방법 표시
+  const vp = document.getElementById('coverVerPlan');
+  if(vp){
+    const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+    const v = verLabels[curVer] || '개역개정';
+    const pl = (curPlan===2 ? '성경순' : '연대순');
+    vp.textContent = v + ' · ' + pl;
+  }
 }
 function getEaster(year){
   const a=year%19,b=Math.floor(year/100),c=year%100;
@@ -3925,6 +3940,7 @@ function selectVerCoverDrop(ver, label){
   // 사용 중이라면 현재 열린 성경도 새 설정 버전으로 즉시 갱신
   if(curN){ const p=PLAN.find(x=>x.n===curN); if(p) loadBible(p); }
   else if(_curBid && _curCh){ bpGoChapter(_curBid, _curCh); }
+  updateCoverTitle();
 }
 
 function selectPlanDrop(n, label){
@@ -3942,6 +3958,7 @@ function selectPlanDrop(n, label){
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   document.getElementById('verDropLabel').textContent = verLabels[curVer] || '개역개정';
   updateVerTopBtn();
+  updateCoverTitle();
 }
 
 // 표지 버전 선택 (기존 호환) — 설정 버전
