@@ -1628,6 +1628,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .rh-col-center:active{background:rgba(180,150,80,.18)}
 .rh-col-center .day-tag{font-size:.78rem;color:#6b4d28;font-weight:700;width:100%;text-align:center}
 .rh-col-center h2{font-family:'Noto Serif KR',serif;font-size:1.17rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;margin:0}
+#readTitleRows{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%}
+.read-title-row{font-family:'Noto Serif KR',serif;color:#221508;font-weight:700;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-radius:8px;padding:1px 6px;transition:background .15s}
+.read-title-row:active{background:rgba(180,150,80,.25)}
+.read-title-row.single{font-size:1.17rem}
+.read-title-row.multi{font-size:.95rem;line-height:1.25}
+.read-title-row.cur{color:#1a4a8a}
+.read-title-row .rt-go{font-size:.7em;opacity:.5;margin-left:3px}
 /* 오른쪽 열 */
 .rh-col-right{display:flex;flex-direction:column;justify-content:space-between;gap:3px;flex-shrink:0;align-items:flex-end}
 .rh-top-right{display:flex;align-items:center}
@@ -1867,10 +1874,11 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           <span class="rh-ver-label" id="rhVerLabel">개역개정</span>
         </div>
       </div>
-      <!-- 중앙: 날짜+제목 전체 높이 상하중앙 -->
-      <div class="rh-col-center" onclick="openBiblePickerFromHeader()" style="cursor:pointer;user-select:none">
+      <!-- 중앙: 날짜+제목(들) -->
+      <div class="rh-col-center">
         <div class="day-tag" id="dayTag"></div>
-        <h2 id="readTitle"></h2>
+        <div id="readTitleRows"></div>
+        <h2 id="readTitle" style="display:none"></h2>
       </div>
       <!-- 오른쪽: 위=이미읽음, 아래=글자크기 -->
       <div class="rh-col-right">
@@ -3287,6 +3295,9 @@ function bpGoChapter(bid,ch){
   const titleEl = document.getElementById('readTitle');
   const dayTagEl = document.getElementById('dayTag');
   if(titleEl) titleEl.textContent = bookName + ' ' + ch + '장';
+  // 제목 줄 영역(직접찾기 모드: 단일 줄, 클릭 이동 없음)
+  const rows = document.getElementById('readTitleRows');
+  if(rows){ rows.innerHTML = '<div class="read-title-row single">'+bookName+' '+ch+'장</div>'; }
   if(dayTagEl) dayTagEl.textContent = '성경 직접 찾기';
 
   if(curVer==='KJV' || curVer==='KJH'){
@@ -3763,7 +3774,7 @@ function openItem(n){
 
   if(curVer==='KJV' || curVer==='KJH'){
     document.getElementById('dayTag').textContent=tag;
-    document.getElementById('readTitle').textContent=p.r;
+    renderReadTitleRows(p);
     const verLabels = {'KJH':'KJV 한글','KJV':'KJV 영어'};
     const vd = document.getElementById('verDisplayBtn');
     if(vd) vd.textContent = verLabels[curVer] || 'KJV';
@@ -3774,7 +3785,7 @@ function openItem(n){
   }
 
   document.getElementById('dayTag').textContent=tag;
-  document.getElementById('readTitle').textContent=p.r;
+  renderReadTitleRows(p);
   // 상단 버전 표시 업데이트
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('verDisplayBtn');
@@ -3792,6 +3803,46 @@ function updateDoneBtn(){
 const BOOK_KEYS=Object.keys(BID).sort((a,b)=>b.length-a.length);
 const BOOK_RE=new RegExp('(' + BOOK_KEYS.map(k=>k.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&')).join('|') + ')\\s*([\\d][\\d\\-,\\s]*(?:장|편)?)', 'g');
 const MAX_CH=[0,50,40,27,36,34,24,21,4,31,24,22,25,29,36,10,13,10,42,150,31,12,8,66,52,5,48,12,14,3,9,1,4,7,3,3,3,2,14,4,28,16,24,41,28,16,16,13,6,6,4,4,5,3,6,4,3,1,13,5,5,3,5,1,1,1,22];
+// 읽기 화면 제목 줄(들) 렌더링 — 1구절이면 한 줄, 2구절 이상이면 여러 줄(각 줄 클릭→해당 구절 이동)
+function renderReadTitleRows(p){
+  const box = document.getElementById('readTitleRows');
+  if(!box) return;
+  const groups = parseRangeGroups(p.r);
+  box.innerHTML = '';
+  if(!groups.length){
+    const h=document.createElement('div');
+    h.className='read-title-row single';
+    h.textContent=p.r;
+    box.appendChild(h);
+    return;
+  }
+  const multi = groups.length > 1;
+  groups.forEach((g,i)=>{
+    const row=document.createElement('div');
+    row.className='read-title-row ' + (multi?'multi':'single') + (i===0?' cur':'');
+    row.innerHTML = g.label + (multi ? '<span class="rt-go">›</span>' : '');
+    row.onclick = ()=> goReadGroup(g, row);
+    box.appendChild(row);
+  });
+}
+// 특정 구절 그룹으로 본문 이동
+function goReadGroup(g, rowEl){
+  if(rowEl){
+    document.querySelectorAll('#readTitleRows .read-title-row').forEach(r=>r.classList.remove('cur'));
+    rowEl.classList.add('cur');
+  }
+  if(curVer==='KJV' || curVer==='KJH'){
+    const abbr = KJV_ABBR[g.bid] || 'GEN';
+    loadKJVInlineDirect(abbr, g.ch);
+    return;
+  }
+  _curBid = g.bid; _curCh = g.ch; _lastOffset = OFFSET;
+  const frame=document.getElementById('bibleFrame');
+  const url=godpiaUrl(g.bid,g.ch)+'&_t='+Date.now();
+  frame.onload = function(){ onFrameLoad(frame, OFFSET); };
+  frame.src=url;
+}
+
 function parseRange(range){
   const out=[],seen=new Set();
   BOOK_RE.lastIndex=0; let m;
@@ -3803,6 +3854,23 @@ function parseRange(range){
     });
   }
   return out;
+}
+// 읽기 범위를 "구절 그룹"으로 분리 (예: "사무엘상 19장, 시편 59편" → 2그룹)
+// 각 그룹: { label:'사무엘상 19장', bid, ch(첫 장) }
+function parseRangeGroups(range){
+  const groups=[];
+  BOOK_RE.lastIndex=0; let m;
+  while((m=BOOK_RE.exec(range))!==null){
+    const bookName=m[1];
+    const bid=BID[bookName]; if(!bid) continue;
+    const numsRaw=m[2].replace(/:\d+/g,'').trim();           // "19", "20-21", "5"
+    const unit = /편/.test(m[2]) ? '편' : '장';
+    const chs=expandNums(numsRaw.replace(/장|편/g,'').trim(), MAX_CH[bid]||999);
+    const firstCh = chs.length ? chs[0] : 1;
+    const label = bookName + ' ' + numsRaw.replace(/장|편/g,'').trim() + unit;
+    groups.push({ label, bid, ch:firstCh });
+  }
+  return groups;
 }
 function expandNums(str,max){
   const r=[];
