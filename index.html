@@ -1854,13 +1854,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <!-- 버전 선택 -->
     <div id="bpVER" style="flex:1;overflow-y:auto;padding:12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-content:start"></div>
     <!-- 책 목록 (구약) -->
-    <div id="bpOT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr;gap:7px"></div>
+    <div id="bpOT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;align-content:start"></div>
     <!-- 책 목록 (신약) -->
-    <div id="bpNT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr;gap:7px"></div>
+    <div id="bpNT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;align-content:start"></div>
     <!-- 장 목록 -->
-    <div id="bpCH" style="flex:1;overflow-y:auto;padding:10px 8px;display:none">
+    <div id="bpCH" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;flex-direction:column">
       <div id="bpBookLabel" style="font-size:.9rem;font-weight:700;color:#3a5ea8;margin-bottom:8px;font-family:'Noto Sans KR',sans-serif"></div>
-      <div id="bpChGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px"></div>
+      <div id="bpChGrid"></div>
     </div>
   </div>
   <div class="read-hdr">
@@ -3182,24 +3182,26 @@ function bpInit(){
   const otEl = document.getElementById('bpOT');
   const ntEl = document.getElementById('bpNT');
   if(otEl.children.length) return; // 이미 초기화됨
-  // 구약 (bid 1~39)
+  // 구약 (bid 1~39) — 글자 30% 확대
   for(let b=1;b<=39;b++){
     const btn=document.createElement('button');
     btn.id='bpBook'+b;
     btn.textContent=BP_BOOKS_KO[b];
     btn.onclick=()=>bpSelectBook(b);
-    Object.assign(btn.style,{padding:'9px 4px',fontSize:'.82rem',fontFamily:"'Noto Sans KR',sans-serif",
-      border:'1.5px solid #ddd',borderRadius:'8px',background:'#fff',color:'#222',cursor:'pointer'});
+    Object.assign(btn.style,{padding:'9px 2px',fontSize:'.94rem',fontFamily:"'Noto Sans KR',sans-serif",
+      border:'1.5px solid #999',borderRadius:'8px',background:'#fff',color:'#222',cursor:'pointer',
+      whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'});
     otEl.appendChild(btn);
   }
-  // 신약 (bid 40~66)
+  // 신약 (bid 40~66) — 구약 카드와 동일 높이·글자
   for(let b=40;b<=66;b++){
     const btn=document.createElement('button');
     btn.id='bpBook'+b;
     btn.textContent=BP_BOOKS_KO[b];
     btn.onclick=()=>bpSelectBook(b);
-    Object.assign(btn.style,{padding:'9px 4px',fontSize:'.82rem',fontFamily:"'Noto Sans KR',sans-serif",
-      border:'1.5px solid #ddd',borderRadius:'8px',background:'#fff',color:'#222',cursor:'pointer'});
+    Object.assign(btn.style,{padding:'9px 2px',fontSize:'.94rem',fontFamily:"'Noto Sans KR',sans-serif",
+      border:'1.5px solid #999',borderRadius:'8px',background:'#fff',color:'#222',cursor:'pointer',
+      whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'});
     ntEl.appendChild(btn);
   }
 }
@@ -3208,7 +3210,16 @@ function bpShowTab(tab){
   document.getElementById('bpVER').style.display=(tab==='VER')?'grid':'none';
   document.getElementById('bpOT').style.display=(tab==='OT')?'grid':'none';
   document.getElementById('bpNT').style.display=(tab==='NT')?'grid':'none';
-  document.getElementById('bpCH').style.display=(tab==='CH')?'block':'none';
+  document.getElementById('bpCH').style.display=(tab==='CH')?'flex':'none';
+  // 장 탭인데 아직 책 미선택이면 안내 표시
+  if(tab==='CH'){
+    const grid=document.getElementById('bpChGrid');
+    const label=document.getElementById('bpBookLabel');
+    if(!grid.children.length){
+      if(label) label.textContent='';
+      grid.innerHTML='<div style="grid-column:1/-1;padding:30px 10px;text-align:center;color:#999;font-size:.9rem;font-family:\'Noto Sans KR\',sans-serif">먼저 신약 또는 구약에서<br>성경책을 선택하세요</div>';
+    }
+  }
   ['VER','NT','OT','CH'].forEach(t=>{
     const btn=document.getElementById('bpTab'+t);
     if(!btn) return;
@@ -3233,7 +3244,7 @@ function bpRenderVersions(){
     btn.textContent=label;
     const on=(curVer===v);
     Object.assign(btn.style,{padding:'13px 6px',fontSize:'.92rem',fontFamily:"'Noto Sans KR',sans-serif",
-      border:'1.5px solid '+(on?'#3a5ea8':'#ddd'),borderRadius:'10px',
+      border:'1.5px solid '+(on?'#3a5ea8':'#999'),borderRadius:'10px',
       background:on?'#3a5ea8':'#fff',color:on?'#fff':'#222',fontWeight:'700',cursor:'pointer'});
     btn.onclick=()=>bpSelectVersion(v);
     wrap.appendChild(btn);
@@ -3259,6 +3270,27 @@ function bpSelectVersion(ver){
   bpShowTab('NT');
 }
 
+// 장 번호 그리드 렌더 — 모든 성경 동일: 10열(10줄)
+// curCh가 주어지면 해당 장 강조
+function renderChapterGrid(grid, maxCh, onPick, curCh){
+  grid.innerHTML='';
+  grid.style.display='grid';
+  grid.style.gridTemplateColumns='repeat(10,1fr)';
+  grid.style.gap='4px';
+  for(let c=1;c<=maxCh;c++){
+    const ch=c;
+    const cb=document.createElement('button');
+    cb.textContent=c;
+    cb.onclick=()=>onPick(ch);
+    const isCur=(curCh!=null && c===curCh);
+    Object.assign(cb.style,{padding:'8px 0',fontSize:'.94rem',fontFamily:"'Noto Sans KR',sans-serif",
+      border:isCur?'2px solid #3a5ea8':'1.5px solid #999',borderRadius:'7px',
+      background:isCur?'#eaf0ff':'#fff',color:isCur?'#3a5ea8':'#222',cursor:'pointer',
+      textAlign:'center',fontWeight:isCur?'700':'400'});
+    grid.appendChild(cb);
+  }
+}
+
 function bpSelectBook(bid){
   bpSelBid=bid;
   // 강조 초기화
@@ -3271,17 +3303,7 @@ function bpSelectBook(bid){
   const maxCh=BP_CHAPS[bid]||1;
   document.getElementById('bpBookLabel').textContent=BP_BOOKS_KO[bid]+' — 장 선택';
   const grid=document.getElementById('bpChGrid');
-  grid.innerHTML='';
-  for(let c=1;c<=maxCh;c++){
-    const cb=document.createElement('button');
-    cb.textContent=c;
-    const ch=c;
-    cb.onclick=()=>bpGoChapter(bid,ch);
-    Object.assign(cb.style,{padding:'10px 4px',fontSize:'.88rem',fontFamily:"'Noto Sans KR',sans-serif",
-      border:'1.5px solid #ddd',borderRadius:'8px',background:'#fff',color:'#222',cursor:'pointer',
-      textAlign:'center'});
-    grid.appendChild(cb);
-  }
+  renderChapterGrid(grid, maxCh, (ch)=>bpGoChapter(bid,ch), null);
   bpShowTab('CH');
 }
 
@@ -3353,24 +3375,7 @@ function openBiblePickerFromHeader(){
     const maxCh = BP_CHAPS[snapBid] || 1;
     document.getElementById('bpBookLabel').textContent = BP_BOOKS_KO[snapBid] + ' — 장 선택';
     const grid = document.getElementById('bpChGrid');
-    grid.innerHTML = '';
-    for(let c=1; c<=maxCh; c++){
-      const cb = document.createElement('button');
-      cb.textContent = c;
-      const ch = c;
-      cb.onclick = () => bpGoChapter(snapBid, ch);
-      const isCur = (c === _curCh);
-      Object.assign(cb.style,{
-        padding:'10px 4px', fontSize:'.88rem', fontFamily:"'Noto Sans KR',sans-serif",
-        border: isCur ? '2px solid #3a5ea8' : '1.5px solid #ddd',
-        borderRadius:'8px',
-        background: isCur ? '#eaf0ff' : '#fff',
-        color: isCur ? '#3a5ea8' : '#222',
-        cursor:'pointer', textAlign:'center',
-        fontWeight: isCur ? '700' : '400'
-      });
-      grid.appendChild(cb);
-    }
+    renderChapterGrid(grid, maxCh, (ch)=>bpGoChapter(snapBid, ch), _curCh);
     // 장 탭으로 바로 이동 (현재 위치 바로 확인)
     bpShowTab('CH');
   }
