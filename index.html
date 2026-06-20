@@ -1657,7 +1657,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .rh-col-center .day-tag{font-size:.78rem;color:#6b4d28;font-weight:700;width:100%;text-align:center}
 .rh-col-center h2{font-family:'Noto Serif KR',serif;font-size:1.17rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;margin:0}
 #readTitleRows{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%}
-.read-title-row{font-family:'Noto Serif KR',serif;color:#221508;font-weight:700;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-radius:8px;padding:1px 6px;transition:background .15s}
+.read-title-row{font-family:'Noto Serif KR',serif;color:#1a1a1a;font-weight:700;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-radius:8px;padding:1px 6px;transition:background .15s}
 .read-title-row:active{background:rgba(180,150,80,.25)}
 .read-title-row.single{font-size:1.17rem}
 .read-title-row.multi{font-size:.95rem;line-height:1.25}
@@ -1866,8 +1866,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <!-- 성경 직접보기 상단 바 -->
   <div id="bibleWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:10px 14px;background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0">
     <button onclick="closeBibleDirect()" class="hdr-btn home-btn">🏠 홈</button>
-    <span id="verDisplayBtn" style="color:#8b5e2a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">개역개정</span>
-    <button id="bsPickBtn" onclick="toggleBiblePicker()" style="background:#3a5ea8;color:#fff;border:1px solid #3a5ea8;border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절이동</button>
+    <span id="verDisplayBtn" style="color:#1a1a1a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">개역개정</span>
+    <button id="bsPickBtn" onclick="toggleBiblePicker()" style="background:#3a5ea8;color:#fff;border:1px solid #3a5ea8;border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절찾기</button>
   </div>
 
   <!-- 성경 선택 패널 (앱 내장) -->
@@ -2103,8 +2103,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <!-- 성경 버튼으로 진입 시 통합 상단바 -->
   <div id="kjvWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:10px 14px;background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0">
     <button onclick="closeKJVDirect()" class="hdr-btn home-btn">🏠 홈</button>
-    <span id="kjvVerDisplayBtn" style="color:#8b5e2a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">KJV 한글</span>
-    <button onclick="kjvOpenBookPicker()" style="background:#3a5ea8;color:#fff;border:1px solid #3a5ea8;border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절이동</button>
+    <span id="kjvVerDisplayBtn" style="color:#1a1a1a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">KJV 한글</span>
+    <button id="kjvPickBtn" onclick="kjvOpenBookPicker()" style="background:#3a5ea8;color:#fff;border:1px solid #3a5ea8;border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절찾기</button>
   </div>
 
   <div class="read-hdr" id="kjvReadHdr">
@@ -3340,7 +3340,7 @@ function bpGoChapter(bid,ch){
 
   document.getElementById('biblePicker').style.display='none';
   const bsPickBtn=document.getElementById('bsPickBtn');
-  if(bsPickBtn) bsPickBtn.style.background='rgba(255,255,255,0.18)';
+  if(bsPickBtn) bsPickBtn.style.background='#3a5ea8';
   const bookName = BP_BOOKS_KO[bid] || '';
   const titleEl = document.getElementById('readTitle');
   const dayTagEl = document.getElementById('dayTag');
@@ -3349,6 +3349,12 @@ function bpGoChapter(bid,ch){
   const rows = document.getElementById('readTitleRows');
   if(rows){ rows.innerHTML = '<div class="read-title-row single">'+bookName+' '+ch+'장</div>'; }
   if(dayTagEl) dayTagEl.textContent = '성경 직접 찾기';
+
+  // 구절찾기 버튼에 현재 위치(책+장) 표시
+  const bsBtn=document.getElementById('bsPickBtn');
+  if(bsBtn) bsBtn.textContent = bookName + ' ' + ch + '장';
+  const kjvBsBtn=document.getElementById('kjvPickBtn');
+  if(kjvBsBtn) kjvBsBtn.textContent = bookName + ' ' + ch + '장';
 
   if(curVer==='KJV' || curVer==='KJH'){
     // 내장 KJV 뷰어로 로드
@@ -3375,7 +3381,7 @@ function toggleBiblePicker(){
   // direct mode: 44px 오버레이 바 아래
   picker.style.top = '44px';
   picker.style.display=open?'flex':'none';
-  document.getElementById('bsPickBtn').style.background=open?'rgba(80,140,255,0.5)':'rgba(255,255,255,0.18)';
+  document.getElementById('bsPickBtn').style.background=open?'#2a4a98':'#3a5ea8';
 }
 
 // 일반 읽기 화면 중앙 제목 터치 → 현재 위치 선택된 상태로 보드 열기
