@@ -2146,7 +2146,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 성경 용어 사전 결과 화면 -->
 <div class="screen" id="s-glossary">
   <div class="appendix-hdr">
-    <button class="nav-btn" onclick="showScreen('s-appendix')">← 부록</button>
+    <button class="nav-btn" onclick="glossaryGoBack()">← 이전</button>
     <div class="appendix-title">📖 용어 사전</div>
     <button class="hdr-btn home-btn" onclick="showScreen('s-cover')">🏠 홈</button>
   </div>
@@ -4503,15 +4503,26 @@ async function loadSharedPrayer(){
 if(typeof window.GLOSSARY === 'undefined'){ window.GLOSSARY = {}; }
 
 // 부록 검색창 → 검색 실행
+// 용어 사전 진입 출처 ('appendix' | 'kjv')
+let _glossaryFrom = 'appendix';
 function searchGlossary(){
   const q = (document.getElementById('glossaryInput').value || '').trim();
   if(!q){ return; }
+  _glossaryFrom = 'appendix';
   showGlossaryResult(q);
 }
 function searchGlossary2(){
   const q = (document.getElementById('glossaryInput2').value || '').trim();
   if(!q){ return; }
   showGlossaryResult(q);
+}
+// 용어 사전에서 '이전' → 출처로 복귀
+function glossaryGoBack(){
+  if(_glossaryFrom === 'kjv'){
+    showScreen('s-kjv-reader');
+  } else {
+    showScreen('s-appendix');
+  }
 }
 
 // 검색 실행 후 결과 화면 표시
@@ -4610,8 +4621,9 @@ function linkifyGlossary(text){
 function escapeAttr(s){
   return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
 }
-// 파란 단어 클릭 → 용어 설명 화면
+// 파란 단어 클릭 → 용어 설명 화면 (KJV 본문에서 진입)
 function openGlossaryTerm(term){
+  _glossaryFrom = 'kjv';
   showGlossaryResult(term);
 }
 
