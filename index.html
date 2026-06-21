@@ -4385,8 +4385,8 @@ async function loadSharedPrayer(){
 
 // 목장별 기도제목 저장/조회
 // ── 목장별 기도제목 (로컬 + 서버 공유) ──
-// Cloudflare Worker 주소 — 배포 후 본인 주소로 교체하세요
-const PRAYER_WORKER = 'https://prayer.kghwang1.workers.dev';
+// Cloudflare Worker 주소
+const PRAYER_WORKER = 'https://nameless-cloud-969b.kghwang1.workers.dev';
 
 function groupPrayerKey(group){ return 'bible_prayer_grp_' + (group||'').trim(); }
 function getGroupPrayer(group){
