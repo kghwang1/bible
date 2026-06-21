@@ -6,6 +6,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>성경읽기 계획표</title>
+<!-- godpia 서버 사전 연결: 첫 본문 로딩 시 DNS·TLS 연결 시간 단축 -->
+<link rel="preconnect" href="https://www.godpia.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.godpia.com">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -3175,7 +3178,7 @@ function openBibleDirect(){
   frame.src = 'about:blank';
   hideKJVInline();
 
-  // 버전 텍스트 업데이트
+  // 버전 텍스트 업데이트 (설정 버전 따름)
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vd = document.getElementById('verDisplayBtn');
   if(vd) vd.textContent = verLabels[curVer] || '개역개정';
@@ -3186,6 +3189,15 @@ function openBibleDirect(){
   picker.style.top = '44px';
   picker.style.display = 'flex';
   bpShowTab('NT');
+  // godpia 연결 워밍업: 직전에 본 위치(있으면)를 미리 받아 첫 펼침 단축
+  try{
+    const last = JSON.parse(localStorage.getItem('bible_direct_last')||'null');
+    if(last && last.bid && last.ch){
+      prefetchBookChapter(last.bid, last.ch);
+    } else {
+      prefetchBookChapter(40, 1); // 기본: 마태복음 1장으로 연결 워밍업
+    }
+  }catch(e){ prefetchBookChapter(40, 1); }
 }
 
 // ── TTS 성경 듣기 ──────────────────────────────────────
@@ -3356,10 +3368,29 @@ function bpSelectBook(bid){
   const grid=document.getElementById('bpChGrid');
   renderChapterGrid(grid, maxCh, (ch)=>bpGoChapter(bid,ch), null);
   bpShowTab('CH');
+  // 사용자가 장을 고르는 동안 이 책 1장을 미리 받아 연결 워밍업
+  prefetchBookChapter(bid, 1);
+}
+
+// 성경책에서 특정 책·장을 백그라운드로 미리 받기
+function prefetchBookChapter(bid, ch){
+  try{
+    if(curVer==='KJV' || curVer==='KJH') return; // KJV는 내장
+    const pf=document.getElementById('prefetchFrame');
+    if(!pf) return;
+    const url=godpiaUrl(bid, ch);
+    if(pf.dataset.url===url) return;
+    pf.dataset.url=url;
+    setTimeout(()=>{ try{ pf.src=url; }catch(e){} }, 300);
+  }catch(e){}
 }
 
 function bpGoChapter(bid,ch){
   _curBid = bid; _curCh = ch;
+  // 성경책에서 본 위치 저장 (다음 진입 시 미리 받기용)
+  if(window._bibleDirectMode){
+    try{ localStorage.setItem('bible_direct_last', JSON.stringify({bid,ch})); }catch(e){}
+  }
 
   document.getElementById('biblePicker').style.display='none';
   const bsPickBtn=document.getElementById('bsPickBtn');
@@ -3552,6 +3583,8 @@ function initCover(){
   updateVerTopBtn();
   // ③ 마지막에 표지 제목·버전·방법 표시 (복원된 값 반영)
   updateCoverTitle();
+  // ④ 표지 보는 동안 오늘 본문 미리 받기 (매일읽기 첫 로딩 단축)
+  prefetchTodayReading();
 }
 
 // ── 표지 사진 관리 ────────────────────────────────────────
@@ -4267,6 +4300,29 @@ function prefetchNextChapter(){
     pf.dataset.url=url;
     // 약간 지연시켜 현재 본문 렌더 우선
     setTimeout(()=>{ try{ pf.src=url; }catch(e){} }, 600);
+  }catch(e){}
+}
+
+// ── 표지에서 오늘 본문 미리 받기 ──
+// 앱을 켜고 표지를 보는 동안 오늘 읽을 첫 장을 백그라운드로 받아둠
+// → 매일읽기를 누르면 캐시에서 빠르게 표시
+function prefetchTodayReading(){
+  try{
+    if(curVer==='KJV' || curVer==='KJH') return; // KJV는 내장
+    if(!PLAN || !PLAN.length) return;
+    const idx = todayIdx(ST.startDate);
+    const n = (idx>=0 && idx<PLAN.length) ? PLAN[idx].n : 1;
+    const p = PLAN.find(x=>x.n===n) || PLAN[0];
+    if(!p) return;
+    const segs = parseRange(p.r);
+    if(!segs || !segs.length) return;
+    const pf=document.getElementById('prefetchFrame');
+    if(!pf) return;
+    const url=godpiaUrl(segs[0].bid, segs[0].ch);
+    if(pf.dataset.url===url) return;
+    pf.dataset.url=url;
+    // 표지 렌더·폰트 로딩 끝난 뒤 받기 (1.2초 지연)
+    setTimeout(()=>{ try{ pf.src=url; }catch(e){} }, 1200);
   }catch(e){}
 }
 const KJV_FONT_SIZES = ['0.78rem','0.88rem','1.0rem','1.12rem','1.28rem'];
