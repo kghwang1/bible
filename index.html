@@ -4519,7 +4519,13 @@ function searchGlossary2(){
 // 용어 사전에서 '이전' → 출처로 복귀
 function glossaryGoBack(){
   if(_glossaryFrom === 'kjv'){
-    showScreen('s-kjv-reader');
+    const target = _glossaryReturnScreen || 's-kjv-reader';
+    showScreen(target);
+    // 매일읽기 KJV는 s-read 안의 kjvInlineWrap에 그려져 있으므로 표시 보장
+    if(target === 's-read'){
+      const wrap = document.getElementById('kjvInlineWrap');
+      if(wrap) wrap.style.display = 'flex';
+    }
   } else {
     showScreen('s-appendix');
   }
@@ -4635,8 +4641,12 @@ function escapeAttr(s){
   return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
 }
 // 파란 단어 클릭 → 용어 설명 화면 (KJV 본문에서 진입)
+let _glossaryReturnScreen = null;
 function openGlossaryTerm(term){
   _glossaryFrom = 'kjv';
+  // 현재 보고 있던 실제 화면 id 저장 (s-read 또는 s-kjv-reader)
+  const cur = document.querySelector('.screen.active');
+  _glossaryReturnScreen = cur ? cur.id : 's-read';
   showGlossaryResult(term);
 }
 
