@@ -1973,6 +1973,18 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div class="appendix-body">
     <div class="appendix-intro">성경 이해를 돕는 자료들입니다</div>
 
+    <!-- 성경 용어 사전 -->
+    <div class="appendix-section">
+      <div class="appendix-section-title">📖 성경 용어 사전</div>
+      <div class="appendix-section-desc">인물·지명·용어를 검색해 뜻을 찾아보세요</div>
+      <div style="display:flex;gap:6px;margin-top:4px">
+        <input type="text" id="glossaryInput" placeholder="예: 아브라함, 바로, 안식일"
+          onkeydown="if(event.key==='Enter')searchGlossary()"
+          style="flex:1;min-width:0;padding:11px 13px;border-radius:12px;border:1.5px solid #c9a84c;background:#fff;color:#222;font-size:.88rem;font-family:'Noto Sans KR',sans-serif">
+        <button class="appendix-open-btn" style="width:auto;flex:0 0 auto;padding:11px 18px;margin:0" onclick="searchGlossary()">🔍 검색</button>
+      </div>
+    </div>
+
     <!-- 성경 지도 -->
     <div class="appendix-section">
       <div class="appendix-section-title">🗺 성경 지도</div>
@@ -2122,6 +2134,23 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;background:#fff">
     <iframe id="appendixFrame" style="width:100%;flex:1;border:none;background:#fff" src=""></iframe>
   </div>
+</div>
+
+<!-- 성경 용어 사전 결과 화면 -->
+<div class="screen" id="s-glossary">
+  <div class="appendix-hdr">
+    <button class="nav-btn" onclick="showScreen('s-appendix')">← 부록</button>
+    <div class="appendix-title">📖 용어 사전</div>
+    <button class="hdr-btn home-btn" onclick="showScreen('s-cover')">🏠 홈</button>
+  </div>
+  <!-- 검색창 (결과 화면에서도 재검색 가능) -->
+  <div style="display:flex;gap:6px;padding:12px 14px;background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0;flex-shrink:0">
+    <input type="text" id="glossaryInput2" placeholder="용어를 입력하세요"
+      onkeydown="if(event.key==='Enter')searchGlossary2()"
+      style="flex:1;min-width:0;padding:10px 13px;border-radius:12px;border:1.5px solid #c9a84c;background:#fff;color:#222;font-size:.88rem;font-family:'Noto Sans KR',sans-serif">
+    <button class="appendix-open-btn" style="width:auto;flex:0 0 auto;padding:10px 16px;margin:0" onclick="searchGlossary2()">🔍</button>
+  </div>
+  <div id="glossaryResult" style="flex:1;overflow-y:auto;padding:18px 16px 40px;background:#f7f4ee"></div>
 </div>
 
 <!-- KJV 성경 읽기 화면 -->
@@ -2400,6 +2429,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
+<!-- 성경 용어 사전 데이터 (별도 파일) -->
+<script src="glossary.js"></script>
 <script>
 
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
@@ -3189,15 +3220,25 @@ function openBibleDirect(){
   picker.style.top = '44px';
   picker.style.display = 'flex';
   bpShowTab('NT');
-  // godpia 연결 워밍업: 직전에 본 위치(있으면)를 미리 받아 첫 펼침 단축
+  // godpia 서버와 '연결만' 미리 열어둠 (본문은 받지 않음 → 임의 장 선택에도 첫 응답 단축)
+  warmupGodpia();
+}
+
+// godpia 연결 워밍업: 본문을 받지 않고 DNS·TLS 연결만 미리 준비
+let _godpiaWarmed = false;
+function warmupGodpia(){
   try{
-    const last = JSON.parse(localStorage.getItem('bible_direct_last')||'null');
-    if(last && last.bid && last.ch){
-      prefetchBookChapter(last.bid, last.ch);
-    } else {
-      prefetchBookChapter(40, 1); // 기본: 마태복음 1장으로 연결 워밍업
-    }
-  }catch(e){ prefetchBookChapter(40, 1); }
+    if(_godpiaWarmed) return;
+    _godpiaWarmed = true;
+    // preconnect 힌트를 동적으로 한 번 더 추가 (브라우저가 연결을 미리 맺도록)
+    const l = document.createElement('link');
+    l.rel = 'preconnect';
+    l.href = 'https://www.godpia.com';
+    l.crossOrigin = '';
+    document.head.appendChild(l);
+    // 가벼운 사전 연결 시도 (no-cors: 응답 본문은 쓰지 않고 연결만 데움)
+    fetch('https://www.godpia.com/favicon.ico', {mode:'no-cors', cache:'force-cache'}).catch(()=>{});
+  }catch(e){}
 }
 
 // ── TTS 성경 듣기 ──────────────────────────────────────
@@ -3368,14 +3409,12 @@ function bpSelectBook(bid){
   const grid=document.getElementById('bpChGrid');
   renderChapterGrid(grid, maxCh, (ch)=>bpGoChapter(bid,ch), null);
   bpShowTab('CH');
-  // 사용자가 장을 고르는 동안 이 책 1장을 미리 받아 연결 워밍업
-  prefetchBookChapter(bid, 1);
 }
 
-// 성경책에서 특정 책·장을 백그라운드로 미리 받기
+// 성경책에서 특정 책·장을 백그라운드로 미리 받기 (현재 미사용)
 function prefetchBookChapter(bid, ch){
   try{
-    if(curVer==='KJV' || curVer==='KJH') return; // KJV는 내장
+    if(curVer==='KJV' || curVer==='KJH') return;
     const pf=document.getElementById('prefetchFrame');
     if(!pf) return;
     const url=godpiaUrl(bid, ch);
@@ -4448,6 +4487,82 @@ async function loadSharedPrayer(){
       celSection.style.display = 'block';
     }
   }
+}
+
+// ── 성경 용어 사전 ──────────────────────────────
+// 용어집 데이터(GLOSSARY)는 별도 파일 glossary.js 에서 불러옵니다.
+// 항목 형식: { 표제어: {category:'인물/지명/용어', desc:'설명', ref:'성경 위치'} }
+// (glossary.js 가 없거나 로드 실패 시 빈 사전으로 동작)
+if(typeof window.GLOSSARY === 'undefined'){ window.GLOSSARY = {}; }
+
+// 부록 검색창 → 검색 실행
+function searchGlossary(){
+  const q = (document.getElementById('glossaryInput').value || '').trim();
+  if(!q){ return; }
+  showGlossaryResult(q);
+}
+function searchGlossary2(){
+  const q = (document.getElementById('glossaryInput2').value || '').trim();
+  if(!q){ return; }
+  showGlossaryResult(q);
+}
+
+// 검색 실행 후 결과 화면 표시
+function showGlossaryResult(query){
+  const q = query.trim();
+  // 결과 화면의 검색창에도 입력값 반영
+  const in2 = document.getElementById('glossaryInput2');
+  if(in2) in2.value = q;
+  const box = document.getElementById('glossaryResult');
+  if(!box) return;
+
+  // 1) 정확히 일치
+  let matches = [];
+  if(GLOSSARY[q]){
+    matches.push([q, GLOSSARY[q]]);
+  }
+  // 2) 부분 일치 (표제어에 검색어 포함, 또는 검색어에 표제어 포함)
+  Object.entries(GLOSSARY).forEach(([term,info])=>{
+    if(term===q) return;
+    if(term.includes(q) || q.includes(term)){
+      matches.push([term, info]);
+    }
+  });
+  // 3) 설명 안에 검색어가 있는 경우도 보조 결과로
+  Object.entries(GLOSSARY).forEach(([term,info])=>{
+    if(matches.find(m=>m[0]===term)) return;
+    if(info.desc.includes(q)){
+      matches.push([term, info]);
+    }
+  });
+
+  const catColor = {'인물':'#3a5ea8','지명':'#2a7a4a','용어':'#9a6a20'};
+  let html = '';
+  if(matches.length === 0){
+    html = '<div style="text-align:center;color:#999;padding:40px 14px;font-size:.92rem">'
+         + '"' + escapeHtml(q) + '"에 대한 설명을 찾지 못했습니다.<br><br>'
+         + '<span style="font-size:.82rem">다른 용어로 검색해 보세요.<br>(예: 아브라함, 모세, 가나안, 안식일)</span></div>';
+  } else {
+    html = '<div style="font-size:.8rem;color:#888;margin-bottom:12px">검색 결과 ' + matches.length + '개</div>';
+    matches.forEach(([term,info])=>{
+      const c = catColor[info.category] || '#666';
+      html += '<div style="background:#fff;border:1px solid #e0d8c8;border-radius:14px;padding:16px 16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+        + '<span style="font-family:\'Noto Serif KR\',serif;font-size:1.15rem;font-weight:700;color:#1a1a1a">' + escapeHtml(term) + '</span>'
+        + '<span style="font-size:.68rem;color:#fff;background:' + c + ';border-radius:8px;padding:2px 8px;font-weight:700">' + info.category + '</span>'
+        + '</div>'
+        + '<div style="font-size:.92rem;line-height:1.65;color:#333">' + escapeHtml(info.desc) + '</div>'
+        + (info.ref ? '<div style="font-size:.76rem;color:#8b5e2a;margin-top:8px">📍 ' + escapeHtml(info.ref) + '</div>' : '')
+        + '</div>';
+    });
+  }
+  box.innerHTML = html;
+  box.scrollTop = 0;
+  showScreen('s-glossary');
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // 목장별 기도제목 저장/조회
