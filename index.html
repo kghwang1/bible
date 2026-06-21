@@ -1890,24 +1890,25 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 <!-- 읽기 -->
 <div class="screen" id="s-read">
   <!-- 성경 직접보기 상단 바 -->
-  <div id="bibleWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:10px 14px;background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0">
-    <button onclick="closeBibleDirect()" class="hdr-btn home-btn">🏠 홈</button>
-    <span id="verDisplayBtn" style="color:#1a1a1a;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;white-space:nowrap;padding:0 4px">개역개정</span>
-    <button id="bsPickBtn" onclick="toggleBiblePicker()" style="background:#3a5ea8;color:#fff;border:1px solid #3a5ea8;border-radius:18px;padding:5px 0;font-size:.75rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap;font-weight:700;flex:2;text-align:center">구절찾기</button>
+  <div id="bibleWrapDirect" style="display:none;position:absolute;top:0;left:0;right:0;z-index:20;align-items:center;gap:6px;padding:8px 10px;background:linear-gradient(180deg,#ece9e0,#f0ede6);border-bottom:1.5px solid #eedcb0">
+    <button onclick="closeBibleDirect()" class="hdr-btn home-btn" style="flex:0 0 auto">🏠 홈</button>
+    <button id="bsVerBtn" onclick="toggleVerPicker()" style="flex:1;background:#fff;color:#3a2410;border:1.5px solid #c8a86b;border-radius:18px;padding:6px 4px;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;font-weight:700;text-align:center;white-space:nowrap">개역개정</button>
+    <button id="bsPickBtn" onclick="toggleBiblePicker()" style="flex:2;background:#3a5ea8;color:#fff;border:1px solid #3a5ea8;border-radius:18px;padding:6px 4px;font-size:.78rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;font-weight:700;text-align:center;white-space:nowrap">마태복음 1장</button>
   </div>
+
+  <!-- 버전 선택 패널 -->
+  <div id="verPicker" style="display:none;position:absolute;top:44px;left:0;right:0;z-index:25;background:#fff;border-bottom:2px solid #d4c5a9;padding:12px 10px;grid-template-columns:1fr 1fr;gap:9px"></div>
 
   <!-- 성경 선택 패널 (앱 내장) -->
   <div id="biblePicker" style="display:none;position:absolute;left:0;right:0;bottom:0;z-index:19;background:#fff;flex-direction:column;overflow:hidden">
     <!-- 탭 바 -->
     <div style="display:flex;border-bottom:2px solid #e0d5c5;flex-shrink:0">
-      <button id="bpTabVER" onclick="bpShowTab('VER')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">버전</button>
-      <button id="bpTabNT" onclick="bpShowTab('NT')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">신약</button>
+      <button id="bpTabNT" onclick="bpShowTab('NT')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">신약</button>
       <button id="bpTabOT" onclick="bpShowTab('OT')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">구약</button>
       <button id="bpTabCH" onclick="bpShowTab('CH')" style="flex:1;padding:11px 4px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;border:none;background:#f5f0e8;color:#999;font-weight:700;cursor:pointer;border-bottom:3px solid transparent">장</button>
     </div>
-    <!-- 버전 선택 -->
-    <div id="bpVER" style="flex:1;overflow-y:auto;padding:12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-content:start"></div>
     <!-- 책 목록 (구약) -->
+
     <div id="bpOT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;align-content:start"></div>
     <!-- 책 목록 (신약) -->
     <div id="bpNT" style="flex:1;overflow-y:auto;padding:10px 8px;display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;align-content:start"></div>
@@ -1958,7 +1959,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <!-- 다음 장 미리 받기(prefetch)용 숨김 iframe -->
     <iframe id="prefetchFrame" src="" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:none;left:-9999px"></iframe>
     <!-- KJV 내장 뷰어 (KJV/KJH 버전일 때 표시) -->
-    <div id="kjvInlineWrap" style="display:none;position:absolute;inset:0;overflow:hidden;background:#f5f0e8;display:flex;flex-direction:column;z-index:1">
+    <div id="kjvInlineWrap" style="display:none;position:absolute;inset:0;overflow:hidden;background:#f5f0e8;flex-direction:column;z-index:1">
       <!-- 한글/영어 탭 + TTS 버튼 -->
       <div id="kjvInlineTabs" style="display:flex;background:#f5f0e8;border-bottom:2px solid #d4c5a9;flex-shrink:0;align-items:center">
         <button id="kjvTabKo" onclick="kjvInlineSwitchLang('ko')" style="flex:1;padding:9px 4px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;border:none;background:transparent;color:#3a5ea8;font-weight:700;cursor:pointer;border-bottom:3px solid #3a5ea8">한글 KJV</button>
@@ -3211,23 +3212,23 @@ function openBibleDirect(){
   document.querySelector('#s-read .read-hdr').style.display='none';
   document.getElementById('bibleWrapDirect').style.display='flex';
 
-  // 이전 본문 비우기 (버전이 바뀌었을 수 있으므로)
-  const frame = document.getElementById('bibleFrame');
-  frame.src = 'about:blank';
-  hideKJVInline();
+  // 버전 버튼 텍스트 동기화
+  bsUpdateVerBtn();
 
-  // 버전 텍스트 업데이트 (설정 버전 따름)
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
-  const vd = document.getElementById('verDisplayBtn');
-  if(vd) vd.textContent = verLabels[curVer] || '개역개정';
+  // 이전에 읽던 위치 복원, 없으면 마태복음 1장
+  let lastBid = 40, lastCh = 1; // 마태복음 1장 기본값
+  try{
+    const saved = localStorage.getItem('bible_direct_last');
+    if(saved){ const p=JSON.parse(saved); if(p.bid && p.ch){ lastBid=p.bid; lastCh=p.ch; } }
+  }catch(e){}
 
-  // 구절선택 보드 먼저 열기 (버전은 표지 선택값 유지, 신약 탭부터)
   bpInit();
-  const picker = document.getElementById('biblePicker');
-  picker.style.top = '44px';
-  picker.style.display = 'flex';
-  bpShowTab('NT');
-  // godpia 서버와 '연결만' 미리 열어둠 (본문은 받지 않음 → 임의 장 선택에도 첫 응답 단축)
+  hideKJVInline();
+  document.getElementById('bibleFrame').src = 'about:blank';
+  // 닫힌 상태로 시작하고 본문 바로 로드
+  document.getElementById('biblePicker').style.display='none';
+  document.getElementById('verPicker').style.display='none';
+  bpGoChapter(lastBid, lastCh);
   warmupGodpia();
 }
 
@@ -3318,7 +3319,6 @@ function bpInit(){
 }
 
 function bpShowTab(tab){
-  document.getElementById('bpVER').style.display=(tab==='VER')?'grid':'none';
   document.getElementById('bpOT').style.display=(tab==='OT')?'grid':'none';
   document.getElementById('bpNT').style.display=(tab==='NT')?'grid':'none';
   document.getElementById('bpCH').style.display=(tab==='CH')?'flex':'none';
@@ -3331,14 +3331,13 @@ function bpShowTab(tab){
       grid.innerHTML='<div style="grid-column:1/-1;padding:30px 10px;text-align:center;color:#999;font-size:.9rem;font-family:\'Noto Sans KR\',sans-serif">먼저 신약 또는 구약에서<br>성경책을 선택하세요</div>';
     }
   }
-  ['VER','NT','OT','CH'].forEach(t=>{
+  ['NT','OT','CH'].forEach(t=>{
     const btn=document.getElementById('bpTab'+t);
     if(!btn) return;
     const on=(t===tab);
     btn.style.color=on?'#3a5ea8':'#999';
     btn.style.borderBottom=on?'3px solid #3a5ea8':'3px solid transparent';
   });
-  if(tab==='VER') bpRenderVersions();
 }
 
 // 버전 선택 패널 렌더링
@@ -3364,21 +3363,16 @@ function bpRenderVersions(){
 
 // 보드에서 버전 선택 → curVer 변경 (런타임 전용, 설정값 변경 안 함)
 function bpSelectVersion(ver){
-  curVer = ver;  // 저장 안 함 — 재시작 시 설정값으로 복원됨
-  // 상단 버전 라벨/버튼 동기화
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
-  const vdLabel = document.getElementById('verDropLabel');
-  if(vdLabel) vdLabel.textContent = verLabels[ver] || '개역개정';
-  const vdBtn = document.getElementById('verDisplayBtn');
-  if(vdBtn) vdBtn.textContent = verLabels[ver] || '개역개정';
+  curVer = ver;
+  bsUpdateVerBtn();
   if(typeof updateVerTopBtn==='function') updateVerTopBtn();
-  bpRenderVersions();
   // 이미 로드된 장이 있으면 새 버전으로 즉시 갱신
   if(_curBid && _curCh){
     bpGoChapter(_curBid, _curCh);
     return;
   }
-  bpShowTab('NT');
+  // 마태복음 1장으로 기본 로드
+  bpGoChapter(40, 1);
 }
 
 // 장 번호 그리드 렌더 — 모든 성경 동일: 10열(10줄)
@@ -3438,6 +3432,18 @@ function bpGoChapter(bid,ch){
     try{ localStorage.setItem('bible_direct_last', JSON.stringify({bid,ch})); }catch(e){}
   }
 
+  // 버전 전환 시 뷰어 정리: KJV↔godpia 교차 전환
+  const isKjv = (curVer==='KJV' || curVer==='KJH');
+  const kjvWrap = document.getElementById('kjvInlineWrap');
+  const bibleFrameEl = document.getElementById('bibleFrame');
+  if(isKjv){
+    if(bibleFrameEl) bibleFrameEl.style.display = 'none';
+    if(kjvWrap) kjvWrap.style.display = 'flex';
+  } else {
+    if(kjvWrap) kjvWrap.style.display = 'none';
+    if(bibleFrameEl) bibleFrameEl.style.display = '';
+  }
+
   document.getElementById('biblePicker').style.display='none';
   const bsPickBtn=document.getElementById('bsPickBtn');
   if(bsPickBtn) bsPickBtn.style.background='#3a5ea8';
@@ -3475,14 +3481,57 @@ function bpGoChapter(bid,ch){
   frame.src=url;
 }
 
+// 버전 버튼 텍스트 동기화
+function bsUpdateVerBtn(){
+  const verLabels={'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
+  const btn=document.getElementById('bsVerBtn');
+  if(btn) btn.textContent=verLabels[curVer]||'개역개정';
+  // 구 verDisplayBtn도 혹시 참조하는 곳 대비
+  const old=document.getElementById('verDisplayBtn');
+  if(old) old.textContent=verLabels[curVer]||'개역개정';
+}
+
+// 버전 선택 패널 토글
+function toggleVerPicker(){
+  const vp=document.getElementById('verPicker');
+  const bp=document.getElementById('biblePicker');
+  const isOpen=(vp.style.display==='grid');
+  bp.style.display='none'; // 성경판 닫기
+  if(isOpen){ vp.style.display='none'; return; }
+  // 버전 버튼 렌더
+  const vers=[['GAE','개역개정'],['SAENEW','새번역'],['HDM','현대인의성경'],['NIV','NIV 영어'],['KJH','KJV 한글'],['KJV','KJV 영어']];
+  vp.innerHTML='';
+  vers.forEach(([v,label])=>{
+    const btn=document.createElement('button');
+    btn.textContent=label;
+    const on=(curVer===v);
+    Object.assign(btn.style,{padding:'13px 6px',fontSize:'.92rem',fontFamily:"'Noto Sans KR',sans-serif",
+      border:'1.5px solid '+(on?'#3a5ea8':'#c8a86b'),borderRadius:'10px',
+      background:on?'#3a5ea8':'#fff',color:on?'#fff':'#3a2410',fontWeight:'700',cursor:'pointer'});
+    btn.onclick=()=>{ bpSelectVersion(v); vp.style.display='none'; };
+    vp.appendChild(btn);
+  });
+  vp.style.display='grid';
+}
+
 function toggleBiblePicker(){
   bpInit();
   const picker=document.getElementById('biblePicker');
+  const vp=document.getElementById('verPicker');
   const open=(picker.style.display==='none'||picker.style.display==='');
-  // direct mode: 44px 오버레이 바 아래
-  picker.style.top = '44px';
+  vp.style.display='none'; // 버전판 닫기
+  picker.style.top='44px';
   picker.style.display=open?'flex':'none';
-  document.getElementById('bsPickBtn').style.background=open?'#2a4a98':'#3a5ea8';
+  if(open){
+    // 현재 위치로 탭 자동 이동
+    if(_curBid){
+      bpShowTab(_curBid<=39?'OT':'NT');
+    } else {
+      bpShowTab('NT');
+    }
+  }
+  const bsBtn=document.getElementById('bsPickBtn');
+  if(bsBtn) bsBtn.style.background=open?'#2a4a98':'#3a5ea8';
 }
 
 // 일반 읽기 화면 중앙 제목 터치 → 현재 위치 선택된 상태로 보드 열기
@@ -3544,6 +3593,7 @@ function closeBibleDirect(){
   document.querySelector('#s-read .read-hdr').style.display='';
   document.getElementById('bibleWrapDirect').style.display='none';
   document.getElementById('biblePicker').style.display='none';
+  document.getElementById('verPicker').style.display='none';
   showScreen('s-cover');
 }
 
@@ -4173,6 +4223,7 @@ function selectVerCoverDrop(ver, label){
   const vd = document.getElementById('verDrop');
   if(vd) vd.style.display='none';
   updateVerTopBtn();
+  if(typeof bsUpdateVerBtn==='function') bsUpdateVerBtn();
   // 사용 중이라면 현재 열린 성경도 새 설정 버전으로 즉시 갱신
   if(curN){ const p=PLAN.find(x=>x.n===curN); if(p) loadBible(p); }
   else if(_curBid && _curCh){ bpGoChapter(_curBid, _curCh); }
