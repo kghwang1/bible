@@ -4603,8 +4603,11 @@ function escapeHtml(s){
 
 // 본문 텍스트에서 용어집에 등록된 단어를 파란색 클릭 링크로 변환 (한글 본문용)
 // 본문 단어 강조에서 제외할 표제어 (조사·일상어와 겹쳐 오매칭이 잦은 것)
-// '바로'(부사 곧장)처럼 흔한 일상어와 겹치는 표제어는 본문 강조에서 제외
-const GLOSS_LINK_EXCLUDE = new Set(['셋','함','에서','의','롯','욥','룻','셈','빛','죄','바로']);
+// '바로'(곧장), '아이'(child), '가나'(가나다), '마라'(마르다) 등 흔한 일상어와 겹치는 표제어 제외
+const GLOSS_LINK_EXCLUDE = new Set([
+  '셋','함','에서','의','롯','욥','룻','셈','빛','죄',
+  '바로','아이','가나','마라','수가','놉','옥','스바','후새','도단','살렘','의'
+]);
 let _glossaryTermsSorted = null;
 function getGlossaryTermsSorted(){
   if(_glossaryTermsSorted) return _glossaryTermsSorted;
