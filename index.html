@@ -3642,12 +3642,31 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
   if(id==='s-cover') initCover();
   if(id==='s-list')  renderList();
-  // s-read를 일반 방식으로 열 때는 헤더 복원
+  // s-read 복귀 시: direct-mode 여부에 따라 헤더/오버레이 상태 복원
   if(id==='s-read'){
     const hdr=document.querySelector('#s-read .read-hdr');
     const ov=document.getElementById('bibleWrapDirect');
-    if(ov && ov.style.display!=='none' && !window._bibleDirectMode){
-      hdr.style.display=''; ov.style.display='none';
+    if(window._bibleDirectMode){
+      // 성경책 직접보기 모드 복원
+      document.getElementById('s-read').classList.add('direct-mode');
+      if(hdr) hdr.style.display='none';
+      if(ov)  ov.style.display='flex';
+      // KJV 뷰어 상태 복원
+      const isKjv=(curVer==='KJV'||curVer==='KJH');
+      const kjvWrap=document.getElementById('kjvInlineWrap');
+      const bf=document.getElementById('bibleFrame');
+      if(isKjv){
+        if(bf) bf.style.display='none';
+        if(kjvWrap) kjvWrap.style.display='flex';
+      } else {
+        if(kjvWrap) kjvWrap.style.display='none';
+        if(bf) bf.style.display='';
+      }
+    } else {
+      // 일반 매일읽기 모드
+      document.getElementById('s-read').classList.remove('direct-mode');
+      if(hdr) hdr.style.display='';
+      if(ov)  ov.style.display='none';
     }
   }
   if(id!=='s-read') window._bibleDirectMode=false;
@@ -4572,11 +4591,6 @@ function glossaryGoBack(){
   if(_glossaryFrom === 'kjv'){
     const target = _glossaryReturnScreen || 's-kjv-reader';
     showScreen(target);
-    // 매일읽기 KJV는 s-read 안의 kjvInlineWrap에 그려져 있으므로 표시 보장
-    if(target === 's-read'){
-      const wrap = document.getElementById('kjvInlineWrap');
-      if(wrap) wrap.style.display = 'flex';
-    }
   } else {
     showScreen('s-appendix');
   }
