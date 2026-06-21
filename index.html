@@ -290,6 +290,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 }
 
 /* 읽기 */
+.bible-spinner{
+  width:38px;height:38px;border-radius:50%;
+  border:4px solid rgba(139,94,42,.2);
+  border-top-color:#8b5e2a;
+  animation:bibleSpin .8s linear infinite;
+}
+@keyframes bibleSpin{to{transform:rotate(360deg)}}
 #s-read{background:#f0ede6}
 
 
@@ -1825,6 +1832,14 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       </div>
     </div>
 
+    <!-- 목장별 기도제목 -->
+    <div class="set-group">
+      <span class="set-group-label">🙏 우리 목장 기도제목</span>
+      <textarea class="input-field" id="groupPrayerInput" placeholder="우리 목장의 기도제목을 입력하세요&#10;(완료 화면에 표시됩니다)" rows="5" oninput="saveGroupPrayerInput()" style="width:100%;resize:vertical;line-height:1.5;font-family:'Noto Sans KR',sans-serif"></textarea>
+      <div style="font-size:.7rem;color:#a07840;margin-top:4px">목장 이름별로 저장되며, 같은 목장 목원들과 공유됩니다.</div>
+      <div id="prayerSaveStatus" style="font-size:.7rem;color:#7ecb7e;margin-top:2px;min-height:1em"></div>
+    </div>
+
     <button type="button" class="set-done-btn" onclick="closeSettings()">완료</button>
   </div>
 </div>
@@ -1924,6 +1939,13 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
   <div class="bible-wrap" style="position:relative">
     <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
+    <!-- 로딩 표시 오버레이 -->
+    <div id="bibleLoading" style="display:none;position:absolute;inset:0;z-index:5;background:rgba(245,240,232,0.96);flex-direction:column;align-items:center;justify-content:center;gap:14px">
+      <div class="bible-spinner"></div>
+      <div style="font-size:.9rem;color:#8b5e2a;font-weight:700;font-family:'Noto Sans KR',sans-serif">성경을 불러오는 중…</div>
+    </div>
+    <!-- 다음 장 미리 받기(prefetch)용 숨김 iframe -->
+    <iframe id="prefetchFrame" src="" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:none;left:-9999px"></iframe>
     <!-- KJV 내장 뷰어 (KJV/KJH 버전일 때 표시) -->
     <div id="kjvInlineWrap" style="display:none;position:absolute;inset:0;overflow:hidden;background:#f5f0e8;display:flex;flex-direction:column;z-index:1">
       <!-- 한글/영어 탭 + TTS 버튼 -->
@@ -3034,9 +3056,9 @@ const KJH_BOOK_ABBR = {
 // 계획별 독립 저장소 키
 const SK = {1:'bible_plan1', 2:'bible_plan2'};
 const DEF_GROUP  = '로마';   // 기본 목장명
-const DEF_READER = '브리스'; // 기본 이름
+const DEF_READER = '브리스길라'; // 기본 이름
 let curPlan = 1;             // 기본 읽는방법: 연대순
-let curVer = 'GAE'; // 개역개정 기본값
+let curVer = 'SAENEW'; // 새번역 기본값
 let ST = {checks:{},reader:'',startDate:'',filter:'all',ver:'GAE'};
 let PLAN = PLAN_DATA[1];
 let curN = 0, fontIdx = 1;
@@ -3063,8 +3085,8 @@ function selectPlan(n, btn){
   document.getElementById('readerInput').value    = ST.reader    || DEF_READER;
   updateEndDate();
   // 버전 버튼 상태 복원 (버전은 플랜과 무관하게 마지막 선택값 유지)
-  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
-  catch(e){ curVer = 'GAE'; }
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'SAENEW'; }
+  catch(e){ curVer = 'SAENEW'; }
   document.querySelectorAll('.ver-sel-btn').forEach(b=>b.classList.remove('on'));
   const vBtn = document.getElementById('verBtn-'+curVer);
   if(vBtn) vBtn.classList.add('on');
@@ -3363,8 +3385,9 @@ function bpGoChapter(bid,ch){
     return;
   }
 
-  const url = godpiaUrl(bid, ch) + '&_t='+Date.now();
+  const url = godpiaUrl(bid, ch);
   const frame=document.getElementById('bibleFrame');
+  showBibleLoading();
   if(window._bibleDirectMode){
     frame.onload=function(){ onFrameLoadDirect(frame); };
   } else {
@@ -3423,11 +3446,13 @@ function openBiblePickerFromHeader(){
 // 선택은 앱 내장 보드를 사용하므로 godpia 선택 영역 전체 숨김
 let offsetDirect = 225;
 function onFrameLoadDirect(frame){
+  hideBibleLoading();
   const zm = GODPIA_ZOOM[fontIdx] || 1.0;
   frame.style.zoom = zm;
   const adj = Math.round(offsetDirect * zm);
   frame.style.marginTop = '-' + adj + 'px';
   frame.style.height = 'calc(100% + ' + adj + 'px)';
+  prefetchNextChapter();
 }
 function adjustBibleOffset(delta){
   offsetDirect = Math.max(0, Math.min(350, offsetDirect + delta));
@@ -3502,8 +3527,8 @@ function showScreen(id){
 
 function initCover(){
   // ① 먼저 설정값(버전·읽기방법) 복원
-  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
-  catch(e){ curVer = 'GAE'; }
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'SAENEW'; }
+  catch(e){ curVer = 'SAENEW'; }
   try{ const sp = localStorage.getItem('bible_cur_plan'); if(sp){ curPlan = parseInt(sp)||1; PLAN = PLAN_DATA[curPlan]; } }catch(e){}
 
   // ② 화면 그리기
@@ -3625,7 +3650,7 @@ function showToastMsg(msg){
 
 // ── 기독교 절기 계산 ──────────────────────────────────
 function getGroupName(){ try{ return localStorage.getItem('bible_group')||DEF_GROUP; }catch(e){ return DEF_GROUP; } }
-function saveGroupName(){ try{ localStorage.setItem('bible_group', document.getElementById('groupInput').value.trim()||DEF_GROUP); }catch(e){} }
+function saveGroupName(){ try{ localStorage.setItem('bible_group', document.getElementById('groupInput').value.trim()||DEF_GROUP); }catch(e){} const gp=document.getElementById('groupPrayerInput'); if(gp) gp.value=getGroupPrayer((document.getElementById('groupInput').value||'').trim()); }
 function saveReaderName(){ try{ ST.reader=(document.getElementById('readerInput').value||'').trim(); saveST(); }catch(e){} }
 function updateCoverTitle(){
   const val = (document.getElementById('groupInput').value||'').trim();
@@ -3877,7 +3902,8 @@ function goReadGroup(g, rowEl){
   }
   _curBid = g.bid; _curCh = g.ch; _lastOffset = OFFSET;
   const frame=document.getElementById('bibleFrame');
-  const url=godpiaUrl(g.bid,g.ch)+'&_t='+Date.now();
+  const url=godpiaUrl(g.bid,g.ch);
+  showBibleLoading();
   frame.onload = function(){ onFrameLoad(frame, OFFSET); };
   frame.src=url;
 }
@@ -3953,10 +3979,10 @@ function openBareRead(){
     if(segs && segs.length){
       // 읽기는 항상 개역개정(gae) 고정
       const vol = GODPIA_VOL[segs[0].bid] || 'gen';
-      url = 'https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+segs[0].ch+'&_t='+Date.now();
+      url = 'https://www.godpia.com/read/reading.asp?ver=gae&vol='+vol+'&chap='+segs[0].ch;
     }
   }
-  if(!url) url = 'https://www.godpia.com/read/reading.asp?ver=gae&vol=gen&chap=1&_t='+Date.now();
+  if(!url) url = 'https://www.godpia.com/read/reading.asp?ver=gae&vol=gen&chap=1';
   document.getElementById('bareReadFrame').src = url;
   // position:fixed 화면이므로 showScreen 대신 직접 표시
   document.getElementById('s-bare-read').style.display = 'flex';
@@ -3979,6 +4005,19 @@ function openSettings(){
   if(ri) ri.value = ST.reader || DEF_READER;
   const gi = document.getElementById('groupInput');
   if(gi) gi.value = getGroupName();
+  // 현재 목장 기도제목 불러오기 (로컬 먼저, 서버에서 최신값 동기화)
+  const gp = document.getElementById('groupPrayerInput');
+  if(gp){
+    gp.value = getGroupPrayer(getGroupName());
+    const st = document.getElementById('prayerSaveStatus');
+    if(st) st.textContent = '';
+    fetchGroupPrayer(getGroupName()).then(srv=>{
+      if(srv!=null){
+        gp.value = srv;
+        setGroupPrayer(getGroupName(), srv);
+      }
+    });
+  }
   updateEndDate();
 
   const h=document.getElementById('settingsHint'); if(h) h.style.display='none';
@@ -4060,8 +4099,8 @@ function selectPlanDrop(n, label){
   document.getElementById('readerInput').value    = ST.reader    || DEF_READER;
   updateEndDate();
   // 버전은 플랜과 무관하게 마지막 선택값 유지
-  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'GAE'; }
-  catch(e){ curVer = 'GAE'; }
+  try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'SAENEW'; }
+  catch(e){ curVer = 'SAENEW'; }
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   document.getElementById('verDropLabel').textContent = verLabels[curVer] || '개역개정';
   updateVerTopBtn();
@@ -4162,7 +4201,8 @@ function loadBible(p){
   _curCh  = segs[0].ch;
   _lastOffset = OFFSET;
   const frame=document.getElementById('bibleFrame');
-  const url=godpiaUrl(segs[0].bid,segs[0].ch)+'&_t='+Date.now();
+  const url=godpiaUrl(segs[0].bid,segs[0].ch);
+  showBibleLoading();
   frame.onload = function(){ onFrameLoad(frame, OFFSET); };
   frame.src=url;
 }
@@ -4172,12 +4212,51 @@ const OFFSET_FROM_PICKER = 90;  // 선택보드 이동 후 → 2번(스피커)�
 let _lastOffset = OFFSET; // 마지막 사용한 offset 기억 (글자크기 변경 시 유지)
 
 function onFrameLoad(frame, offsetOverride){
+  hideBibleLoading();
   const zm=GODPIA_ZOOM[fontIdx]||1.0;
   frame.style.zoom=zm;
   const base = (offsetOverride !== undefined) ? offsetOverride : OFFSET;
   const adj=Math.round(base*zm);
   frame.style.marginTop='-'+adj+'px';
   frame.style.height='calc(100% + '+adj+'px)';
+  // 본문 표시 후 다음 장 미리 받기
+  prefetchNextChapter();
+}
+
+// ── 로딩 표시 ──
+let _bibleLoadTimer=null;
+function showBibleLoading(){
+  const el=document.getElementById('bibleLoading');
+  if(el) el.style.display='flex';
+  // 20초 넘으면 자동 숨김(무한 로딩 방지)
+  if(_bibleLoadTimer) clearTimeout(_bibleLoadTimer);
+  _bibleLoadTimer=setTimeout(hideBibleLoading, 20000);
+}
+function hideBibleLoading(){
+  const el=document.getElementById('bibleLoading');
+  if(el) el.style.display='none';
+  if(_bibleLoadTimer){ clearTimeout(_bibleLoadTimer); _bibleLoadTimer=null; }
+}
+
+// ── 다음 장 미리 받기 (prefetch) ──
+// 현재 _curBid/_curCh 기준 다음 장을 숨김 iframe으로 미리 로드 → 캐시에 저장
+function prefetchNextChapter(){
+  try{
+    if(curVer==='KJV' || curVer==='KJH') return; // KJV는 내장이라 불필요
+    if(!_curBid || !_curCh) return;
+    const maxCh = (typeof MAX_CH!=='undefined' && MAX_CH[_curBid]) ? MAX_CH[_curBid] : 999;
+    let nb=_curBid, nc=_curCh+1;
+    if(nc>maxCh){ nb=_curBid+1; nc=1; }       // 다음 책 1장
+    if(nb>66) return;                          // 마지막 책 끝
+    const pf=document.getElementById('prefetchFrame');
+    if(!pf) return;
+    const url=godpiaUrl(nb,nc);
+    // 같은 URL 중복 prefetch 방지
+    if(pf.dataset.url===url) return;
+    pf.dataset.url=url;
+    // 약간 지연시켜 현재 본문 렌더 우선
+    setTimeout(()=>{ try{ pf.src=url; }catch(e){} }, 600);
+  }catch(e){}
 }
 const KJV_FONT_SIZES = ['0.78rem','0.88rem','1.0rem','1.12rem','1.28rem'];
 
@@ -4263,28 +4342,101 @@ function showCelebration(n){
 async function loadSharedPrayer(){
   const celPrayer = document.getElementById('celPrayerContent');
   const celSection = document.getElementById('celPrayerSection');
+  const celTitle = document.querySelector('#celPrayerSection .cel-prayer-title');
   if(!celPrayer || !celSection) return;
 
   const groupName = (getGroupName() || '').trim();
 
-  if(groupName === '생명수'){
-    // 생명수 목장: 기도문.txt 불러오기
-    const setText = (t) => {
-      if(t && t.trim()){
-        celPrayer.textContent = t;
-        celSection.style.display = 'block';
-      } else {
-        celSection.style.display = 'none';
-      }
-    };
-    setText(localStorage.getItem('bible_prayer_cache') || '');
-    const text = await loadSharedPrayerFile();
-    setText(text);
+  // 제목: "○○○ 목장 기도제목"
+  if(celTitle){
+    celTitle.textContent = groupName ? '🙏 ' + groupName + ' 목장 기도제목' : '🙏 기도제목';
+  }
+
+  const fixedText = '선교지와\n목장식구 위해\n함께 기도합니다. 아멘';
+
+  // 1) 로컬 저장값을 먼저 즉시 표시 (오프라인에서도 보이게)
+  const local = getGroupPrayer(groupName);
+  if(local && local.trim()){
+    celPrayer.textContent = local;
+    celSection.style.display = 'block';
   } else {
-    // 그 외 목장: 고정 문구
-    celPrayer.innerHTML = '<span style="font-size:1.275rem;line-height:2;text-align:center;display:block;">선교지와<br>목장식구 위해<br>함께 기도합니다. 아멘</span>';
+    celPrayer.textContent = fixedText;
     celSection.style.display = 'block';
   }
+
+  // 2) 서버에서 최신값 받아 갱신 (목원들과 공유)
+  const srv = await fetchGroupPrayer(groupName);
+  if(srv != null && srv.trim()){
+    celPrayer.textContent = srv;
+    setGroupPrayer(groupName, srv);  // 로컬 캐시도 갱신
+    celSection.style.display = 'block';
+    return;
+  }
+
+  // 3) 서버에 값이 없고 생명수면 기도문.txt 시도(레거시 호환)
+  if(groupName === '생명수'){
+    const text = await loadSharedPrayerFile();
+    if(text && text.trim()){
+      celPrayer.textContent = text;
+      celSection.style.display = 'block';
+    }
+  }
+}
+
+// 목장별 기도제목 저장/조회
+// ── 목장별 기도제목 (로컬 + 서버 공유) ──
+// Cloudflare Worker 주소 — 배포 후 본인 주소로 교체하세요
+const PRAYER_WORKER = 'https://prayer.kghwang1.workers.dev';
+
+function groupPrayerKey(group){ return 'bible_prayer_grp_' + (group||'').trim(); }
+function getGroupPrayer(group){
+  try{ return localStorage.getItem(groupPrayerKey(group)) || ''; }catch(e){ return ''; }
+}
+function setGroupPrayer(group, text){
+  try{ localStorage.setItem(groupPrayerKey(group), text||''); }catch(e){}
+}
+
+// 서버에서 목장 기도제목 불러오기
+async function fetchGroupPrayer(group){
+  const g = (group||'').trim();
+  if(!g) return null;
+  try{
+    const res = await fetch(PRAYER_WORKER + '/?group=' + encodeURIComponent(g) + '&t=' + Date.now());
+    if(!res.ok) return null;
+    const data = await res.json();
+    return (typeof data.text === 'string') ? data.text : null;
+  }catch(e){ return null; }
+}
+
+// 서버에 목장 기도제목 저장하기
+async function saveGroupPrayerServer(group, text){
+  const g = (group||'').trim();
+  if(!g) return false;
+  try{
+    const res = await fetch(PRAYER_WORKER, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ group:g, text:text||'' })
+    });
+    return res.ok;
+  }catch(e){ return false; }
+}
+// 설정 입력란 → 현재 목장 기도제목 저장
+let _prayerSaveTimer = null;
+function saveGroupPrayerInput(){
+  const ta = document.getElementById('groupPrayerInput');
+  if(!ta) return;
+  const group = (getGroupName()||'').trim();
+  const text = ta.value;
+  setGroupPrayer(group, text);  // 로컬 즉시 저장
+  // 서버 저장은 입력 멈춘 뒤 1.2초 후 (디바운스)
+  const statusEl = document.getElementById('prayerSaveStatus');
+  if(statusEl) statusEl.textContent = '저장 중…';
+  if(_prayerSaveTimer) clearTimeout(_prayerSaveTimer);
+  _prayerSaveTimer = setTimeout(async ()=>{
+    const ok = await saveGroupPrayerServer(group, text);
+    if(statusEl) statusEl.textContent = ok ? '✓ 목원들과 공유됨' : '⚠ 저장 실패(인터넷 확인)';
+  }, 1200);
 }
 function goNext(){
   const idx=PLAN.findIndex(x=>x.n===curN);
@@ -4322,15 +4474,44 @@ async function doShare(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // ── 첫 실행(앱 설치) 처리 ──
+  let installDate;
+  try{ installDate = localStorage.getItem('bible_install_date'); }catch(e){}
+  const firstRun = !installDate;
+  if(firstRun){
+    installDate = todayISO();
+    try{
+      localStorage.setItem('bible_install_date', installDate);
+      // 기본 시작날짜 = 설치일
+      if(!localStorage.getItem('bible_plan1')) {
+        // 아직 ST 저장 전 — 아래 loadST 후 startDate 보정
+      }
+      // 기본 목장(로마) 기도제목 저장 (비어있을 때만)
+      const defaultPrayer = '1. 선교지 위해\n2. 목사님 위해\n3. 다음 세대를 위해\n4. 목장 식구를 위해 기도해 주세요';
+      const k = 'bible_prayer_grp_' + DEF_GROUP;
+      if(!localStorage.getItem(k)){
+        localStorage.setItem(k, defaultPrayer);
+        // 서버에 로마 목장 기본 기도제목이 없으면 올려두기
+        if(typeof fetchGroupPrayer==='function'){
+          fetchGroupPrayer(DEF_GROUP).then(srv=>{
+            if(!srv || !srv.trim()){ saveGroupPrayerServer(DEF_GROUP, defaultPrayer); }
+          });
+        }
+      }
+    }catch(e){}
+  }
+
   // 읽는방법 복원 (저장값 우선, 없으면 기본 연대순=1)
   try{ const sp=localStorage.getItem('bible_cur_plan'); if(sp) curPlan=parseInt(sp)||1; }catch(e){}
   ST = loadST(curPlan);
   PLAN = PLAN_DATA[curPlan];
+  // 시작날짜가 비어있으면 설치일로 설정
+  if(!ST.startDate){ ST.startDate = installDate || todayISO(); saveST(); }
   try{fontIdx=parseInt(localStorage.getItem('bible_fi')||'1');}catch(e){}
   // KJV abbr→bid 역매핑 초기화
   Object.entries(KJV_ABBR).forEach(([bid,abbr])=>{ KJV_ABBR_INV[abbr]=Number(bid); });
   initCover();
-  // 목장명 또는 이름이 기본값(로마·브리스) 그대로면 시작 시 안내 말풍선 표시
+  // 목장명 또는 이름이 기본값(로마·브리스길라) 그대로면 시작 시 안내 말풍선 표시
   maybeShowSettingsHint();
 });
 
