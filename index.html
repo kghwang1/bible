@@ -4590,6 +4590,8 @@ function searchGlossary2(){
 function glossaryGoBack(){
   if(_glossaryFrom === 'kjv'){
     const target = _glossaryReturnScreen || 's-kjv-reader';
+    // 용어집 진입 전 direct-mode 복원 (showScreen 안에서 참조하므로 먼저 설정)
+    window._bibleDirectMode = _glossaryReturnDirectMode;
     showScreen(target);
   } else {
     showScreen('s-appendix');
@@ -4710,11 +4712,13 @@ function escapeAttr(s){
 }
 // 파란 단어 클릭 → 용어 설명 화면 (KJV 본문에서 진입)
 let _glossaryReturnScreen = null;
+let _glossaryReturnDirectMode = false;
 function openGlossaryTerm(term){
   _glossaryFrom = 'kjv';
   // 현재 보고 있던 실제 화면 id 저장 (s-read 또는 s-kjv-reader)
   const cur = document.querySelector('.screen.active');
   _glossaryReturnScreen = cur ? cur.id : 's-read';
+  _glossaryReturnDirectMode = !!window._bibleDirectMode;
   showGlossaryResult(term);
 }
 
