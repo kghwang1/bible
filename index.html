@@ -4652,6 +4652,7 @@ function showGlossaryResult(query){
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
         + '<span style="font-family:\'Noto Serif KR\',serif;font-size:1.15rem;font-weight:700;color:#1a1a1a">' + escapeHtml(term) + '</span>'
         + '<span style="font-size:.68rem;color:#fff;background:' + c + ';border-radius:8px;padding:2px 8px;font-weight:700">' + info.category + '</span>'
+        + (info.category==='지명' && info.en ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(info.en + ' biblical') + '" target="_blank" rel="noopener" style="margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:.72rem;color:#1a73e8;text-decoration:none;background:#e8f0fe;border-radius:8px;padding:3px 8px;font-weight:700;white-space:nowrap">🗺 지도</a>' : '')
         + '</div>'
         + sub
         + '<div style="font-size:.92rem;line-height:1.65;color:#333">' + escapeHtml(info.desc) + '</div>'
