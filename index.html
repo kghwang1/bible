@@ -1984,7 +1984,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <!-- 성경 용어 사전 -->
     <div class="appendix-section">
       <div class="appendix-section-title">📖 성경 용어 사전</div>
-      <div class="appendix-section-desc">인물·지명·용어를 검색해 뜻을 찾아보세요</div>
+      <div class="appendix-section-desc">인물 244명 · 지명 121개 · 용어 122개를 검색해 뜻을 찾아보세요</div>
       <div style="display:flex;gap:6px;margin-top:4px">
         <input type="text" id="glossaryInput" placeholder="예: 아브라함, 바로, 안식일"
           onkeydown="if(event.key==='Enter')searchGlossary()"
@@ -4694,9 +4694,26 @@ function linkifyGlossary(text){
   let work = text;
   for(const term of terms){
     if(work.indexOf(term) === -1) continue;
-    work = work.split(term).join('\u0000' + tokens.length + '\u0001');
+    // 부분 매칭 방지: 이미 토큰화된 구간(\u0000..\u0001) 밖에서만 치환
+    // 또한 앞뒤 문자가 한글(가-힣)이면 더 긴 단어의 일부이므로 건너뜀
+    const tIdx = tokens.length;
     tokens.push(term);
-    // 주의: 같은 term이 여러 번 나와도 같은 토큰 index 사용(동일 단어이므로 OK)
+    let result = '';
+    let rest = work;
+    let idx;
+    while((idx = rest.indexOf(term)) !== -1){
+      const before = rest[idx - 1];
+      // 앞 글자가 한글이면 더 긴 단어의 일부이므로 매칭 건너뜀
+      const prevKo = before && /[\uAC00-\uD7A3]/.test(before);
+      if(prevKo){
+        result += rest.slice(0, idx + term.length);
+        rest = rest.slice(idx + term.length);
+      } else {
+        result += rest.slice(0, idx) + '\u0000' + tIdx + '\u0001';
+        rest = rest.slice(idx + term.length);
+      }
+    }
+    work = result + rest;
   }
   // 2) 남은 평문 이스케이프
   let safe = escapeHtml(work);

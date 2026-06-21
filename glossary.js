@@ -119,6 +119,7 @@ window.GLOSSARY = {
   '에훗': { category:'인물', desc:'왼손잡이 사사로 모압 왕 에글론을 처치했다.', ref:'사사기 3장' , en:'Ehud', origin:'אֵהוּד', pron:'에후드' },
   '바락': { category:'인물', desc:'드보라와 함께 가나안 군대를 무찌른 장수.', ref:'사사기 4장' , en:'Barak', origin:'בָּרָק', pron:'바라크' },
   '입다': { category:'인물', desc:'경솔한 서원으로 딸을 잃은 사사.', ref:'사사기 11장' , en:'Jephthah', origin:'יִפְתָּח', pron:'이프타흐' },
+  '엘리멜렉': { category:'인물', desc:'룻의 시아버지. 베들레헴 출신으로 기근을 피해 모압으로 이주하였으나 그곳에서 죽었다.', ref:'룻기 1:2, 2:1, 4:3,9', en:'Elimelech', origin:'אֱלִימֶלֶךְ', pron:'엘리멜렉' },
   '엘리': { category:'인물', desc:'사무엘을 양육한 제사장. 두 아들의 악행으로 심판받았다.', ref:'사무엘상 1~4장' , en:'Eli', origin:'עֵלִי', pron:'엘리' },
   '아비가일': { category:'인물', desc:'지혜로 다윗의 보복을 막고 후에 그의 아내가 된 여인.', ref:'사무엘상 25장' , en:'Abigail', origin:'אֲבִיגַיִל', pron:'아비가일' },
   '요압': { category:'인물', desc:'다윗의 군대장관.', ref:'사무엘하' , en:'Joab', origin:'יוֹאָב', pron:'요아브' },
