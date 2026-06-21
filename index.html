@@ -4564,11 +4564,23 @@ function showGlossaryResult(query){
     html = '<div style="font-size:.8rem;color:#888;margin-bottom:12px">검색 결과 ' + matches.length + '개</div>';
     matches.forEach(([term,info])=>{
       const c = catColor[info.category] || '#666';
+      // 영어 · 원어(발음) 줄 구성 (있는 것만)
+      let sub = '';
+      const parts = [];
+      if(info.en) parts.push('<span style="font-style:italic">' + escapeHtml(info.en) + '</span>');
+      let orig = '';
+      if(info.origin) orig += escapeHtml(info.origin);
+      if(info.pron) orig += (orig ? ' ' : '') + '<span style="color:#888">[' + escapeHtml(info.pron) + ']</span>';
+      if(orig) parts.push(orig);
+      if(parts.length){
+        sub = '<div style="font-size:.8rem;color:#666;margin-bottom:8px;line-height:1.5">' + parts.join(' · ') + '</div>';
+      }
       html += '<div style="background:#fff;border:1px solid #e0d8c8;border-radius:14px;padding:16px 16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
         + '<span style="font-family:\'Noto Serif KR\',serif;font-size:1.15rem;font-weight:700;color:#1a1a1a">' + escapeHtml(term) + '</span>'
         + '<span style="font-size:.68rem;color:#fff;background:' + c + ';border-radius:8px;padding:2px 8px;font-weight:700">' + info.category + '</span>'
         + '</div>'
+        + sub
         + '<div style="font-size:.92rem;line-height:1.65;color:#333">' + escapeHtml(info.desc) + '</div>'
         + (info.ref ? '<div style="font-size:.76rem;color:#8b5e2a;margin-top:8px">📍 ' + escapeHtml(info.ref) + '</div>' : '')
         + '</div>';
@@ -4584,8 +4596,9 @@ function escapeHtml(s){
 }
 
 // 본문 텍스트에서 용어집에 등록된 단어를 파란색 클릭 링크로 변환 (한글 본문용)
-// 본문 단어 강조에서 제외할 표제어 (조사·흔한 음절과 겹쳐 오매칭이 잦은 것)
-const GLOSS_LINK_EXCLUDE = new Set(['셋','함','에서','의','롯','욥','룻','셈','빛','죄','의']);
+// 본문 단어 강조에서 제외할 표제어 (조사·일상어와 겹쳐 오매칭이 잦은 것)
+// '바로'(부사 곧장)처럼 흔한 일상어와 겹치는 표제어는 본문 강조에서 제외
+const GLOSS_LINK_EXCLUDE = new Set(['셋','함','에서','의','롯','욥','룻','셈','빛','죄','바로']);
 let _glossaryTermsSorted = null;
 function getGlossaryTermsSorted(){
   if(_glossaryTermsSorted) return _glossaryTermsSorted;
