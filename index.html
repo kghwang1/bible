@@ -139,8 +139,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .set-modal-box{
   background:radial-gradient(ellipse at 40% 0%,#2a1a0c 0%,#1a0e05 100%);
   border:1px solid rgba(201,168,76,.4);border-radius:20px;
-  width:100%;max-width:400px;max-height:88vh;overflow-y:auto;
+  width:100%;max-width:400px;max-height:none;overflow-y:visible;
   padding:20px 18px;box-shadow:0 12px 48px rgba(0,0,0,.7);
+  margin-bottom:60vh;
 }
 .set-modal-box::-webkit-scrollbar{width:4px}
 .set-modal-box::-webkit-scrollbar-thumb{background:#c9a84c;border-radius:6px}
@@ -1767,7 +1768,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 
 
 <!-- ⚙ 설정 모달 -->
-<div class="modal-overlay" id="settingsOverlay" style="z-index:600" onclick="if(event.target===this)closeSettings()">
+<div class="modal-overlay" id="settingsOverlay" style="z-index:600;align-items:flex-start;padding-top:12px;overflow-y:auto" onclick="if(event.target===this)closeSettings()">
   <div class="set-modal-box" onclick="event.stopPropagation()">
     <div class="set-modal-head">
       <div class="set-modal-title">⚙ 설정</div>
@@ -3993,6 +3994,16 @@ function closeBareRead(){
 }
 
 function openSettings(){
+  // 입력란 포커스 시 자판 위로 보이게 스크롤 (1회 바인딩)
+  const ov = document.getElementById('settingsOverlay');
+  if(ov && !ov._scrollBound){
+    ov._scrollBound = true;
+    ov.querySelectorAll('input,textarea,select').forEach(el=>{
+      el.addEventListener('focus', ()=>{
+        setTimeout(()=>{ try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} }, 250);
+      });
+    });
+  }
   // 설정 열기 전 현재 저장값으로 모든 필드 동기화
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vl = document.getElementById('verDropLabel');
