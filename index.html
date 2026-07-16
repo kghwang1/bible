@@ -1675,10 +1675,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .rh-col-center .day-tag{font-size:.78rem;color:#6b4d28;font-weight:700;width:100%;text-align:center}
 .rh-col-center h2{font-family:'Noto Serif KR',serif;font-size:1.17rem;color:#221508;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;margin:0}
 #readTitleRows{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%}
+#readTitleRows.grid2{display:grid;grid-template-columns:1fr 1fr;gap:2px 4px}
 .read-title-row{font-family:'Noto Serif KR',serif;color:#1a1a1a;font-weight:700;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-radius:8px;padding:1px 6px;transition:background .15s}
 .read-title-row:active{background:rgba(180,150,80,.25)}
 .read-title-row.single{font-size:1.17rem}
 .read-title-row.multi{font-size:.95rem;line-height:1.25}
+#readTitleRows.grid2 .read-title-row.multi{font-size:.82rem;line-height:1.3;padding:2px 4px}
 .read-title-row.cur{color:#1a4a8a}
 .read-title-row .rt-go{font-size:.7em;opacity:.5;margin-left:3px}
 /* 오른쪽 열 */
@@ -3871,14 +3873,14 @@ function setFilter(f,btn){
 function renderList(){
   const tidx=ST.startDate?todayIdx(ST.startDate):0;
   const todayN=PLAN[Math.min(tidx,PLAN.length-1)].n;
-  const planName=planName(curPlan)+' 읽기';
+  const pLabel=planName(curPlan)+' 읽기';
   const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV 영어','KJH':'KJV 한글','KJV':'KJV 영어'};
   const vEl = document.getElementById('listVerLabel');
   if(vEl) vEl.textContent = verLabels[curVer] || '개역개정';
   const pEl = document.getElementById('listPlanLabel');
   if(pEl) pEl.textContent = planName(curPlan) + ' 읽기';
   // 구 ID 호환 (있으면 업데이트)
-  const lt=document.getElementById('listTitle'); if(lt) lt.textContent=planName;
+  const lt=document.getElementById('listTitle'); if(lt) lt.textContent=pLabel;
   const ls=document.getElementById('listSubtitle'); if(ls) ls.textContent='';
   const items=PLAN.filter(p=>ST.filter==='done'?ST.checks[p.n]:ST.filter==='unread'?!ST.checks[p.n]:true);
   document.getElementById('planList').innerHTML=items.map(p=>{
@@ -3892,7 +3894,7 @@ function renderList(){
     const doneHtml=ST.checks[p.n]?'<div class="item-done-mark">✓ 읽음</div>':'<div class="item-arrow">›</div>';
     return '<div class="plan-item'+(ST.checks[p.n]?' done':'')+(isToday?' today':'')+'" onclick="openItem('+p.n+')">'
       +'<div class="item-date">'+dateHtml+'</div>'
-      +'<div class="item-info"><div class="item-range">'+p.r+'</div><div class="item-daynum">제 '+p.n+'일차</div></div>'
+      +'<div class="item-info"><div class="item-range">'+p.r.replace(/장/g,'')+'</div><div class="item-daynum">제 '+p.n+'일차</div></div>'
       +doneHtml+'</div>';
   }).join('');
   updateProg();
@@ -3957,6 +3959,7 @@ function renderReadTitleRows(p){
   if(!box) return;
   const groups = parseRangeGroups(p.r);
   box.innerHTML = '';
+  box.classList.remove('grid2');
   if(!groups.length){
     const h=document.createElement('div');
     h.className='read-title-row single';
@@ -3965,6 +3968,8 @@ function renderReadTitleRows(p){
     return;
   }
   const multi = groups.length > 1;
+  // 3장 이상이면 2열 그리드 (2줄 표시)
+  if(groups.length >= 3) box.classList.add('grid2');
   groups.forEach((g,i)=>{
     const row=document.createElement('div');
     row.className='read-title-row ' + (multi?'multi':'single') + (i===0?' cur':'');
