@@ -1719,11 +1719,11 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <span class="settings-hint-icon">⚙</span>
       <span>시작 전에 설정값을 입력하세요</span>
     </div>
-    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-06-13</div>
+    <div id="buildStamp" style="display:none"></div>
 
     <!-- 오늘 날짜 -->
     <div class="cover-today" style="flex-direction:column;gap:5px">
-      <div class="cover-verplan" id="coverVerPlan">개역개정 · 연대순</div>
+      <div class="cover-verplan" id="coverVerPlan" style="font-size:.92rem;font-weight:700;letter-spacing:.04em">개역개정 · 연대순</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
         <span class="today-label">📅 오늘</span>
         <span class="today-val" id="todayDisplay">—</span>
@@ -1756,14 +1756,17 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       </div>
     </div>
 
-    <!-- 버전 안내 -->
-    <p style="font-size:.74rem;color:#a08840;margin:-4px 0 0;letter-spacing:.02em">성경버전은 ⚙ 설정에서 바꿀 수 있습니다</p>
-
     <!-- 행2: 성경책 / TTS / 부록 -->
     <div style="display:flex;gap:8px;width:88%;margin-top:24px">
       <button class="start-btn" style="flex:1;padding:9px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="openBibleDirect()">성경책</button>
       <button class="start-btn" style="flex:1;padding:9px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="openBareRead()">🔊 TTS</button>
       <button type="button" class="start-btn" style="flex:1;padding:9px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" id="selBtnApp" onclick="showScreen('s-appendix')">📚 부록</button>
+    </div>
+
+    <!-- 버전안내 + 수정일 -->
+    <div style="text-align:center;font-size:.72rem;color:#a08840;margin:8px 0 2px;line-height:1.8;font-family:'Noto Sans KR',sans-serif">
+      성경버전은 ⚙ 설정에서 바꿀 수 있습니다<br>
+      <span id="buildStampBottom">최근수정 2026-06-13</span>
     </div>
 
     <!-- 하단 교회 -->
@@ -3614,6 +3617,16 @@ function initCover(){
   try{ const sv = localStorage.getItem('bible_settings_ver'); curVer = sv || 'SAENEW'; }
   catch(e){ curVer = 'SAENEW'; }
   try{ const sp = localStorage.getItem('bible_cur_plan'); if(sp){ curPlan = parseInt(sp)||1; PLAN = PLAN_DATA[curPlan]; } }catch(e){}
+
+  // 최근수정일 자동 반영 (브라우저가 파일을 받은 날짜)
+  try{
+    const lm = new Date(document.lastModified);
+    if(lm && !isNaN(lm)){
+      const y=lm.getFullYear(), mo=String(lm.getMonth()+1).padStart(2,'0'), d=String(lm.getDate()).padStart(2,'0');
+      const el=document.getElementById('buildStampBottom');
+      if(el) el.textContent='최근수정 '+y+'-'+mo+'-'+d;
+    }
+  }catch(e){}
 
   // ② 화면 그리기
   document.getElementById('todayDisplay').textContent = fmtKo(today());
