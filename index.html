@@ -4585,9 +4585,12 @@ function showGlossaryResult(query){
   const catColor = {'인물':'#3a5ea8','지명':'#2a7a4a','용어':'#9a6a20'};
   let html = '';
   if(matches.length === 0){
+    const naverUrl = 'https://search.naver.com/search.naver?query=' + encodeURIComponent(q + ' 성경');
     html = '<div style="text-align:center;color:#999;padding:40px 14px;font-size:.92rem">'
          + '"' + escapeHtml(q) + '"에 대한 설명을 찾지 못했습니다.<br><br>'
-         + '<span style="font-size:.82rem">다른 용어로 검색해 보세요.<br>(예: 아브라함, 모세, 가나안, 안식일)</span></div>';
+         + '<span style="font-size:.82rem">다른 용어로 검색해 보세요.<br>(예: 아브라함, 모세, 가나안, 안식일)</span><br><br>'
+         + '<a href="' + naverUrl + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:8px 18px;background:#03c75a;color:#fff;border-radius:20px;font-size:.82rem;font-weight:700;text-decoration:none">🔍 네이버에서 검색</a>'
+         + '</div>';
   } else {
     html = '<div style="font-size:.8rem;color:#888;margin-bottom:12px">검색 결과 ' + matches.length + '개</div>';
     matches.forEach(([term,info])=>{
@@ -4611,6 +4614,7 @@ function showGlossaryResult(query){
         + sub
         + '<div style="font-size:.92rem;line-height:1.65;color:#333">' + escapeHtml(info.desc) + '</div>'
         + (info.ref ? '<div style="font-size:.76rem;color:#8b5e2a;margin-top:8px">📍 ' + escapeHtml(info.ref) + '</div>' : '')
+        + '<div style="margin-top:8px"><a href="https://search.naver.com/search.naver?query=' + encodeURIComponent(term+' 성경') + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:5px 14px;background:#03c75a;color:#fff;border-radius:16px;font-size:.75rem;font-weight:700;text-decoration:none">🔍 네이버 검색</a></div>'
         + '</div>';
     });
   }
