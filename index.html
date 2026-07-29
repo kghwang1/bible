@@ -264,6 +264,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .item-daynum{font-size:.6rem;color:#a07850;margin-top:2px}
 .item-done-mark{font-size:.68rem;color:#3a7050;font-weight:700;flex-shrink:0}
 .item-arrow{font-size:11px;color:#a07850;flex-shrink:0}
+.item-check-btn{flex-shrink:0;border:none;border-radius:14px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s}
+.item-check-btn.item-done{background:#d4edda;color:#2d6a4f}
+.item-check-btn.item-unread{background:#f0ede6;color:#b0956a;font-size:1.1rem;padding:3px 12px}
 
 /* 읽기 (bare) 화면 */
 #s-bare-read{
@@ -1861,8 +1864,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div class="set-group">
       <span class="set-group-label">💾 읽기기록 백업 · 복원</span>
       <div style="display:flex;gap:10px;margin-top:4px">
-        <button type="button" onclick="backupReadRecord()" style="flex:1;padding:10px;background:#5a7a3a;color:#fff;border:none;border-radius:10px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer">⬇ 백업 (파일저장)</button>
-        <button type="button" onclick="document.getElementById('restoreFileInput').click()" style="flex:1;padding:10px;background:#3a5ea8;color:#fff;border:none;border-radius:10px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer">⬆ 복원 (파일열기)</button>
+        <button type="button" onclick="backupReadRecord()" style="flex:1;padding:10px;background:#5a7a3a;color:#fff;border:none;border-radius:10px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer">💾 저장</button>
+        <button type="button" onclick="document.getElementById('restoreFileInput').click()" style="flex:1;padding:10px;background:#3a5ea8;color:#fff;border:none;border-radius:10px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer">📂 불러오기</button>
       </div>
       <input type="file" id="restoreFileInput" accept=".txt,.json" style="display:none" onchange="restoreReadRecord(this)">
       <div id="backupStatus" style="font-size:.72rem;color:#7ecb7e;margin-top:6px;min-height:1em;text-align:center"></div>
@@ -3766,8 +3769,11 @@ function renderList(){
       dateHtml='<div class="m">'+(d.getMonth()+1)+'월</div><div class="d">'+d.getDate()+'</div>';
       if(isToday) dateHtml+='<div class="today-badge">TODAY</div>';
     }
-    const doneHtml=ST.checks[p.n]?'<div class="item-done-mark">✓ 읽음</div>':'<div class="item-arrow">›</div>';
-    return '<div class="plan-item'+(ST.checks[p.n]?' done':'')+(isToday?' today':'')+'" onclick="openItem('+p.n+')">'
+    const done=!!ST.checks[p.n];
+    const doneHtml=done
+      ?'<button class="item-check-btn item-done" onclick="event.stopPropagation();toggleCheck('+p.n+')">✓ 읽음</button>'
+      :'<button class="item-check-btn item-unread" onclick="event.stopPropagation();toggleCheck('+p.n+')">·</button>';
+    return '<div class="plan-item'+(done?' done':'')+(isToday?' today':'')+'" onclick="openItem('+p.n+')">' 
       +'<div class="item-date">'+dateHtml+'</div>'
       +'<div class="item-info"><div class="item-range">'+p.r.replace(/장/g,'')+'</div><div class="item-daynum">제 '+p.n+'일차</div></div>'
       +doneHtml+'</div>';
@@ -3780,6 +3786,26 @@ function updateProg(){
   const pct=Math.round(done/PLAN.length*100);
   document.getElementById('progLabel').textContent=done+' / '+PLAN.length;
   document.getElementById('progFill').style.width=pct+'%';
+}
+
+function toggleCheck(n){
+  ST.checks[n]=!ST.checks[n];
+  if(!ST.checks[n]) delete ST.checks[n];
+  saveST();
+  updateProg();
+  // 해당 아이템만 버튼 갱신
+  const items = document.querySelectorAll('.plan-item');
+  items.forEach(el=>{
+    const btn = el.querySelector('.item-check-btn');
+    if(!btn) return;
+    const onclick = btn.getAttribute('onclick') || '';
+    if(onclick.includes('toggleCheck('+n+')')){
+      const done = !!ST.checks[n];
+      el.classList.toggle('done', done);
+      btn.className = 'item-check-btn ' + (done ? 'item-done' : 'item-unread');
+      btn.textContent = done ? '✓ 읽음' : '·';
+    }
+  });
 }
 
 function openItem(n){
@@ -4326,10 +4352,7 @@ function markDone(){
   if(!curN) return;
   const was=!!ST.checks[curN];
   ST.checks[curN]=!was; saveST(); updateDoneBtn(); updateProg();
-  if(!was){
-    autoBackupRecord(); // 읽기기록 자동 백업
-    showCelebration(curN);
-  }
+  if(!was) showCelebration(curN);
 }
 
 // 모두읽음 누를 때마다 기기에 텍스트 파일 자동 저장 (덮어쓰기)
