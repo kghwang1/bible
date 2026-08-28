@@ -1968,6 +1968,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
   <div class="bible-wrap" style="position:relative">
     <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
+    <!-- 스와이프 차단 오버레이 (godpia iframe 터치 가로채기) -->
+    <div id="swipeBlocker" style="position:absolute;inset:0;z-index:2;background:transparent;pointer-events:auto"></div>
     <!-- 로딩 표시 오버레이 -->
     <div id="bibleLoading" style="display:none;position:absolute;inset:0;z-index:5;background:rgba(245,240,232,0.96);flex-direction:column;align-items:center;justify-content:center;gap:14px">
       <div class="bible-spinner"></div>
@@ -5080,7 +5082,22 @@ function kjvInlineGoPrev(){
 
 // KJV 인라인 스와이프 비활성화 — 화살표 버튼으로만 이동
 (function attachKjvInlineSwipe(){
-  // 스와이프 장 이동 기능 비활성화
+  function bind(){
+    const sc = document.getElementById('kjvInlineScroll');
+    if(!sc){ setTimeout(bind, 300); return; }
+    let tx=0, ty=0;
+    sc.addEventListener('touchstart', function(e){
+      tx = e.touches[0].clientX;
+      ty = e.touches[0].clientY;
+    }, {passive:true});
+    sc.addEventListener('touchmove', function(e){
+      const dx = Math.abs(e.touches[0].clientX - tx);
+      const dy = Math.abs(e.touches[0].clientY - ty);
+      if(dx > dy && dx > 8) e.preventDefault(); // 좌우만 차단
+    }, {passive:false});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
 })();
 
 function kjvInlineSwitchLang(lang){
@@ -5642,6 +5659,29 @@ function kjvMarkChapterDone(abbr, ch) {
   }
   saveState();
 }
+
+// ── godpia iframe 좌우 스와이프 차단 오버레이 ──────────────
+(function setupSwipeBlocker(){
+  function bind(){
+    const el = document.getElementById('swipeBlocker');
+    if(!el) return;
+    let tx = 0, ty = 0;
+    el.addEventListener('touchstart', function(e){
+      tx = e.touches[0].clientX;
+      ty = e.touches[0].clientY;
+    }, {passive:true});
+    el.addEventListener('touchmove', function(e){
+      const dx = Math.abs(e.touches[0].clientX - tx);
+      const dy = Math.abs(e.touches[0].clientY - ty);
+      // 좌우 스와이프 감지 시 이벤트 차단 (상하 스크롤은 허용)
+      if(dx > dy && dx > 8){
+        e.preventDefault();
+      }
+    }, {passive:false});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+})();
 
 // 스와이프 장 이동 기능 비활성화 — 화살표 버튼으로만 이동
 // goNextChapter / goPrevChapter 는 화살표 버튼에서 호출됨
