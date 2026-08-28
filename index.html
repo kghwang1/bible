@@ -1946,14 +1946,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           <span class="rh-ver-label" id="rhVerLabel">개역개정</span>
         </div>
       </div>
-      <!-- 중앙: 날짜+제목(들) + 좌우 이동 버튼 -->
+      <!-- 중앙: 날짜+제목(들) -->
       <div class="rh-col-center">
         <div class="day-tag" id="dayTag"></div>
-        <div style="display:flex;align-items:center;gap:6px;width:100%">
-          <button id="chNavPrevBtn" onclick="chNavPrev()" style="display:none;flex:0 0 auto;background:#5a7a3a;color:#fff;border:none;border-radius:7px;font-size:.72rem;padding:5px 9px;cursor:pointer;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.15)">‹</button>
-          <div id="readTitleRows" style="flex:1"></div>
-          <button id="chNavNextBtn" onclick="chNavNext()" style="display:none;flex:0 0 auto;background:#5a7a3a;color:#fff;border:none;border-radius:7px;font-size:.72rem;padding:5px 9px;cursor:pointer;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.15)">›</button>
-        </div>
+        <div id="readTitleRows"></div>
         <h2 id="readTitle" style="display:none"></h2>
       </div>
       <!-- 오른쪽: 위=이미읽음, 아래=글자크기 -->
@@ -3501,14 +3497,8 @@ function bpGoChapter(bid,ch){
   frame.src=url;
 }
 
-// ── 성경 제목 좌우 이전/다음 장 버튼 ─────────────────────────
-function chNavUpdate(){
-  const prevBtn = document.getElementById('chNavPrevBtn');
-  const nextBtn = document.getElementById('chNavNextBtn');
-  const show = !!(_curBid && _curCh);
-  if(prevBtn) prevBtn.style.display = show ? 'block' : 'none';
-  if(nextBtn) nextBtn.style.display = show ? 'block' : 'none';
-}
+// 이전/다음 버튼 제거됨 (godpia 자체 화살표 사용)
+function chNavUpdate(){ /* 버튼 제거됨 */ }
 
 function chNavPrev(){
   if(!_curBid || !_curCh) return;
