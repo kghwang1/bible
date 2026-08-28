@@ -1965,11 +1965,21 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
         </div>
       </div>
     </div>
+    <!-- 이전/다음 장 네비게이션 바 -->
+    <div id="chNavBar" style="display:none;align-items:center;justify-content:space-between;padding:4px 8px;background:#f5f0e8;border-top:1px solid #e0d5c5;gap:4px">
+      <button onclick="chNavPrev()" style="flex:0 0 auto;background:none;border:none;font-size:1.3rem;color:#5a3e1a;padding:4px 8px;cursor:pointer;font-weight:700">‹</button>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;overflow:hidden">
+        <button id="chNavVer" onclick="toggleVerPicker()" style="background:none;border:none;font-size:.78rem;color:#8b6030;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 4px"></button>
+        <span style="color:#c8a86b;font-size:.8rem">·</span>
+        <button id="chNavBook" onclick="chNavOpenPicker('book')" style="background:none;border:none;font-size:.82rem;color:#3a2410;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 4px"></button>
+        <span style="color:#c8a86b;font-size:.8rem">·</span>
+        <button id="chNavCh" onclick="chNavOpenPicker('ch')" style="background:none;border:none;font-size:.82rem;color:#3a2410;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 4px"></button>
+      </div>
+      <button onclick="chNavNext()" style="flex:0 0 auto;background:none;border:none;font-size:1.3rem;color:#5a3e1a;padding:4px 8px;cursor:pointer;font-weight:700">›</button>
+    </div>
   </div>
   <div class="bible-wrap" style="position:relative">
     <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
-    <!-- 스와이프 차단 오버레이 (godpia iframe 터치 가로채기) -->
-    <div id="swipeBlocker" style="position:absolute;inset:0;z-index:2;background:transparent;pointer-events:auto"></div>
     <!-- 로딩 표시 오버레이 -->
     <div id="bibleLoading" style="display:none;position:absolute;inset:0;z-index:5;background:rgba(245,240,232,0.96);flex-direction:column;align-items:center;justify-content:center;gap:14px">
       <div class="bible-spinner"></div>
@@ -3475,6 +3485,8 @@ function bpGoChapter(bid,ch){
   if(bsBtn) bsBtn.textContent = bookName + ' ' + ch + '장';
   const kjvBsBtn=document.getElementById('kjvPickBtn');
   if(kjvBsBtn) kjvBsBtn.textContent = bookName + ' ' + ch + '장';
+  // 네비게이션 바 업데이트
+  chNavUpdate();
 
   if(curVer==='KJV' || curVer==='KJH'){
     // 내장 KJV 뷰어로 로드
@@ -3493,6 +3505,60 @@ function bpGoChapter(bid,ch){
     frame.onload=function(){ onFrameLoad(frame, OFFSET_FROM_PICKER); };
   }
   frame.src=url;
+}
+
+// ── 상단 이전/다음 장 네비게이션 바 ─────────────────────────
+function chNavUpdate(){
+  const bar = document.getElementById('chNavBar');
+  if(!bar || !_curBid || !_curCh) return;
+  // 매일읽기 모드에서만 표시 (direct 모드 아닐 때)
+  bar.style.display = 'flex';
+  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV','KJH':'KJV 한글','KJV':'KJV'};
+  const vBtn = document.getElementById('chNavVer');
+  const bBtn = document.getElementById('chNavBook');
+  const cBtn = document.getElementById('chNavCh');
+  if(vBtn) vBtn.textContent = verLabels[curVer] || curVer;
+  const bookName = BP_BOOKS_KO[_curBid] || '';
+  if(bBtn) bBtn.textContent = bookName;
+  if(cBtn) cBtn.textContent = _curCh + '장';
+}
+
+function chNavPrev(){
+  if(!_curBid || !_curCh) return;
+  if(_curCh > 1){
+    bpGoChapter(_curBid, _curCh - 1);
+  } else {
+    // 이전 성경책 마지막 장
+    const prevBid = _curBid - 1;
+    if(prevBid >= 1){
+      const prevMaxCh = MAX_CH[prevBid] || 1;
+      bpGoChapter(prevBid, prevMaxCh);
+    }
+  }
+}
+
+function chNavNext(){
+  if(!_curBid || !_curCh) return;
+  const maxCh = MAX_CH[_curBid] || 1;
+  if(_curCh < maxCh){
+    bpGoChapter(_curBid, _curCh + 1);
+  } else {
+    // 다음 성경책 1장
+    const nextBid = _curBid + 1;
+    if(nextBid <= 66){
+      bpGoChapter(nextBid, 1);
+    }
+  }
+}
+
+function chNavOpenPicker(type){
+  // 성경책 또는 장 선택 피커 열기
+  toggleBiblePicker();
+  if(type === 'ch' && _curBid){
+    setTimeout(()=>bpShowTab('CH'), 50);
+  } else {
+    setTimeout(()=>bpShowTab(_curBid && _curBid <= 39 ? 'OT' : 'NT'), 50);
+  }
 }
 
 function toggleBiblePicker(){
@@ -5082,22 +5148,7 @@ function kjvInlineGoPrev(){
 
 // KJV 인라인 스와이프 비활성화 — 화살표 버튼으로만 이동
 (function attachKjvInlineSwipe(){
-  function bind(){
-    const sc = document.getElementById('kjvInlineScroll');
-    if(!sc){ setTimeout(bind, 300); return; }
-    let tx=0, ty=0;
-    sc.addEventListener('touchstart', function(e){
-      tx = e.touches[0].clientX;
-      ty = e.touches[0].clientY;
-    }, {passive:true});
-    sc.addEventListener('touchmove', function(e){
-      const dx = Math.abs(e.touches[0].clientX - tx);
-      const dy = Math.abs(e.touches[0].clientY - ty);
-      if(dx > dy && dx > 8) e.preventDefault(); // 좌우만 차단
-    }, {passive:false});
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
-  else bind();
+  // 스와이프 장 이동 기능 비활성화
 })();
 
 function kjvInlineSwitchLang(lang){
@@ -5660,23 +5711,28 @@ function kjvMarkChapterDone(abbr, ch) {
   saveState();
 }
 
-// ── godpia iframe 좌우 스와이프 차단 오버레이 ──────────────
+// ── bibleFrame 좌우 스와이프 차단 ──────────────────────────
 (function setupSwipeBlocker(){
   function bind(){
-    const el = document.getElementById('swipeBlocker');
-    if(!el) return;
-    let tx = 0, ty = 0;
-    el.addEventListener('touchstart', function(e){
+    const wrap = document.querySelector('.bible-wrap');
+    if(!wrap) return;
+    let tx=0, ty=0, decided=false, isHoriz=false;
+
+    wrap.addEventListener('touchstart', function(e){
       tx = e.touches[0].clientX;
       ty = e.touches[0].clientY;
+      decided = false;
+      isHoriz = false;
     }, {passive:true});
-    el.addEventListener('touchmove', function(e){
+
+    wrap.addEventListener('touchmove', function(e){
+      if(decided){ if(isHoriz) e.preventDefault(); return; }
       const dx = Math.abs(e.touches[0].clientX - tx);
       const dy = Math.abs(e.touches[0].clientY - ty);
-      // 좌우 스와이프 감지 시 이벤트 차단 (상하 스크롤은 허용)
-      if(dx > dy && dx > 8){
-        e.preventDefault();
-      }
+      if(dx < 5 && dy < 5) return; // 아직 방향 미결정
+      decided = true;
+      isHoriz = dx > dy;
+      if(isHoriz) e.preventDefault();
     }, {passive:false});
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
