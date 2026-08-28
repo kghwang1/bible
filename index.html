@@ -3501,8 +3501,10 @@ function bpGoChapter(bid,ch){
   if(window._bibleDirectMode){
     frame.onload=function(){ onFrameLoadDirect(frame); };
   } else {
-    _lastOffset = OFFSET_FROM_PICKER;
-    frame.onload=function(){ onFrameLoad(frame, OFFSET_FROM_PICKER); };
+    // 네비게이션 버튼으로 이동 시엔 OFFSET(본문부터), 선택보드에선 OFFSET_FROM_PICKER
+    const off = (arguments.length > 2 && arguments[2] !== undefined) ? arguments[2] : OFFSET_FROM_PICKER;
+    _lastOffset = off;
+    frame.onload=function(){ onFrameLoad(frame, off); };
   }
   frame.src=url;
 }
@@ -3526,13 +3528,13 @@ function chNavUpdate(){
 function chNavPrev(){
   if(!_curBid || !_curCh) return;
   if(_curCh > 1){
-    bpGoChapter(_curBid, _curCh - 1);
+    bpGoChapter(_curBid, _curCh - 1, OFFSET);
   } else {
     // 이전 성경책 마지막 장
     const prevBid = _curBid - 1;
     if(prevBid >= 1){
       const prevMaxCh = MAX_CH[prevBid] || 1;
-      bpGoChapter(prevBid, prevMaxCh);
+      bpGoChapter(prevBid, prevMaxCh, OFFSET);
     }
   }
 }
@@ -3541,12 +3543,12 @@ function chNavNext(){
   if(!_curBid || !_curCh) return;
   const maxCh = MAX_CH[_curBid] || 1;
   if(_curCh < maxCh){
-    bpGoChapter(_curBid, _curCh + 1);
+    bpGoChapter(_curBid, _curCh + 1, OFFSET);
   } else {
     // 다음 성경책 1장
     const nextBid = _curBid + 1;
     if(nextBid <= 66){
-      bpGoChapter(nextBid, 1);
+      bpGoChapter(nextBid, 1, OFFSET);
     }
   }
 }
