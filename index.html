@@ -1946,10 +1946,14 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           <span class="rh-ver-label" id="rhVerLabel">개역개정</span>
         </div>
       </div>
-      <!-- 중앙: 날짜+제목(들) -->
+      <!-- 중앙: 날짜+제목(들) + 좌우 이동 버튼 -->
       <div class="rh-col-center">
         <div class="day-tag" id="dayTag"></div>
-        <div id="readTitleRows"></div>
+        <div style="display:flex;align-items:center;gap:6px;width:100%">
+          <button id="chNavPrevBtn" onclick="chNavPrev()" style="display:none;flex:0 0 auto;background:#5a7a3a;color:#fff;border:none;border-radius:7px;font-size:.72rem;padding:5px 9px;cursor:pointer;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.15)">‹</button>
+          <div id="readTitleRows" style="flex:1"></div>
+          <button id="chNavNextBtn" onclick="chNavNext()" style="display:none;flex:0 0 auto;background:#5a7a3a;color:#fff;border:none;border-radius:7px;font-size:.72rem;padding:5px 9px;cursor:pointer;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.15)">›</button>
+        </div>
         <h2 id="readTitle" style="display:none"></h2>
       </div>
       <!-- 오른쪽: 위=이미읽음, 아래=글자크기 -->
@@ -1964,18 +1968,6 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
           <button class="rh-fbtn" onclick="changeFont(-1)">A-</button>
         </div>
       </div>
-    </div>
-    <!-- 이전/다음 장 네비게이션 바 -->
-    <div id="chNavBar" style="display:none;align-items:center;justify-content:space-between;padding:6px 8px;background:#f5f0e8;border-top:1px solid #e0d5c5;gap:8px">
-      <button onclick="chNavPrev()" style="flex:0 0 auto;background:#5a7a3a;color:#fff;border:none;border-radius:8px;font-size:.76rem;padding:6px 11px;cursor:pointer;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.15);line-height:1">‹ 이전</button>
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;overflow:hidden">
-        <button id="chNavVer" onclick="chNavOpenPicker('ver')" style="background:none;border:none;font-size:.76rem;color:#8b6030;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 3px"></button>
-        <span style="color:#c8a86b;font-size:.78rem">·</span>
-        <button id="chNavBook" onclick="chNavOpenPicker('book')" style="background:none;border:none;font-size:.8rem;color:#3a2410;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 3px"></button>
-        <span style="color:#c8a86b;font-size:.78rem">·</span>
-        <button id="chNavCh" onclick="chNavOpenPicker('ch')" style="background:none;border:none;font-size:.8rem;color:#3a2410;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 3px"></button>
-      </div>
-      <button onclick="chNavNext()" style="flex:0 0 auto;background:#5a7a3a;color:#fff;border:none;border-radius:8px;font-size:.76rem;padding:6px 11px;cursor:pointer;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.15);line-height:1">다음 ›</button>
     </div>
   </div>
   <div class="bible-wrap" style="position:relative">
@@ -3509,20 +3501,13 @@ function bpGoChapter(bid,ch){
   frame.src=url;
 }
 
-// ── 상단 이전/다음 장 네비게이션 바 ─────────────────────────
+// ── 성경 제목 좌우 이전/다음 장 버튼 ─────────────────────────
 function chNavUpdate(){
-  const bar = document.getElementById('chNavBar');
-  if(!bar || !_curBid || !_curCh) return;
-  // 매일읽기 모드에서만 표시 (direct 모드 아닐 때)
-  bar.style.display = 'flex';
-  const verLabels = {'GAE':'개역개정','SAENEW':'새번역','HDM':'현대인의성경','NIV':'NIV','KJH':'KJV 한글','KJV':'KJV'};
-  const vBtn = document.getElementById('chNavVer');
-  const bBtn = document.getElementById('chNavBook');
-  const cBtn = document.getElementById('chNavCh');
-  if(vBtn) vBtn.textContent = verLabels[curVer] || curVer;
-  const bookName = BP_BOOKS_KO[_curBid] || '';
-  if(bBtn) bBtn.textContent = bookName;
-  if(cBtn) cBtn.textContent = _curCh + '장';
+  const prevBtn = document.getElementById('chNavPrevBtn');
+  const nextBtn = document.getElementById('chNavNextBtn');
+  const show = !!(_curBid && _curCh);
+  if(prevBtn) prevBtn.style.display = show ? 'block' : 'none';
+  if(nextBtn) nextBtn.style.display = show ? 'block' : 'none';
 }
 
 function chNavPrev(){
