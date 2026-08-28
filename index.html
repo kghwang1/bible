@@ -1969,7 +1969,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <div id="chNavBar" style="display:none;align-items:center;justify-content:space-between;padding:4px 8px;background:#f5f0e8;border-top:1px solid #e0d5c5;gap:4px">
       <button onclick="chNavPrev()" style="flex:0 0 auto;background:none;border:none;font-size:1.3rem;color:#5a3e1a;padding:4px 8px;cursor:pointer;font-weight:700">‹</button>
       <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;overflow:hidden">
-        <button id="chNavVer" onclick="toggleVerPicker()" style="background:none;border:none;font-size:.78rem;color:#8b6030;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 4px"></button>
+        <button id="chNavVer" onclick="chNavOpenPicker('ver')" style="background:none;border:none;font-size:.78rem;color:#8b6030;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 4px"></button>
         <span style="color:#c8a86b;font-size:.8rem">·</span>
         <button id="chNavBook" onclick="chNavOpenPicker('book')" style="background:none;border:none;font-size:.82rem;color:#3a2410;cursor:pointer;font-weight:700;white-space:nowrap;padding:2px 4px"></button>
         <span style="color:#c8a86b;font-size:.8rem">·</span>
@@ -3552,12 +3552,29 @@ function chNavNext(){
 }
 
 function chNavOpenPicker(type){
-  // 성경책 또는 장 선택 피커 열기
-  toggleBiblePicker();
-  if(type === 'ch' && _curBid){
-    setTimeout(()=>bpShowTab('CH'), 50);
+  // 피커 열기 (버전 / 성경책 / 장)
+  bpInit();
+  const picker = document.getElementById('biblePicker');
+  const hdr = document.querySelector('#s-read .read-hdr');
+  const hdrH = hdr ? hdr.offsetHeight : 100;
+  picker.style.top = hdrH + 'px';
+  picker.style.display = 'flex';
+  if(type === 'ver'){
+    bpShowTab('VER');
+  } else if(type === 'ch'){
+    // 현재 책이 선택된 상태로 장 탭
+    if(_curBid){
+      bpSelBid = _curBid;
+      const grid = document.getElementById('bpChGrid');
+      const maxCh = MAX_CH[_curBid] || 150;
+      const snapBid = _curBid;
+      renderChapterGrid(grid, maxCh, (ch)=>bpGoChapter(snapBid, ch), _curCh);
+      const lbl = document.getElementById('bpBookLabel');
+      if(lbl) lbl.textContent = BP_BOOKS_KO[_curBid] + ' — 장 선택';
+    }
+    bpShowTab('CH');
   } else {
-    setTimeout(()=>bpShowTab(_curBid && _curBid <= 39 ? 'OT' : 'NT'), 50);
+    bpShowTab(_curBid && _curBid <= 39 ? 'OT' : 'NT');
   }
 }
 
@@ -4030,6 +4047,9 @@ function openItem(n){
     updateDoneBtn(); showScreen('s-read');
     // KJV 내장 뷰어 로드
     loadKJVInline(p);
+    const firstGrpsKjv = parseRangeGroups(p.r);
+    if(firstGrpsKjv.length){ _curBid = firstGrpsKjv[0].bid; _curCh = firstGrpsKjv[0].ch; }
+    chNavUpdate();
     return;
   }
 
@@ -4042,6 +4062,10 @@ function openItem(n){
   // KJV 인라인 숨김
   hideKJVInline();
   updateDoneBtn(); showScreen('s-read'); loadBible(p);
+  // 첫 번째 구절 그룹으로 _curBid/_curCh 설정 후 네비바 업데이트
+  const firstGroups = parseRangeGroups(p.r);
+  if(firstGroups.length){ _curBid = firstGroups[0].bid; _curCh = firstGroups[0].ch; }
+  chNavUpdate();
 }
 function updateDoneBtn(){
   const done=!!ST.checks[curN];
@@ -4091,6 +4115,7 @@ function goReadGroup(g, rowEl){
   showBibleLoading();
   frame.onload = function(){ onFrameLoad(frame, OFFSET); };
   frame.src=url;
+  chNavUpdate();
 }
 
 function parseRange(range){
