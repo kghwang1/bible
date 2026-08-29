@@ -534,7 +534,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
 .rh-nbtn:hover{background:#f5e9c8}
 .done-btn{height:28px;padding:0 6px;border-radius:10px;border:none;cursor:pointer;font-size:.67rem;font-weight:700;line-height:1;text-align:center;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;transition:all .2s;white-space:nowrap}
 .done-btn.unread{background:linear-gradient(160deg,#3a7050,#225038);color:#fff;box-shadow:0 2px 6px rgba(58,112,80,.4)}
-.done-btn.already{background:linear-gradient(160deg,#8b5e2a,#5c3d1e);color:#f5e8c8}
+.done-btn.already{background:linear-gradient(160deg,#c0392b,#8b2418);color:#fff;box-shadow:0 2px 6px rgba(192,57,43,.4)}
 .rh-abtn{height:28px;padding:0 7px;border-radius:10px;border:1.5px solid rgba(201,168,76,.6);background:rgba(201,168,76,.15);color:#c9a84c;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans KR',sans-serif}
 /* 2행 */
 .rh2{display:flex;align-items:center;gap:5px;height:20px;margin-top:1px}
@@ -1956,7 +1956,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="rh-col-right">
         <div class="rh-top-right">
           <button class="done-btn unread" id="cmpBtn" onclick="markDone()">
-            <span id="cmpTxt">모두읽음</span>
+            <span id="cmpTxt">대기</span>
           </button>
         </div>
         <div class="rh-bot-right">
@@ -1968,6 +1968,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   </div>
   <div class="bible-wrap" style="position:relative">
     <iframe class="bible-frame" id="bibleFrame" src=""></iframe>
+    <!-- 가운데 70%에 투명 레이어 (좌우 15%씩은 iframe에 직접 전달) -->
+    <div style="position:absolute;left:15%;right:15%;top:0;bottom:0;z-index:3;background:transparent"></div>
     <!-- 로딩 표시 오버레이 -->
     <div id="bibleLoading" style="display:none;position:absolute;inset:0;z-index:5;background:rgba(245,240,232,0.96);flex-direction:column;align-items:center;justify-content:center;gap:14px">
       <div class="bible-spinner"></div>
@@ -2204,7 +2206,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div class="rh-col-right">
         <div class="rh-top-right">
           <button class="done-btn unread" id="kjvCmpBtn" onclick="kjvDoneAndCelebrate()">
-            <span id="kjvCmpTxt">모두읽음</span>
+            <span id="kjvCmpTxt">대기</span>
           </button>
         </div>
         <div class="rh-bot-right">
@@ -4047,7 +4049,7 @@ function openItem(n){
 function updateDoneBtn(){
   const done=!!ST.checks[curN];
   document.getElementById('cmpBtn').className='done-btn '+(done?'already':'unread');
-  document.getElementById('cmpTxt').innerHTML=done?'이미읽음':'모두읽음';
+  document.getElementById('cmpTxt').innerHTML=done?'✓ 완료':'대기';
 }
 
 const BOOK_KEYS=Object.keys(BID).sort((a,b)=>b.length-a.length);
