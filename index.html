@@ -2964,7 +2964,7 @@ const PLAN_DATA = {
 
 // ── 앱 버전 (수정할 때마다 이 줄만 고치면 표지에 반영됨) ──
 //    형식: 월.일.-v번호   예) 10.18.-v1, 10.18.-v2, 10.19.-v1
-const APP_VERSION = '10.18.-v2';
+const APP_VERSION = '10.19.-v1';
 
 const BID={
   '창세기':1,'출애굽기':2,'레위기':3,'민수기':4,'신명기':5,
@@ -3292,21 +3292,22 @@ function openBibleRef(bid, ch, verse){
   if(picker) picker.style.display = 'none';
   bpGoChapter(bid, ch);
 
-  // 찾아온 절을 상단 바에 표시 (본문은 장 단위로 열림)
-  if(verse){
+  // 외부 링크로 찾아온 말씀임을 상단 바에 표시 (본문은 장 단위로 열림)
+  {
     const bookName = BP_BOOKS_KO[bid] || '';
-    // 직접보기 상단 바(파란 버튼)에 책·장·절 표시
+    const where = bookName + ' ' + ch + (verse ? ':' + verse : '장');
+    // 직접보기 상단 바(파란 버튼)
     const bsBtn = document.getElementById('bsPickBtn');
-    if(bsBtn) bsBtn.textContent = bookName + ' ' + ch + ':' + verse;
+    if(bsBtn) bsBtn.textContent = '찾은 말씀  〈 ' + where + ' 〉';
     // 매일읽기 헤더가 보이는 경우에도 대비
     const rows = document.getElementById('readTitleRows');
     if(rows){
-      rows.innerHTML = '<div class="read-title-row single">' + bookName + ' ' + ch + ':' + verse + '</div>';
+      rows.innerHTML = '<div class="read-title-row single">' + where + '</div>';
     }
     const dayTagEl = document.getElementById('dayTag');
-    if(dayTagEl) dayTagEl.textContent = '찾은 말씀 — ' + ch + '장 ' + verse + '절';
+    if(dayTagEl) dayTagEl.textContent = '찾은 말씀';
     // 내장 KJV 뷰어일 때는 해당 절로 스크롤까지 이동
-    if(curVer === 'KJV' || curVer === 'KJH'){
+    if(verse && (curVer === 'KJV' || curVer === 'KJH')){
       scrollToVerseInline(parseInt(verse, 10));
     }
   }
