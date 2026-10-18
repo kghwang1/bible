@@ -3222,34 +3222,49 @@ const BID_ABBR = {
 //          index.html?ref=마7:1-2&ver=SAENEW
 //          index.html?b=40&c=7
 function handleUrlRef(){
-  try{
-    const p = new URLSearchParams(location.search);
-    const refRaw = p.get('ref');
-    const verRaw = p.get('ver');
-    let bid = null, ch = null;
+  // 쿼리(?ref=) 와 해시(#ref=) 둘 다 지원
+  let qs = location.search || '';
+  if(!qs && location.hash && location.hash.indexOf('=') !== -1){
+    qs = '?' + location.hash.replace(/^#\??/, '');
+  }
+  if(!qs) return false;
 
-    if(refRaw){
-      // 긴 이름 우선 매칭 (고린도전서 → 고전 보다 먼저)
-      const ref = refRaw.trim();
-      const m = ref.match(/^([가-힣]+)\s*(\d+)/);
-      if(m){
-        const name = m[1];
-        bid = BID[name] || BID_ABBR[name] || null;
-        ch  = parseInt(m[2], 10);
-      }
-    } else {
-      const b = p.get('b'), c = p.get('c');
-      if(b && c){ bid = parseInt(b,10); ch = parseInt(c,10); }
+  let p;
+  try{ p = new URLSearchParams(qs); }catch(e){ return false; }
+
+  const refRaw = p.get('ref');
+  const verRaw = p.get('ver');
+  let bid = null, ch = null;
+
+  if(refRaw){
+    const ref = refRaw.trim();
+    // 숫자 앞까지를 책 이름으로 (예: 마18:32, 고후 5:9, 고린도후서5:9)
+    const m = ref.match(/^([^\d]+?)\s*(\d+)/);
+    if(m){
+      const name = m[1].replace(/\s+/g, '');
+      bid = BID[name] || BID_ABBR[name] || null;
+      ch  = parseInt(m[2], 10);
     }
-    if(!bid || !ch) return false;
+  } else {
+    const b = p.get('b'), c = p.get('c');
+    if(b && c){ bid = parseInt(b,10); ch = parseInt(c,10); }
+  }
 
-    // 버전 지정 (링크에 있으면 그 버전으로, 설정값은 변경 안 함)
-    const VALID_VER = ['GAE','SAENEW','HDM','NIV','KJH','KJV'];
-    if(verRaw && VALID_VER.indexOf(verRaw) !== -1){ curVer = verRaw; }
+  if(!bid || !ch){
+    if(refRaw) alert('구절을 찾을 수 없습니다: ' + refRaw);
+    return false;
+  }
 
+  const VALID_VER = ['GAE','SAENEW','HDM','NIV','KJH','KJV'];
+  if(verRaw && VALID_VER.indexOf(verRaw) !== -1){ curVer = verRaw; }
+
+  try{
     openBibleRef(bid, ch);
     return true;
-  }catch(e){ return false; }
+  }catch(e){
+    alert('본문을 여는 중 오류: ' + e.message);
+    return false;
+  }
 }
 
 // 선택보드 없이 바로 해당 장 본문 열기
@@ -4851,7 +4866,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   Object.entries(KJV_ABBR).forEach(([bid,abbr])=>{ KJV_ABBR_INV[abbr]=Number(bid); });
   initCover();
   // 외부 링크(?ref=마7:1)로 들어온 경우 해당 구절 바로 열기
-  if(handleUrlRef()) return;
+  if(/[?&#](ref|b)=/.test(location.href)){
+    setTimeout(handleUrlRef, 50);
+    return;
+  }
   // 목장명 또는 이름이 기본값(로마·브리스길라) 그대로면 시작 시 안내 말풍선 표시
   maybeShowSettingsHint();
 });
