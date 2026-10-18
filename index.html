@@ -1717,7 +1717,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <span class="settings-hint-icon">⚙</span>
       <span>시작 전에 설정값을 입력하세요</span>
     </div>
-    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">수정: 2026-06-13</div>
+    <div id="buildStamp" style="text-align:center;font-size:.7rem;color:#8a7340;margin:-2px 0 6px;font-family:'Noto Sans KR',sans-serif">10.18.-v1</div>
 
     <!-- 오늘 날짜 -->
     <div class="cover-today" style="flex-direction:column;gap:5px">
@@ -2962,6 +2962,10 @@ const PLAN_DATA = {
   {n:365,r:"요한계시록 21-22장"}]
 };
 
+// ── 앱 버전 (수정할 때마다 이 줄만 고치면 표지에 반영됨) ──
+//    형식: 월.일.-v번호   예) 10.18.-v1, 10.18.-v2, 10.19.-v1
+const APP_VERSION = '10.18.-v1';
+
 const BID={
   '창세기':1,'출애굽기':2,'레위기':3,'민수기':4,'신명기':5,
   '여호수아':6,'사사기':7,'룻기':8,'사무엘상':9,'사무엘하':10,
@@ -3234,20 +3238,22 @@ function handleUrlRef(){
 
   const refRaw = p.get('ref');
   const verRaw = p.get('ver');
-  let bid = null, ch = null;
+  let bid = null, ch = null, vs = '';
 
   if(refRaw){
     const ref = refRaw.trim();
     // 숫자 앞까지를 책 이름으로 (예: 마18:32, 고후 5:9, 고린도후서5:9)
-    const m = ref.match(/^([^\d]+?)\s*(\d+)/);
+    const m = ref.match(/^([^\d]+?)\s*(\d+)(?::\s*([\d,\-–~]+))?/);
     if(m){
       const name = m[1].replace(/\s+/g, '');
       bid = BID[name] || BID_ABBR[name] || null;
       ch  = parseInt(m[2], 10);
+      vs  = (m[3] || '').replace(/[–~]/g, '-');
     }
   } else {
     const b = p.get('b'), c = p.get('c');
     if(b && c){ bid = parseInt(b,10); ch = parseInt(c,10); }
+    vs = (p.get('v') || '').replace(/[–~]/g, '-');
   }
 
   if(!bid || !ch){
@@ -3259,7 +3265,7 @@ function handleUrlRef(){
   if(verRaw && VALID_VER.indexOf(verRaw) !== -1){ curVer = verRaw; }
 
   try{
-    openBibleRef(bid, ch);
+    openBibleRef(bid, ch, vs);
     return true;
   }catch(e){
     alert('본문을 여는 중 오류: ' + e.message);
@@ -3267,8 +3273,8 @@ function handleUrlRef(){
   }
 }
 
-// 선택보드 없이 바로 해당 장 본문 열기
-function openBibleRef(bid, ch){
+// 선택보드 없이 바로 해당 장 본문 열기 (verse: '32' 또는 '1-3', 없으면 '')
+function openBibleRef(bid, ch, verse){
   window._bibleDirectMode = true;
   showScreen('s-read');
   document.getElementById('s-read').classList.add('direct-mode');
@@ -3285,7 +3291,45 @@ function openBibleRef(bid, ch){
   const picker = document.getElementById('biblePicker');
   if(picker) picker.style.display = 'none';
   bpGoChapter(bid, ch);
+
+  // 찾아온 절을 제목에 표시 (본문은 장 단위로 열림)
+  if(verse){
+    const bookName = BP_BOOKS_KO[bid] || '';
+    const rows = document.getElementById('readTitleRows');
+    if(rows){
+      rows.innerHTML = '<div class="read-title-row single">' + bookName + ' ' + ch + ':' + verse + '</div>';
+    }
+    const dayTagEl = document.getElementById('dayTag');
+    if(dayTagEl) dayTagEl.textContent = '찾은 말씀 — ' + ch + '장 ' + verse + '절';
+    // 내장 KJV 뷰어일 때는 해당 절로 스크롤까지 이동
+    if(curVer === 'KJV' || curVer === 'KJH'){
+      scrollToVerseInline(parseInt(verse, 10));
+    }
+  }
   warmupGodpia();
+}
+
+// 내장 KJV 뷰어에서 특정 절로 스크롤 (godpia iframe에는 적용 불가)
+function scrollToVerseInline(vnum){
+  if(!vnum) return;
+  let tries = 0;
+  const timer = setInterval(()=>{
+    tries++;
+    const sc = document.getElementById('kjvInlineScroll');
+    if(sc){
+      const rows = sc.querySelectorAll('.verse-row, .verse, [data-v]');
+      for(const el of rows){
+        const n = el.getAttribute('data-v') || (el.querySelector('.vnum') ? el.querySelector('.vnum').textContent : '');
+        if(parseInt(n, 10) === vnum){
+          el.scrollIntoView({block:'center'});
+          el.style.background = 'rgba(255,230,120,.45)';
+          clearInterval(timer);
+          return;
+        }
+      }
+    }
+    if(tries > 20) clearInterval(timer);
+  }, 150);
 }
 
 function openBibleDirect(){
@@ -3694,6 +3738,8 @@ function initCover(){
   try{ const sp = localStorage.getItem('bible_cur_plan'); if(sp){ curPlan = parseInt(sp)||1; PLAN = PLAN_DATA[curPlan]; } }catch(e){}
 
   // ② 화면 그리기
+  const bsEl = document.getElementById('buildStamp');
+  if(bsEl) bsEl.textContent = APP_VERSION;
   document.getElementById('todayDisplay').textContent = fmtKo(today());
   updateFeastDisplay();
   document.getElementById('groupInput').value = getGroupName();
