@@ -166,6 +166,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   margin-top:4px;box-shadow:0 4px 16px rgba(201,168,76,.3);
 }
 .set-done-btn:active{transform:scale(.98)}
+.bk-row{display:flex;gap:8px}
+.bk-btn{flex:1;padding:10px 6px;border-radius:12px;border:1.5px solid rgba(201,168,76,.45);background:rgba(201,168,76,.08);color:#e8c97a;font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer}
+.bk-btn:active{transform:scale(.97);background:rgba(201,168,76,.18)}
 
 /* 표지 말씀 구절 - 사진 좌측 오버랩 */
 .cover-verse-wrap{
@@ -1851,6 +1854,18 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
       <div id="prayerSaveStatus" style="font-size:.7rem;color:#7ecb7e;margin-top:2px;min-height:1em"></div>
     </div>
 
+    <!-- 기기에 저장 · 불러오기 -->
+    <div class="set-group">
+      <span class="set-group-label">💾 기기에 저장 · 불러오기</span>
+      <div class="bk-row">
+        <button type="button" class="bk-btn" onclick="exportSettingsFile()">💾 기기에 저장</button>
+        <button type="button" class="bk-btn" onclick="document.getElementById('bkFileInput').click()">📂 불러오기</button>
+      </div>
+      <input type="file" id="bkFileInput" accept=".json,application/json" style="display:none" onchange="importSettingsFile(this)">
+      <div style="font-size:.7rem;color:#a07840;margin-top:4px">설정과 읽기 기록을 파일로 저장합니다. 휴대폰을 바꾸거나 다른 브라우저로 옮길 때 불러오세요.</div>
+      <div id="bkStatus" style="font-size:.7rem;color:#7ecb7e;margin-top:2px;min-height:1em"></div>
+    </div>
+
     <button type="button" class="set-done-btn" onclick="closeSettings()">완료</button>
   </div>
 </div>
@@ -3068,7 +3083,7 @@ const PLAN_DATA = {
 
 // ── 앱 버전 (수정할 때마다 이 줄만 고치면 표지에 반영됨) ──
 //    형식: 월.일.-v번호   예) 10.18.-v1, 10.18.-v2, 10.19.-v1
-const APP_VERSION = '11.14.-v1';
+const APP_VERSION = '11.16.-v1';
 
 const BID={
   '창세기':1,'출애굽기':2,'레위기':3,'민수기':4,'신명기':5,
@@ -4359,6 +4374,78 @@ function closeSettings(){
   if(o) o.classList.remove('show');
   maybeShowSettingsHint(); // 아직 기본값이면 말풍선 다시 표시
 }
+// ── 설정·읽기기록 기기 저장 / 불러오기 ──────────────────────
+// bible_* 와 TTS 음성 설정을 JSON 파일 하나로 저장 (Google API 키는 제외)
+const BK_EXCLUDE = ['ttsGoogleKey'];
+function bkKeys(){
+  const ks=[];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(!k || BK_EXCLUDE.includes(k)) continue;
+      if(k.startsWith('bible_') || k==='bibleReaderState' || k.startsWith('tts')) ks.push(k);
+    }
+  }catch(e){}
+  return ks;
+}
+function bkStatus(msg, err){
+  const el=document.getElementById('bkStatus');
+  if(el){ el.textContent=msg; el.style.color = err ? '#f0a090' : '#7ecb7e'; }
+}
+async function exportSettingsFile(){
+  try{ saveGroupName(); saveReaderName(); saveST(); }catch(e){}
+  const data={};
+  bkKeys().forEach(k=>{ try{ data[k]=localStorage.getItem(k); }catch(e){} });
+  const pack={app:'kg-bible', type:'settings-backup', format:1, appVersion:APP_VERSION,
+              savedAt:new Date().toISOString(), data};
+  const json=JSON.stringify(pack,null,1);
+  const who=((ST&&ST.reader)||'').replace(/[\\/:*?"<>|\s]/g,'') || '성경읽기';
+  const name='성경읽기_설정_'+who+'_'+todayISO()+'.json';
+  const blob=new Blob([json],{type:'application/json'});
+  // 1) 파일 저장 창 지원 브라우저 (PC 크롬 등)
+  if(window.showSaveFilePicker){
+    try{
+      const h=await window.showSaveFilePicker({suggestedName:name,
+        types:[{description:'성경읽기 설정 파일',accept:{'application/json':['.json']}}]});
+      const w=await h.createWritable(); await w.write(blob); await w.close();
+      bkStatus('✓ 저장했습니다: '+h.name); return;
+    }catch(e){ if(e && e.name==='AbortError'){ bkStatus('저장을 취소했습니다.'); return; } }
+  }
+  // 2) 일반 다운로드 (휴대폰: 다운로드 폴더에 저장)
+  try{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download=name;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    bkStatus('✓ 다운로드 폴더에 저장했습니다: '+name);
+  }catch(e){ bkStatus('⚠ 저장하지 못했습니다.', true); }
+}
+function importSettingsFile(input){
+  const file=input.files && input.files[0];
+  input.value='';
+  if(!file) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    let pack;
+    try{ pack=JSON.parse(rd.result); }catch(e){ bkStatus('⚠ 설정 파일을 읽을 수 없습니다.', true); return; }
+    if(!pack || pack.app!=='kg-bible' || !pack.data || typeof pack.data!=='object'){
+      bkStatus('⚠ 성경읽기 앱에서 저장한 설정 파일이 아닙니다.', true); return;
+    }
+    const keys=Object.keys(pack.data).filter(k=>
+      (k.startsWith('bible_')||k==='bibleReaderState'||k.startsWith('tts')) && !BK_EXCLUDE.includes(k) && typeof pack.data[k]==='string');
+    if(!keys.length){ bkStatus('⚠ 파일에 불러올 내용이 없습니다.', true); return; }
+    const when = pack.savedAt ? new Date(pack.savedAt).toLocaleString('ko-KR') : '';
+    if(!confirm('이 파일의 설정과 읽기 기록으로 바꿀까요?\n'+(when?('저장한 때: '+when+'\n'):'')+'지금 이 기기의 기록은 파일 내용으로 바뀝니다.')) return;
+    try{
+      keys.forEach(k=>localStorage.setItem(k, pack.data[k]));
+    }catch(e){ bkStatus('⚠ 불러오지 못했습니다 (저장 공간 부족).', true); return; }
+    bkStatus('✓ 불러왔습니다. 앱을 다시 엽니다…');
+    setTimeout(()=>location.reload(), 700);
+  };
+  rd.onerror=()=>bkStatus('⚠ 파일을 읽지 못했습니다.', true);
+  rd.readAsText(file);
+}
+
 // 목장명 또는 이름이 기본값이면 표지에 안내 말풍선 표시
 function maybeShowSettingsHint(){
   const h=document.getElementById('settingsHint'); if(!h) return;
