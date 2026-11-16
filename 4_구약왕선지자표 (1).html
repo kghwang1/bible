@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구약 왕과 선지자 — 연대 비교표</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c8a84b; --gold-dark:#8b6914; --gold-light:#e8d48a;
+  --ink:#1a0a00; --border:#c4a45a;
+  --blue-hd:#1a3d5c; --blue-hd2:#2c5f8a; --red-hd:#7a1515;
+  --LW:24px;  /* 인물 막대 한 줄(레인) 폭 */
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans KR',sans-serif;color:var(--ink);
+  background:linear-gradient(160deg,#f8efd5 0%,#f0e2b8 30%,#ead9aa 70%,#e5d3a0 100%);
+  font-size:12px;line-height:1.5;
+}
+.wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.legend{
+  display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;
+  padding:8px 8px 6px;font-size:11px;color:#3a2000;
+}
+.lg{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.lg i{display:inline-block;width:11px;height:11px;border-radius:2px}
+.lg i.good{box-shadow:inset 3px 0 0 #ffd54a}
+.legend-note{width:100%;text-align:center;font-size:10.5px;color:#6a4a20}
+
+/* ── 그리드 표 ── */
+#grid{
+  display:grid;position:relative;width:max-content;
+  border:2px solid var(--gold-dark);
+  margin:0 6px 10px;
+  background:rgba(255,255,255,.08);
+}
+.th{
+  position:sticky;top:0;z-index:30;
+  background:linear-gradient(180deg,var(--blue-hd2),var(--blue-hd));
+  color:#fff;font-family:'Noto Serif KR',serif;font-weight:700;font-size:12.5px;
+  text-align:center;padding:6px 2px;border:1px solid #0a2030;
+  text-shadow:0 1px 3px rgba(0,0,0,.5);
+}
+.cell{
+  border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:4px 5px;overflow:hidden;
+}
+.c-isr{background:rgba(255,255,255,.18)}
+.c-wld{background:rgba(200,225,255,.16)}
+.row-odd.c-isr{background:rgba(255,255,255,.32)}
+.row-odd.c-wld{background:rgba(200,225,255,.28)}
+
+.era-label{
+  display:inline-block;font-size:10.5px;font-weight:700;color:#fff;
+  padding:1px 6px;border-radius:2px;margin-bottom:3px;white-space:nowrap;
+  text-shadow:0 1px 1px rgba(0,0,0,.4);
+}
+.evt{display:flex;gap:4px;align-items:baseline;margin-bottom:2px}
+.ey{font-weight:700;font-size:10.5px;white-space:nowrap;flex-shrink:0;color:var(--red-hd)}
+.et{font-size:11px}
+.c-wld .ey{color:#1a3d7a}
+
+/* 이스라엘 역사 열 — 연도 위치에 맞춰 배치 */
+#col-isr{background:rgba(255,255,255,.18)}
+.isr-band{position:absolute;left:0;right:0;pointer-events:none}
+.isr-band.odd{background:rgba(255,255,255,.22)}
+.isr-item{position:absolute;left:9px;right:4px;margin:0}
+.isr-item.era-label{right:auto}
+.isr-mark{position:absolute;left:0;width:7px;height:0;border-top:2px solid #a52020;pointer-events:none}
+.isr-link{position:absolute;left:3px;width:0;border-left:1px dotted #a52020;pointer-events:none}
+
+/* 세로로 길게 이어지는 열 (년도·왕·선지자) */
+.span-col{position:relative;border-right:1px solid var(--border);overflow:hidden}
+#col-year{background:linear-gradient(90deg,#d4b060,#c09a48)}
+#col-king{background:rgba(255,248,235,.55)}
+#col-proph{background:rgba(245,235,255,.5)}
+
+.tick{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(90,60,20,.18);pointer-events:none}
+.tick.era{border-top:1.5px solid rgba(139,105,20,.75)}
+.ylab{
+  position:absolute;right:3px;transform:translateY(-50%);
+  font-size:10px;color:#4a3000;white-space:nowrap;font-weight:500;
+}
+.ylab.era{font-weight:900;font-size:11px;color:#1a0a00;background:#e8d48a;padding:0 2px;border-radius:2px}
+.ylab.first{transform:none}
+
+.sub-hd{
+  position:absolute;top:2px;font-size:9.5px;font-weight:700;color:#5a3a10;
+  writing-mode:vertical-rl;letter-spacing:1px;opacity:.55;pointer-events:none;
+}
+
+/* ── 인물 막대 ── */
+.bar{
+  position:absolute;width:calc(var(--LW) - 3px);
+  border-radius:4px;color:#fff;cursor:pointer;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:3px;overflow:hidden;z-index:5;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.35);
+  transition:filter .12s;
+}
+.bar span{
+  writing-mode:vertical-rl;text-orientation:upright;
+  font-size:12px;font-weight:700;letter-spacing:-1px;line-height:1;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);white-space:nowrap;
+}
+.bar.good{box-shadow:inset 3px 0 0 #ffd54a,0 1px 3px rgba(0,0,0,.3)}
+.bar:hover{filter:brightness(1.18)}
+.bar.sel{outline:3px solid #ffe080;filter:brightness(1.25);z-index:9}
+
+/* ── 상세 시트 ── */
+#sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:100;
+  background:#1a1430;color:#e8e8ff;
+  border-top:3px solid var(--gold);
+  padding:10px 14px 14px;max-height:48vh;overflow-y:auto;
+  transform:translateY(105%);transition:transform .22s ease;
+  box-shadow:0 -6px 20px rgba(0,0,0,.45);
+}
+#sheet.show{transform:none}
+#sheet .s-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+#sheet .s-name{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:900;color:#ffe080}
+#sheet .s-badge{font-size:11px;padding:2px 9px;border-radius:12px;font-weight:700;color:#fff}
+#sheet .s-period{font-size:12px;color:#aac0ff;font-weight:700}
+#sheet .s-close{margin-left:auto;background:none;border:1px solid #6a6aa0;color:#ccd;border-radius:8px;padding:3px 10px;font-size:12px;cursor:pointer}
+#sheet .s-desc{font-size:13px;line-height:1.75}
+#sheet .s-verse{font-size:12px;color:#80d0a0;margin-top:6px;border-top:1px solid #3a3a6a;padding-top:6px}
+
+.foot{
+  margin:0 6px 70px;padding:6px 10px;font-size:10.5px;color:#3a2000;line-height:1.7;
+  background:rgba(0,0,0,.04);border:1px solid var(--border);border-radius:3px;
+}
+</style>
+</head>
+<body>
+
+<div class="legend" id="legend"></div>
+
+<div class="wrap">
+  <div id="grid"></div>
+</div>
+
+<div class="foot">
+  <b>【보는 법】</b> 세로 막대 하나가 한 인물입니다. 위에서 아래로 시간이 흐르고, 막대 길이가 그 인물의 기간입니다.
+  같은 줄에는 기간이 겹치지 않는 인물만 놓이며, 먼저 등장한 인물이 왼쪽 줄부터 차례로 들어갑니다.
+  족장은 생애, 지도자·사사는 활동기간, 왕은 재위기간, 선지자는 사역기간 기준입니다.
+  남 유다·북 이스라엘 왕의 재위에는 공동통치(섭정) 기간이 포함되어 앞뒤 왕과 일부 겹칩니다. 기간이 아주 짧은 인물은 이름이 보이도록 막대를 최소 길이로 늘렸습니다. 막대를 누르면 상세 정보가 나옵니다. 이스라엘 역사 열의 사건도 연도 높이에 맞춰 놓았으며, 왼쪽 빨간 눈금이 정확한 연도 위치입니다(글이 겹쳐 아래로 밀린 경우 점선으로 연결).<br>
+  <b>【연대 기준】</b> 성경 연대기·세계 비교표와 같은 보수적 성경 연대(출애굽 BC1446, 분열 BC931, Thiele 왕정 연대)를 따릅니다.
+  사사 기간은 사사기의 '땅이 평온하였더라' 연수를 포함한 대략값이고, 요엘·오바댜·나훔 등 일부 선지자의 연대는 학자마다 차이가 있습니다.
+</div>
+
+<div id="sheet">
+  <div class="s-top">
+    <span class="s-name" id="sName"></span>
+    <span class="s-badge" id="sBadge"></span>
+    <span class="s-period" id="sPeriod"></span>
+    <button class="s-close" onclick="closeSheet()">닫기 ✕</button>
+  </div>
+  <div class="s-desc" id="sDesc"></div>
+  <div class="s-verse" id="sVerse"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// 1. 시대 구분 (행) — 이스라엘 역사 / 세계사
+// ══════════════════════════════════════════════
+const ERAS = [
+  { s:2166, e:1805, label:'족장시대', c:'#2c5f8a', dens:1.3,
+    isr:[[2166,'아브람 출생 (갈대아 우르)'],[2091,'아브람, 부르심 받아 가나안 이주'],[2066,'이삭 출생'],[2006,'야곱 출생'],[1915,'요셉 출생'],[1898,'요셉, 애굽에 팔려감'],[1876,'야곱 가족 애굽 이주 (70명)']],
+    wld:[[2112,'우르 제3왕조 성립 — 아브람의 고향 우르 전성기'],[2004,'우르 제3왕조 멸망 (엘람 침공)'],[1894,'고바빌로니아 왕국 성립']] },
+  { s:1805, e:1526, label:'애굽 체류', c:'#5d3a1a', dens:0.7,
+    isr:[[1805,'요셉 사망'],[0,'요셉을 알지 못하는 새 왕 — 이스라엘 노예 생활 (출 1장)'],[1526,'모세 출생']],
+    wld:[[1754,'함무라비 법전 편찬 (바벨론)'],[1700,'크레타 미노스 문명 전성기'],[1600,'미케네 문명 시작 (그리스)'],[1550,'이집트 신왕국 시작 (18왕조)']] },
+  { s:1526, e:1406, label:'출애굽·광야', c:'#7a1515', dens:2.2,
+    isr:[[1486,'모세, 미디안으로 도피'],[1446,'출애굽'],[1445,'시내산 십계명·성막'],[1406,'모세 사망 (느보산)']],
+    wld:[[1457,'이집트 투트모세 3세, 므깃도 전투']] },
+  { s:1406, e:1052, label:'정복·사사시대', c:'#1a4d1a', dens:3.6,
+    isr:[[1406,'요단강 건넘, 여리고 함락 — 가나안 정복'],[1383,'여호수아 사망, 사사시대 시작'],[0,'타락 → 압제 → 부르짖음 → 구원 반복 (사사기)'],[0,'룻 이야기 (다윗의 증조모)'],[1104,'블레셋에 언약궤 빼앗김 (엘리 사망)']],
+    wld:[[1200,'알파벳 (페니키아 문자) 발명'],[1200,'청동기 문명 붕괴 (해양 민족 침략)'],[1100,'페니키아 도시국가 전성기']] },
+  { s:1052, e:931, label:'통일왕국', c:'#1e3a6e', dens:3.4,
+    isr:[[1052,'사울, 첫 번째 왕 즉위'],[1011,'다윗 즉위 (헤브론)'],[1004,'예루살렘을 수도로 정함'],[971,'솔로몬 즉위'],[967,'성전 건축 시작 (왕상 6:1)'],[960,'성전 완공'],[931,'솔로몬 사망']],
+    wld:[[1050,'페니키아 알파벳 지중해 전파'],[1000,'그리스 암흑기 종료, 폴리스 형성']] },
+  { s:931, e:722, label:'분열왕국 (북·남)', c:'#0e6b6b', dens:7.2,
+    isr:[[931,'왕국 분열 — 북 이스라엘·남 유다'],[925,'애굽 시삭 침공, 성전 보물 약탈'],[860,'엘리야, 갈멜산 대결'],[853,'아합 전사 (길르앗 라못)'],[841,'예후 혁명 — 아합 왕가 멸절'],[760,'아모스·호세아 사역'],[740,'이사야 소명 (웃시야 죽던 해)'],[722,'사마리아 함락 — 북 이스라엘 멸망']],
+    wld:[[853,'카르카르 전투 — 앗수르 vs 아합 등 연합군'],[776,'그리스 제1회 올림픽'],[753,'로마 건국 (전통설)'],[745,'디글랏빌레셀 3세 — 앗수르 팽창']] },
+  { s:722, e:586, label:'남 유다 단독', c:'#8b1a1a', dens:7.2,
+    isr:[[715,'히스기야 개혁'],[701,'산헤립 침공 — 예루살렘 구원'],[622,'율법책 발견, 요시야 개혁'],[609,'요시야 므깃도 전사'],[605,'1차 바벨론 포로 (다니엘 등)'],[597,'2차 포로 (여호야긴·에스겔 등)'],[586,'예루살렘 멸망, 성전 파괴 — 3차 포로']],
+    wld:[[701,'앗수르 산헤립 서방 원정'],[626,'신바빌로니아 제국 성립 (나보폴라살)'],[612,'니느웨 함락 — 앗수르 멸망'],[605,'갈그미스 전투 — 바벨론 패권'],[600,'공자·붓다·조로아스터 — "축의 시대"']] },
+  { s:586, e:538, label:'바벨론 포로기', c:'#3d1560', dens:7,
+    isr:[[586,'포로 생활 시작 (그발 강가)'],[562,'여호야긴 석방'],[539,'바벨론 함락, 고레스 칙령']],
+    wld:[[550,'고레스, 페르시아 제국 건국'],[539,'페르시아, 바벨론 정복']] },
+  { s:538, e:400, label:'귀환·페르시아 시대', c:'#1a5c2a', dens:3.2,
+    isr:[[538,'스룹바벨 1차 귀환 (약 5만명)'],[536,'성전 기초 놓음'],[520,'학개·스가랴, 성전 재건 독려'],[515,'제2성전 완공'],[479,'에스더 왕비 (아하수에로 시대)'],[458,'에스라 2차 귀환'],[445,'느헤미야 귀환, 성벽 52일 재건'],[433,'말라기 — 이후 약 400년 침묵']],
+    wld:[[525,'페르시아 이집트 정복 — 오리엔트 통일'],[508,'아테네 민주주의 시작'],[490,'마라톤 전투 (그리스-페르시아 전쟁)'],[480,'살라미스 해전'],[431,'펠로폰네소스 전쟁'],[399,'소크라테스 사망']] },
+];
+
+// ══════════════════════════════════════════════
+// 2. 인물 — 왕(지도자) 열 / 선지자 열
+//    g: 그룹, p: 기간 종류, good: 선한 왕
+// ══════════════════════════════════════════════
+const GROUPS = {
+  pat:   { name:'족장',          c:'#7a5520' },
+  lead:  { name:'지도자·사사',   c:'#9a6a2a' },
+  uni:   { name:'통일왕국 왕',   c:'#1e3a6e' },
+  south: { name:'남 유다 왕',    c:'#9b2020' },
+  north: { name:'북 이스라엘 왕',c:'#0e6b6b' },
+  forn:  { name:'이방 제국 왕',  c:'#55555f' },
+  ret:   { name:'귀환 지도자',   c:'#1a6a30' },
+  pEarly:{ name:'초기 선지자',   c:'#3d5a9a' },
+  pNorth:{ name:'북 이스라엘 선지자', c:'#0a7a7a' },
+  pSouth:{ name:'남 유다 선지자', c:'#7a1080' },
+  pExile:{ name:'포로기 선지자', c:'#3a2a80' },
+  pRet:  { name:'귀환기 선지자', c:'#2a7a40' },
+};
+const PK = { life:'생애', act:'활동', reign:'재위', min:'사역', judge:'사사 기간(평온기 포함·대략)' };
+
+const KINGS = [
+  // 족장 (생애)
+  {n:'아브라함',s:2166,e:1991,g:'pat',p:'life',d:'믿음의 조상. 갈대아 우르에서 부르심 받아 가나안으로 이주. 이삭 번제 시험. 하나님과 언약 체결.',v:'창 12~25장'},
+  {n:'이삭',s:2066,e:1886,g:'pat',p:'life',d:'약속의 아들. 모리아산 번제 제물이 됨. 리브가와 결혼, 야곱·에서를 낳음.',v:'창 21~35장'},
+  {n:'야곱',s:2006,e:1859,g:'pat',p:'life',d:'12지파의 조상. 브니엘에서 하나님과 씨름 후 이스라엘이란 이름을 받음.',v:'창 25~49장'},
+  {n:'요셉',s:1915,e:1805,g:'pat',p:'life',d:'형들에게 팔려 애굽으로. 바로의 꿈을 해석하고 총리가 되어 가족을 애굽으로 이주시킴.',v:'창 37~50장'},
+  // 지도자·사사
+  {n:'모세',s:1526,e:1406,g:'lead',p:'life',d:'출애굽 지도자. 10가지 재앙, 홍해 도하, 시내산 율법, 40년 광야 인도. 모세오경 저자.',v:'출애굽기~신명기'},
+  {n:'여호수아',s:1406,e:1383,g:'lead',p:'act',d:'모세의 후계자. 요단강 도하, 여리고 함락, 가나안 정복과 12지파 땅 분배.',v:'수 1~24장'},
+  {n:'옷니엘',s:1374,e:1334,g:'lead',p:'judge',d:'첫 번째 사사. 갈렙의 조카. 구산 리사다임의 압제에서 이스라엘을 구원.',v:'삿 3:7-11'},
+  {n:'에훗',s:1316,e:1236,g:'lead',p:'judge',d:'베냐민 지파의 왼손잡이 사사. 모압 왕 에글론을 처치. 80년 평화.',v:'삿 3:12-30'},
+  {n:'삼갈',s:1236,e:1226,g:'lead',p:'judge',d:'아낫의 아들. 소 모는 막대기로 블레셋 사람 600명을 죽여 이스라엘을 구원. 재임 연수는 기록이 없어 에훗과 드보라 사이에 대략 표시.',v:'삿 3:31, 5:6'},
+  {n:'드보라',s:1216,e:1176,g:'lead',p:'judge',d:'여사사·여선지자. 바락과 함께 가나안 왕 야빈의 장군 시스라를 격파.',v:'삿 4~5장'},
+  {n:'기드온',s:1169,e:1129,g:'lead',p:'judge',d:'300명 용사로 미디안 대군 격파. 왕으로 세우려는 요청을 거절.',v:'삿 6~8장'},
+  {n:'아비멜렉',s:1129,e:1126,g:'lead',p:'judge',d:'기드온의 아들. 형제 70명을 죽이고 스스로 왕이 됨. 3년 만에 맷돌에 맞아 죽음.',v:'삿 9장'},
+  {n:'돌라',s:1126,e:1103,g:'lead',p:'judge',d:'잇사갈 지파. 아비멜렉 이후 일어나 23년 동안 사사로 다스림.',v:'삿 10:1-2'},
+  {n:'야일',s:1103,e:1081,g:'lead',p:'judge',d:'길르앗 사람. 22년 동안 사사. 아들 30명이 나귀 30마리를 타고 성읍 30개를 다스림. 입다 시대와 일부 겹치는 것은 사사들이 지역별로 함께 다스렸다는 견해에 따른 것.',v:'삿 10:3-5'},
+  {n:'입다',s:1100,e:1094,g:'lead',p:'judge',d:'길르앗 사람. 암몬 자손을 물리침. 경솔한 서원으로 딸을 잃음.',v:'삿 11~12장'},
+  {n:'입산',s:1094,e:1087,g:'lead',p:'judge',d:'베들레헴 사람. 7년 동안 사사. 아들 30명과 딸 30명을 둠.',v:'삿 12:8-10'},
+  {n:'엘론',s:1087,e:1077,g:'lead',p:'judge',d:'스불론 지파. 10년 동안 사사로 다스림.',v:'삿 12:11-12'},
+  {n:'압돈',s:1077,e:1069,g:'lead',p:'judge',d:'비라돈 사람. 8년 동안 사사. 아들 40명과 손자 30명이 나귀 70마리를 탐.',v:'삿 12:13-15'},
+  {n:'엘리',s:1144,e:1104,g:'lead',p:'judge',d:'실로의 제사장이자 사사로 40년 다스림. 사무엘을 양육. 두 아들의 타락을 방치, 언약궤를 빼앗긴 날 98세로 사망.',v:'삼상 1~4장'},
+  {n:'삼손',s:1075,e:1055,g:'lead',p:'judge',d:'단 지파 나실인. 블레셋과 20년 싸움. 마지막에 다곤 신전을 무너뜨림.',v:'삿 13~16장'},
+  // 통일왕국
+  {n:'사울',s:1052,e:1011,g:'uni',p:'reign',d:'이스라엘 첫 번째 왕. 불순종으로 버림받음. 다윗을 죽이려 함. 길보아 전투에서 전사.',v:'삼상 9~31장'},
+  {n:'다윗',s:1011,e:971,g:'uni',p:'reign',good:1,d:'하나님의 마음에 합한 왕. 골리앗 격파, 예루살렘을 수도로. 다윗 언약. 시편 다수 저자.',v:'삼상 16장~왕상 2장'},
+  {n:'솔로몬',s:971,e:931,g:'uni',p:'reign',d:'지혜의 왕. 예루살렘 성전 건축. 잠언·전도서·아가 저자. 말년의 우상숭배로 왕국 분열 초래.',v:'왕상 1~11장'},
+  // 남 유다
+  {n:'르호보암',s:931,e:913,g:'south',p:'reign',d:'솔로몬의 아들. 백성의 요구를 무시해 왕국 분열. 애굽 시삭의 침공.',v:'왕상 12~14장, 대하 10~12장'},
+  {n:'아비얌',s:913,e:911,g:'south',p:'reign',d:'르호보암의 아들. 아버지의 죄를 따름. 여로보암과 전쟁.',v:'왕상 15:1-8, 대하 13장'},
+  {n:'아사',s:911,e:870,g:'south',p:'reign',good:1,d:'선한 왕. 우상 제거, 구스 대군 격파. 말년에 아람을 의지하고 선견자를 가둠.',v:'왕상 15:9-24, 대하 14~16장'},
+  {n:'여호사밧',s:873,e:848,g:'south',p:'reign',good:1,d:'선한 왕. 레위인을 보내 율법 교육. 찬양대를 앞세워 모압·암몬 연합군 격파. 아합과의 동맹은 실책. (BC873~870 아버지 아사와 공동통치)',v:'대하 17~20장'},
+  {n:'여호람',s:848,e:841,g:'south',p:'reign',d:'아합의 딸 아달랴와 결혼. 형제들을 죽임. 엘리야의 심판 편지를 받음.',v:'왕하 8:16-24, 대하 21장'},
+  {n:'아하시야',s:841,e:841,g:'south',p:'reign',d:'남 유다 왕. 어머니 아달랴의 영향으로 악을 행함. 1년 만에 예후에게 죽임당함.',v:'왕하 8:25~9:29'},
+  {n:'아달랴',s:841,e:835,g:'south',p:'reign',d:'아합과 이세벨의 딸. 왕손을 학살하고 왕위 찬탈한 유일한 여왕. 제사장 여호야다에 의해 처형.',v:'왕하 11장'},
+  {n:'요아스',s:835,e:796,g:'south',p:'reign',good:1,d:'7세 즉위. 여호야다의 도움으로 성전 보수. 여호야다 사후 우상숭배, 선지자 스가랴를 죽임.',v:'왕하 12장, 대하 24장'},
+  {n:'아마샤',s:796,e:767,g:'south',p:'reign',good:1,d:'에돔을 정복했으나 에돔 신을 섬김. 북 이스라엘에 도전했다 패배.',v:'왕하 14장, 대하 25장'},
+  {n:'웃시야',s:792,e:740,g:'south',p:'reign',good:1,d:'52년 통치(아사랴). 국력 크게 신장. 교만하여 직접 분향하다 나병에 걸림. (BC792~767 아버지 아마샤와 공동통치)',v:'왕하 15:1-7, 대하 26장'},
+  {n:'요담',s:750,e:732,g:'south',p:'reign',good:1,d:'선한 왕. 성전 윗문 건축, 암몬 정복. 이사야·미가 활동 시기. (BC750~740 웃시야 나병으로 섭정)',v:'왕하 15:32-38, 대하 27장'},
+  {n:'아하스',s:735,e:715,g:'south',p:'reign',d:'매우 악한 왕. 자녀를 불에 태움. 이사야의 권고를 거절하고 앗수르를 의지. (BC735~732 요담과 공동통치)',v:'왕하 16장, 사 7장'},
+  {n:'히스기야',s:729,e:686,g:'south',p:'reign',good:1,d:'대개혁을 이룬 선한 왕. 산헤립 침공 때 기도로 구원받음. 생명 15년 연장. 히스기야 터널. (BC729~715 아하스와 공동통치, 715년부터 단독)',v:'왕하 18~20장, 대하 29~32장'},
+  {n:'므낫세',s:697,e:642,g:'south',p:'reign',d:'55년 최장 통치의 악한 왕. 우상을 다시 세움. 포로로 끌려갔다가 회개. (BC697~686 히스기야와 공동통치)',v:'왕하 21장, 대하 33장'},
+  {n:'아몬',s:642,e:640,g:'south',p:'reign',d:'므낫세의 아들. 악을 행하다 신하들에게 암살.',v:'왕하 21:19-26'},
+  {n:'요시야',s:640,e:609,g:'south',p:'reign',good:1,d:'8세 즉위. 성전에서 율법책 발견, 대대적 종교개혁. 므깃도에서 애굽 느고와 싸우다 전사.',v:'왕하 22~23장, 대하 34~35장'},
+  {n:'여호아하스',s:609,e:609,g:'south',p:'reign',d:'요시야의 아들. 3개월 만에 애굽 느고에게 폐위되어 애굽에서 죽음.',v:'왕하 23:31-34'},
+  {n:'여호야김',s:609,e:598,g:'south',p:'reign',d:'애굽이 세운 왕. 예레미야의 두루마리를 불태움. 1차 바벨론 포로.',v:'왕하 23:36~24:7, 렘 36장'},
+  {n:'여호야긴',s:598,e:597,g:'south',p:'reign',d:'3개월 통치 후 바벨론에 항복, 포로로 끌려감. 37년 후 석방.',v:'왕하 24:8-17, 25:27-30'},
+  {n:'시드기야',s:597,e:586,g:'south',p:'reign',d:'마지막 왕. 예레미야의 경고를 무시하고 반역. 예루살렘 멸망, 눈이 뽑혀 바벨론으로.',v:'왕하 24:18~25:7, 렘 39장'},
+  // 북 이스라엘
+  {n:'여로보암1세',s:931,e:910,g:'north',p:'reign',d:'북 이스라엘 초대 왕. 벧엘과 단에 금송아지를 세움 — 이후 북왕들 죄의 원형.',v:'왕상 11~14장'},
+  {n:'나답',s:910,e:909,g:'north',p:'reign',d:'여로보암의 아들. 블레셋과 전쟁 중 바아사에게 암살.',v:'왕상 15:25-31'},
+  {n:'바아사',s:909,e:886,g:'north',p:'reign',d:'나답을 죽이고 왕이 됨. 유다 아사와 계속 전쟁.',v:'왕상 15:33~16:7'},
+  {n:'엘라',s:886,e:885,g:'north',p:'reign',d:'바아사의 아들. 술에 취했을 때 시므리에게 암살.',v:'왕상 16:8-14'},
+  {n:'시므리',s:885,e:885,g:'north',p:'reign',d:'엘라를 죽이고 7일간 왕. 오므리에게 포위되자 왕궁에 불을 지르고 죽음.',v:'왕상 16:9-20'},
+  {n:'오므리',s:885,e:874,g:'north',p:'reign',d:'군대장관 출신. 사마리아를 건축해 수도로 삼음. 아합의 아버지. (BC885~880 디브니와 왕위 다툼)',v:'왕상 16:21-28'},
+  {n:'아합',s:874,e:853,g:'north',p:'reign',d:'이세벨과 결혼, 바알 숭배를 국교화. 엘리야와 대립. 나봇의 포도원 사건. 길르앗 라못에서 전사.',v:'왕상 16:29~22:40'},
+  {n:'아하시야',s:853,e:852,g:'north',p:'reign',d:'북 이스라엘 왕. 아합의 아들. 다쳐서 바알세붑에게 물었다가 엘리야의 심판 선언대로 죽음.',v:'왕상 22:51~왕하 1장'},
+  {n:'요람',s:852,e:841,g:'north',p:'reign',d:'아합의 아들(여호람). 엘리사 활동 시기. 예후에게 죽임당함.',v:'왕하 3~9장'},
+  {n:'예후',s:841,e:814,g:'north',p:'reign',d:'엘리사가 보낸 선지자에게 기름부음 받음. 아합 가문과 바알 숭배자를 멸절했으나 금송아지는 유지.',v:'왕하 9~10장'},
+  {n:'여호아하스',s:814,e:798,g:'north',p:'reign',d:'북 이스라엘 왕. 예후의 아들. 아람 하사엘에게 크게 시달리다 여호와께 간구함.',v:'왕하 13:1-9'},
+  {n:'요아스',s:798,e:782,g:'north',p:'reign',d:'북 이스라엘 왕(여호아스). 임종하는 엘리사를 찾아감. 아람을 세 번 이기고 유다 아마샤를 꺾음.',v:'왕하 13:10~14:16'},
+  {n:'여로보암2세',s:793,e:753,g:'north',p:'reign',d:'41년 통치. 영토를 최대로 회복, 경제 번영. 극심한 빈부격차 — 아모스·호세아·요나 시대. (BC793~782 아버지 요아스와 공동통치)',v:'왕하 14:23-29'},
+  {n:'스가랴',s:753,e:752,g:'north',p:'reign',d:'북 이스라엘 왕. 여로보암 2세의 아들. 6개월 만에 살룸에게 암살 — 예후 왕조 끝.',v:'왕하 15:8-12'},
+  {n:'살룸',s:752,e:752,g:'north',p:'reign',d:'스가랴를 죽이고 1개월 통치. 므나헴에게 죽임당함.',v:'왕하 15:13-15'},
+  {n:'므나헴',s:752,e:742,g:'north',p:'reign',d:'앗수르 왕 불(디글랏빌레셀)에게 은 1천 달란트를 조공.',v:'왕하 15:16-22'},
+  {n:'브가히야',s:742,e:740,g:'north',p:'reign',d:'므나헴의 아들. 베가에게 암살.',v:'왕하 15:23-26'},
+  {n:'베가',s:752,e:732,g:'north',p:'reign',d:'아람 르신과 동맹해 유다 공격. 앗수르에 갈릴리를 빼앗김. 호세아에게 암살. (BC752부터 길르앗에서 경쟁 정권, 740년부터 사마리아 통치)',v:'왕하 15:27-31, 사 7장'},
+  {n:'호세아',s:732,e:722,g:'north',p:'reign',d:'북 이스라엘 마지막 왕. 애굽과 내통하다 앗수르에 잡힘. BC722 사마리아 함락.',v:'왕하 17장'},
+  // 이방 제국 왕
+  {n:'느부갓네살',s:605,e:562,g:'forn',p:'reign',d:'신바빌로니아 왕. 세 차례 유다 침공, 예루살렘 성전 파괴. 다니엘을 통해 하나님을 인정함.',v:'왕하 24~25장, 단 1~4장'},
+  {n:'고레스',s:539,e:530,g:'forn',p:'reign',d:'페르시아 왕. 바벨론 정복 후 칙령으로 유대인 귀환과 성전 재건을 허락. 이사야가 이름까지 예언.',v:'스 1장, 사 44:28~45:1'},
+  {n:'다리오1세',s:522,e:486,g:'forn',p:'reign',d:'페르시아 왕. 중단된 성전 재건을 다시 허락해 BC515 제2성전 완공.',v:'스 4~6장, 학 1:1'},
+  {n:'아하수에로',s:486,e:465,g:'forn',p:'reign',d:'페르시아 왕 크세르크세스 1세. 에스더를 왕비로 맞음. 하만의 음모를 꺾음.',v:'에스더 1~10장'},
+  {n:'아닥사스다',s:465,e:424,g:'forn',p:'reign',d:'페르시아 왕 아르타크세르크세스 1세. 에스라와 느헤미야의 귀환을 허락.',v:'스 7장, 느 2장'},
+  // 귀환 지도자
+  {n:'스룹바벨',s:538,e:515,g:'ret',p:'act',d:'다윗 왕가 후손, 1차 귀환 총독. 학개·스가랴와 함께 제2성전 완공.',v:'스 1~6장, 학 1~2장'},
+  {n:'에스라',s:458,e:440,g:'ret',p:'act',d:'학사 겸 제사장. 2차 귀환 인솔. 율법을 가르치고 신앙 개혁을 이끔.',v:'스 7~10장, 느 8장'},
+  {n:'느헤미야',s:445,e:420,g:'ret',p:'act',d:'아닥사스다의 술 맡은 관원. 총독으로 귀환해 52일 만에 성벽 재건.',v:'느 1~13장'},
+];
+
+const PROPHETS = [
+  {n:'모세',s:1446,e:1406,g:'pEarly',p:'min',d:'하나님과 대면하여 말한 선지자. 율법을 받아 전함. "나와 같은 선지자"(메시아) 예언.',v:'신 18:15, 34:10'},
+  {n:'미리암',s:1446,e:1407,g:'pEarly',p:'min',d:'모세의 누이, 여선지자. 홍해를 건넌 후 소고를 잡고 찬양을 이끔.',v:'출 15:20-21, 민 12장'},
+  {n:'드보라',s:1216,e:1176,g:'pEarly',p:'min',d:'여선지자이자 사사. 종려나무 아래서 재판. 드보라의 노래.',v:'삿 4~5장'},
+  {n:'사무엘',s:1110,e:1015,g:'pEarly',p:'min',d:'마지막 사사이자 선지자. 어려서 실로에서 부르심 받아 엘리 생전에 이미 선지자로 인정됨(삼상 3:20). 사울과 다윗에게 기름을 부음. 다윗 즉위 전에 사망.',v:'삼상 1~25장'},
+  {n:'갓',s:1020,e:970,g:'pEarly',p:'min',d:'다윗의 선견자. 인구조사 후 세 가지 징벌 중 선택을 전함.',v:'삼상 22:5, 삼하 24장'},
+  {n:'나단',s:1003,e:970,g:'pEarly',p:'min',d:'다윗 언약을 전함. 밧세바 사건을 비유로 책망. 솔로몬 즉위를 도움.',v:'삼하 7, 12장, 왕상 1장'},
+  {n:'아히야',s:945,e:910,g:'pNorth',p:'min',d:'실로 사람. 겉옷을 12조각으로 찢어 여로보암이 10지파를 얻을 것을 예언.',v:'왕상 11:29-39, 14장'},
+  {n:'스마야',s:931,e:913,g:'pSouth',p:'min',d:'르호보암에게 북 이스라엘과 싸우지 말라고 전함.',v:'왕상 12:22-24, 대하 12장'},
+  {n:'잇도',s:931,e:910,g:'pSouth',p:'min',d:'선견자. 르호보암·아비야 왕의 행적을 기록.',v:'대하 9:29, 12:15, 13:22'},
+  {n:'아사랴',s:900,e:895,g:'pSouth',p:'min',d:'오뎃의 아들. 아사 왕에게 하나님을 찾으면 만나리라 전해 개혁을 일으킴.',v:'대하 15:1-8'},
+  {n:'하나니',s:895,e:870,g:'pSouth',p:'min',d:'선견자. 아람을 의지한 아사 왕을 책망하다 옥에 갇힘.',v:'대하 16:7-10'},
+  {n:'예후',s:886,e:853,g:'pSouth',p:'min',d:'하나니의 아들. 바아사의 멸망을 예언하고 아합과 동맹한 여호사밧을 책망.',v:'왕상 16:1-7, 대하 19:2'},
+  {n:'엘리야',s:875,e:848,g:'pNorth',p:'min',d:'갈멜산에서 바알 선지자 450명과 대결. 가뭄 선포. 불수레를 타고 승천. 승천 시기는 BC848년경으로 보나, 유다 왕 여호람에게 보낸 편지(대하 21:12) 때문에 조금 더 늦게 보기도 함.',v:'왕상 17장~왕하 2장'},
+  {n:'미가야',s:853,e:853,g:'pNorth',p:'min',d:'아합 앞에서 거짓 선지자 400명과 달리 패전을 예언하고 옥에 갇힘.',v:'왕상 22장'},
+  {n:'엘리사',s:848,e:797,g:'pNorth',p:'min',d:'엘리야의 갑절의 영감을 받음. 수넴 여인의 아들을 살림, 나아만 치유.',v:'왕하 2~13장'},
+  {n:'요엘',s:835,e:810,g:'pSouth',p:'min',d:'메뚜기 재앙으로 여호와의 날을 경고. "내 영을 만민에게 부어주리니" — 오순절 성취.',v:'욜 1~3장, 행 2:17'},
+  {n:'스가랴',s:805,e:796,g:'pSouth',p:'min',d:'제사장 여호야다의 아들. 요아스 왕의 명령으로 성전 뜰에서 돌에 맞아 순교.',v:'대하 24:20-22'},
+  {n:'요나',s:793,e:753,g:'pNorth',p:'min',d:'니느웨로 가라는 명령을 피하다 물고기 뱃속 3일. 니느웨 전체가 회개.',v:'요나 1~4장, 왕하 14:25'},
+  {n:'아모스',s:760,e:750,g:'pNorth',p:'min',d:'드고아 목자 출신. 북 이스라엘의 사회 불의 고발. "정의를 물같이".',v:'암 1~9장'},
+  {n:'호세아',s:755,e:715,g:'pNorth',p:'min',d:'음란한 아내 고멜과의 결혼으로 이스라엘을 향한 하나님의 사랑을 보여줌.',v:'호 1~14장'},
+  {n:'이사야',s:740,e:681,g:'pSouth',p:'min',d:'웃시야~히스기야 시대 대선지자. 임마누엘·고난받는 종·고레스 예언.',v:'사 1~66장'},
+  {n:'미가',s:735,e:700,g:'pSouth',p:'min',d:'모레셋 출신. 지도자들의 부패 고발. 베들레헴 메시아 탄생 예언.',v:'미 1~7장, 미 5:2'},
+  {n:'오뎃',s:734,e:733,g:'pNorth',p:'min',d:'사마리아의 선지자. 유다 포로들을 돌려보내라고 북 이스라엘 군대를 설득.',v:'대하 28:9-15'},
+  {n:'나훔',s:663,e:612,g:'pSouth',p:'min',d:'앗수르 수도 니느웨의 멸망 예언 — BC612에 성취.',v:'나 1~3장'},
+  {n:'스바냐',s:640,e:621,g:'pSouth',p:'min',d:'히스기야의 현손. 요시야 초기에 여호와의 날 심판 선포.',v:'습 1~3장'},
+  {n:'예레미야',s:627,e:580,g:'pSouth',p:'min',d:'눈물의 선지자. 요시야~시드기야까지 40여 년. 새 언약 예언. 예루살렘 함락 목격.',v:'렘 1~52장, 애가'},
+  {n:'훌다',s:622,e:621,g:'pSouth',p:'min',d:'여선지자. 발견된 율법책에 대해 요시야 왕에게 하나님의 뜻을 전함.',v:'왕하 22:14-20'},
+  {n:'하박국',s:609,e:598,g:'pSouth',p:'min',d:'"어찌하여 악인을 허용하시나이까" 질문. "의인은 믿음으로 살리라".',v:'합 1~3장'},
+  {n:'다니엘',s:605,e:536,g:'pExile',p:'min',d:'1차 포로. 느부갓네살~고레스 섬김. 꿈 해석, 사자굴. 70이레·세계 제국 예언.',v:'단 1~12장'},
+  {n:'에스겔',s:593,e:571,g:'pExile',p:'min',d:'2차 포로, 그발 강가에서 소명. 마른 뼈 환상, 새 성전 환상.',v:'겔 1~48장'},
+  {n:'오바댜',s:586,e:580,g:'pSouth',p:'min',d:'구약에서 가장 짧은 책. 예루살렘 멸망 때 방관한 에돔의 심판 예언.',v:'옵 1장'},
+  {n:'학개',s:520,e:520,g:'pRet',p:'min',d:'중단된 성전 재건을 독려. "이 성전의 나중 영광이 이전 영광보다 크리라".',v:'학 1~2장'},
+  {n:'스가랴',s:520,e:480,g:'pRet',p:'min',d:'잇도의 손자. 8가지 환상. 나귀 타고 오시는 왕·은 30·찔린 자 예언.',v:'슥 1~14장'},
+  {n:'말라기',s:433,e:420,g:'pRet',p:'min',d:'구약 마지막 선지자. 제사장·백성 책망. 엘리야(세례 요한)를 보내리라 예언.',v:'말 1~4장'},
+];
+
+// ══════════════════════════════════════════════
+// 3. 레이아웃
+// ══════════════════════════════════════════════
+const LW = 24, GAP = 4, PAD = 4;
+const W_YEAR = 50, W_ISR = 158, W_WLD = 150;
+const grid = document.getElementById('grid');
+
+function el(tag, cls, html){ const d=document.createElement(tag); if(cls) d.className=cls; if(html!=null) d.innerHTML=html; return d; }
+
+// 범례
+(function(){
+  const lg = document.getElementById('legend');
+  ['pat','lead','uni','south','north','forn','ret'].forEach(k=>{
+    lg.appendChild(el('span','lg',`<i style="background:${GROUPS[k].c}"></i>${GROUPS[k].name}`));
+  });
+  lg.appendChild(el('span','lg',`<i class="good" style="background:#9b2020"></i>선한 왕(노란 줄)`));
+  lg.appendChild(el('div','legend-note',''));
+  ['pEarly','pNorth','pSouth','pExile','pRet'].forEach(k=>{
+    lg.appendChild(el('span','lg',`<i style="background:${GROUPS[k].c};border-radius:6px"></i>${GROUPS[k].name}`));
+  });
+})();
+
+// 헤더
+['년도<br>BC','이스라엘 역사','왕','선지자','세계사'].forEach((t,i)=>{
+  const h = el('div','th',t);
+  h.style.gridColumn = (i+1); h.style.gridRow = 1;
+  grid.appendChild(h);
+});
+
+// 시대 행: 이스라엘 역사 / 세계사 셀
+const N = ERAS.length;
+const wldCells = [];
+function evHTML(list){
+  return list.map(([y,t])=>`<div class="evt">${y?`<span class="ey">${y}</span>`:'<span class="ey">·</span>'}<span class="et">${t}</span></div>`).join('');
+}
+ERAS.forEach((r,i)=>{
+  const odd = i%2 ? ' row-odd' : '';
+  const b = el('div','cell c-wld'+odd, evHTML(r.wld));
+  b.style.gridColumn = 5; b.style.gridRow = i+2;
+  grid.appendChild(b);
+  wldCells.push(b);
+});
+
+// 세로로 이어지는 열 3개
+const colYear  = el('div','span-col'); colYear.id='col-year';
+const colKing  = el('div','span-col'); colKing.id='col-king';
+const colProph = el('div','span-col'); colProph.id='col-proph';
+const colIsr   = el('div','span-col'); colIsr.id='col-isr';
+[[colYear,1],[colIsr,2],[colKing,3],[colProph,4]].forEach(([c,ci])=>{
+  c.style.gridColumn = ci; c.style.gridRow = `2 / ${N+2}`;
+  grid.appendChild(c);
+});
+
+// 이스라엘 역사 항목: 시대 이름표 + 사건 (위치는 layout에서 결정)
+const ISR = ERAS.map((r,i)=>{
+  const band = el('div','isr-band'+(i%2?' odd':''));
+  const label = el('div','era-label isr-item', `${r.label} ${r.s}~${r.e}`);
+  label.style.background = r.c;
+  const evs = r.isr.map(([y,t])=>{
+    const d = el('div','evt isr-item', `<span class="ey">${y||'·'}</span><span class="et">${t}</span>`);
+    const mark = y ? el('div','isr-mark') : null;
+    const link = y ? el('div','isr-link') : null;
+    return { y, d, mark, link };
+  });
+  colIsr.appendChild(band); colIsr.appendChild(label);
+  evs.forEach(e=>{ if(e.mark){ colIsr.appendChild(e.link); colIsr.appendChild(e.mark); } colIsr.appendChild(e.d); });
+  return { band, label, evs };
+});
+
+function layout(){
+  // ① 텍스트 열 폭 고정 후 자연 높이 측정
+  grid.style.gridTemplateColumns = `${W_YEAR}px ${W_ISR}px 40px 40px ${W_WLD}px`;
+  grid.style.gridTemplateRows = 'auto';
+  colIsr.style.width = W_ISR+'px';
+  const H = [], T = [];
+  ERAS.forEach((r,i)=>{
+    const span = r.s - r.e;
+    // 연이은 두 사건이 각자 연도 자리에 놓이려면 필요한 밀도 (과도하면 2.5배까지만)
+    let need = r.dens;
+    const ev = ISR[i].evs.filter(e=>e.y);
+    for(let k=0;k<ev.length-1;k++){
+      const gap = ev[k].y - ev[k+1].y;
+      if(gap > 0) need = Math.max(need, (ev[k].d.offsetHeight + 3) / gap);
+    }
+    const dens = Math.min(need, r.dens * 2.5);
+    H.push(Math.ceil(Math.max(wldCells[i].scrollHeight, span * dens)));
+  });
+  let TOTAL = 0;
+  function calcT(){ T.length = 0; let a = 0; H.forEach(h=>{ T.push(a); a += h; }); TOTAL = a; }
+
+  // 연도 → y(px)
+  function Y(bc){
+    for(let i=0;i<N;i++){
+      const r = ERAS[i];
+      if(bc <= r.s && bc >= r.e) return T[i] + (r.s - bc) / (r.s - r.e) * H[i];
+    }
+    return bc > ERAS[0].s ? 0 : TOTAL;
+  }
+
+  // 이스라엘 사건 배치: 연도 높이에 두되, 앞 항목과 겹치면 아래로 밀기.
+  // 시대 칸을 넘치면 그 시대 높이를 늘리고 다시 계산
+  function placeIsr(){
+    let grow = false;
+    ERAS.forEach((r,i)=>{
+      const it = ISR[i];
+      let cur = T[i] + 3;
+      it.band.style.top = T[i]+'px'; it.band.style.height = H[i]+'px';
+      it.label.style.top = cur+'px';
+      cur += it.label.offsetHeight + 3;
+      it.evs.forEach(e=>{
+        const h = e.d.offsetHeight;
+        let top = cur;
+        if(e.y){
+          const ty = Y(e.y);
+          const lim = T[i] + H[i] - h - 3;          // 시대 칸 아래로 넘치지 않게
+          top = Math.max(cur, Math.min(ty - 8, lim));
+          e.mark.style.top = (ty - 1)+'px';
+          e.link.style.top = Math.min(ty, top + 8)+'px';
+          e.link.style.height = Math.abs(top + 8 - ty)+'px';
+        }
+        e.d.style.top = top+'px';
+        cur = top + h + 2;
+      });
+      const over = (cur - 2) + 3 - (T[i] + H[i]);   // 마지막 항목 아래 3px 여유
+      if(over > 0){ H[i] += Math.ceil(over); grow = true; }
+    });
+    return grow;
+  }
+  calcT();
+  for(let k=0;k<15;k++){ const g = placeIsr(); calcT(); if(!g) break; }
+
+  // ② 막대 위치 계산 + 레인 배정 (겹치지 않게, 먼저 등장한 순)
+  function place(list, pools){
+    const items = list.map((p,idx)=>{
+      const top = Y(p.s);
+      const yEnd = Y(p.e === p.s ? p.e - 0.5 : p.e);
+      const minH = [...p.n].length * 12.5 + 8;
+      return { p, idx, top, bot: top + Math.max(yEnd - top, minH) };
+    });
+    items.sort((a,b)=> a.top - b.top || b.bot - a.bot);
+    const out = [];
+    let laneOffset = 0;
+    const poolLanes = [];
+    pools.forEach(pool=>{
+      const lanes = [];
+      items.filter(it=>pool.includes(it.p.g)).forEach(it=>{
+        let k = lanes.findIndex(b => b + GAP <= it.top);
+        if(k < 0){ k = lanes.length; lanes.push(0); }
+        lanes[k] = it.bot;
+        it.lane = laneOffset + k;
+        out.push(it);
+      });
+      poolLanes.push({ start:laneOffset, count:lanes.length });
+      laneOffset += lanes.length;
+    });
+    return { items: out, lanes: laneOffset, poolLanes };
+  }
+
+  // 왕 열: [족장·지도자·통일·남유다·이방·귀환] 줄 묶음 + [북 이스라엘] 줄 묶음
+  const K = place(KINGS, [['pat','lead','uni','south','forn','ret'], ['north']]);
+  const P = place(PROPHETS, [['pEarly','pNorth','pSouth','pExile','pRet']]);
+  const wK = K.lanes * LW + PAD*2 + 6;   // +6: 북왕국 묶음 구분 간격
+  const wP = P.lanes * LW + PAD*2;
+
+  grid.style.gridTemplateColumns = `${W_YEAR}px ${W_ISR}px ${wK}px ${wP}px ${W_WLD}px`;
+  grid.style.gridTemplateRows = `auto ${H.map(h=>h+'px').join(' ')}`;
+
+  // ③ 눈금선
+  [colYear, colKing, colProph].forEach(c => c.innerHTML = '');
+  const eraYears = new Set(ERAS.map(r=>r.s).concat([ERAS[N-1].e]));
+  const ticks = [];
+  for(let y = 2150; y >= 400; y -= 50) if(!eraYears.has(y)) ticks.push(y);
+  ticks.forEach(y=>{
+    const ty = Y(y);
+    // 촘촘한 구간만 50년, 나머지는 100년 단위 라벨
+    const r = ERAS.find(r=> y<=r.s && y>=r.e);
+    const step = r && r.dens >= 3 ? 50 : 100;
+    [colKing,colProph].forEach(c=>{ const t=el('div','tick'); t.style.top=ty+'px'; c.appendChild(t); });
+    const nearEra = [...eraYears].some(ey => Math.abs(Y(ey) - ty) < 16);
+    if(y % step === 0 && !nearEra){
+      const tl = el('div','tick'); tl.style.top = ty+'px'; colYear.appendChild(tl);
+      const lb = el('div','ylab', y); lb.style.top = ty+'px'; colYear.appendChild(lb);
+    }
+  });
+  [...eraYears].forEach(y=>{
+    const ty = Y(y);
+    [colYear,colKing,colProph].forEach(c=>{ const t=el('div','tick era'); t.style.top=ty+'px'; c.appendChild(t); });
+    const lb = el('div','ylab era'+(y===ERAS[0].s?' first':''), y);
+    lb.style.top = (y===ERAS[0].s ? 2 : ty)+'px';
+    if(y === ERAS[N-1].e){ lb.style.transform='translateY(-100%)'; }
+    colYear.appendChild(lb);
+  });
+
+  // ④ 막대 그리기
+  function draw(col, res, xShift){
+    res.items.forEach(it=>{
+      const p = it.p, g = GROUPS[p.g];
+      const b = el('div','bar'+(p.good?' good':''), `<span>${p.n}</span>`);
+      const extra = xShift && xShift(it.lane) || 0;
+      b.style.left = (PAD + it.lane*LW + extra)+'px';
+      b.style.top = it.top+'px';
+      b.style.height = (it.bot - it.top)+'px';
+      b.style.background = g.c;
+      if(p.g.startsWith('p')) b.style.borderRadius = '10px';
+      b.title = `${p.n} — ${g.name} (BC ${p.s}${p.e!==p.s?'~'+p.e:''})`;
+      b.onclick = (ev)=>{ ev.stopPropagation(); openSheet(p, b); };
+      col.appendChild(b);
+    });
+  }
+  const northStart = K.poolLanes[1].start;
+  draw(colKing, K, lane => lane >= northStart ? 6 : 0);
+  draw(colProph, P);
+
+  // 북 이스라엘 묶음 구분선
+  if(K.poolLanes[1].count){
+    const x = PAD + northStart*LW + 2;
+    const sep = el('div');
+    sep.style.cssText = `position:absolute;left:${x}px;top:${Y(931)}px;height:${Y(722)-Y(931)}px;border-left:2px dotted rgba(14,107,107,.6);`;
+    colKing.appendChild(sep);
+  }
+}
+
+// ══════════════════════════════════════════════
+// 4. 상세 시트
+// ══════════════════════════════════════════════
+let selBar = null;
+function openSheet(p, bar){
+  if(selBar) selBar.classList.remove('sel');
+  selBar = bar; bar.classList.add('sel');
+  const g = GROUPS[p.g];
+  document.getElementById('sName').textContent = p.n;
+  const badge = document.getElementById('sBadge');
+  badge.textContent = g.name + (p.good ? ' · 선한 왕' : '');
+  badge.style.background = g.c;
+  const yrs = p.s - p.e;
+  document.getElementById('sPeriod').textContent =
+    `${PK[p.p]} BC ${p.s}${p.e!==p.s ? ' ~ '+p.e : ''}` + (yrs>0 ? ` (약 ${yrs}년)` : '');
+  document.getElementById('sDesc').textContent = p.d;
+  document.getElementById('sVerse').textContent = '📖 ' + p.v;
+  document.getElementById('sheet').classList.add('show');
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('show');
+  if(selBar){ selBar.classList.remove('sel'); selBar = null; }
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#sheet') && !e.target.closest('.bar')) closeSheet();
+});
+
+layout();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+let rzT; window.addEventListener('resize', ()=>{ clearTimeout(rzT); rzT = setTimeout(layout, 200); });
+</script>
+</body>
+</html>
