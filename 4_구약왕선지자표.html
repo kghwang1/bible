@@ -61,6 +61,15 @@ body{
 .et{font-size:11px}
 .c-wld .ey{color:#1a3d7a}
 
+/* 이스라엘 역사 열 — 연도 위치에 맞춰 배치 */
+#col-isr{background:rgba(255,255,255,.18)}
+.isr-band{position:absolute;left:0;right:0;pointer-events:none}
+.isr-band.odd{background:rgba(255,255,255,.22)}
+.isr-item{position:absolute;left:9px;right:4px;margin:0}
+.isr-item.era-label{right:auto}
+.isr-mark{position:absolute;left:0;width:7px;height:0;border-top:2px solid #a52020;pointer-events:none}
+.isr-link{position:absolute;left:3px;width:0;border-left:1px dotted #a52020;pointer-events:none}
+
 /* 세로로 길게 이어지는 열 (년도·왕·선지자) */
 .span-col{position:relative;border-right:1px solid var(--border);overflow:hidden}
 #col-year{background:linear-gradient(90deg,#d4b060,#c09a48)}
@@ -136,7 +145,7 @@ body{
   <b>【보는 법】</b> 세로 막대 하나가 한 인물입니다. 위에서 아래로 시간이 흐르고, 막대 길이가 그 인물의 기간입니다.
   같은 줄에는 기간이 겹치지 않는 인물만 놓이며, 먼저 등장한 인물이 왼쪽 줄부터 차례로 들어갑니다.
   족장은 생애, 지도자·사사는 활동기간, 왕은 재위기간, 선지자는 사역기간 기준입니다.
-  남 유다·북 이스라엘 왕의 재위에는 공동통치(섭정) 기간이 포함되어 앞뒤 왕과 일부 겹칩니다. 기간이 아주 짧은 인물은 이름이 보이도록 막대를 최소 길이로 늘렸습니다. 막대를 누르면 상세 정보가 나옵니다.<br>
+  남 유다·북 이스라엘 왕의 재위에는 공동통치(섭정) 기간이 포함되어 앞뒤 왕과 일부 겹칩니다. 기간이 아주 짧은 인물은 이름이 보이도록 막대를 최소 길이로 늘렸습니다. 막대를 누르면 상세 정보가 나옵니다. 이스라엘 역사 열의 사건도 연도 높이에 맞춰 놓았으며, 왼쪽 빨간 눈금이 정확한 연도 위치입니다(글이 겹쳐 아래로 밀린 경우 점선으로 연결).<br>
   <b>【연대 기준】</b> 성경 연대기·세계 비교표와 같은 보수적 성경 연대(출애굽 BC1446, 분열 BC931, Thiele 왕정 연대)를 따릅니다.
   사사 기간은 사사기의 '땅이 평온하였더라' 연수를 포함한 대략값이고, 요엘·오바댜·나훔 등 일부 선지자의 연대는 학자마다 차이가 있습니다.
 </div>
@@ -354,41 +363,64 @@ function el(tag, cls, html){ const d=document.createElement(tag); if(cls) d.clas
 
 // 시대 행: 이스라엘 역사 / 세계사 셀
 const N = ERAS.length;
-const isrCells = [], wldCells = [];
+const wldCells = [];
 function evHTML(list){
   return list.map(([y,t])=>`<div class="evt">${y?`<span class="ey">${y}</span>`:'<span class="ey">·</span>'}<span class="et">${t}</span></div>`).join('');
 }
 ERAS.forEach((r,i)=>{
   const odd = i%2 ? ' row-odd' : '';
-  const a = el('div','cell c-isr'+odd, `<div class="era-label" style="background:${r.c}">${r.label} ${r.s}~${r.e}</div>`+evHTML(r.isr));
-  a.style.gridColumn = 2; a.style.gridRow = i+2;
   const b = el('div','cell c-wld'+odd, evHTML(r.wld));
   b.style.gridColumn = 5; b.style.gridRow = i+2;
-  grid.appendChild(a); grid.appendChild(b);
-  isrCells.push(a); wldCells.push(b);
+  grid.appendChild(b);
+  wldCells.push(b);
 });
 
 // 세로로 이어지는 열 3개
 const colYear  = el('div','span-col'); colYear.id='col-year';
 const colKing  = el('div','span-col'); colKing.id='col-king';
 const colProph = el('div','span-col'); colProph.id='col-proph';
-[[colYear,1],[colKing,3],[colProph,4]].forEach(([c,ci])=>{
+const colIsr   = el('div','span-col'); colIsr.id='col-isr';
+[[colYear,1],[colIsr,2],[colKing,3],[colProph,4]].forEach(([c,ci])=>{
   c.style.gridColumn = ci; c.style.gridRow = `2 / ${N+2}`;
   grid.appendChild(c);
+});
+
+// 이스라엘 역사 항목: 시대 이름표 + 사건 (위치는 layout에서 결정)
+const ISR = ERAS.map((r,i)=>{
+  const band = el('div','isr-band'+(i%2?' odd':''));
+  const label = el('div','era-label isr-item', `${r.label} ${r.s}~${r.e}`);
+  label.style.background = r.c;
+  const evs = r.isr.map(([y,t])=>{
+    const d = el('div','evt isr-item', `<span class="ey">${y||'·'}</span><span class="et">${t}</span>`);
+    const mark = y ? el('div','isr-mark') : null;
+    const link = y ? el('div','isr-link') : null;
+    return { y, d, mark, link };
+  });
+  colIsr.appendChild(band); colIsr.appendChild(label);
+  evs.forEach(e=>{ if(e.mark){ colIsr.appendChild(e.link); colIsr.appendChild(e.mark); } colIsr.appendChild(e.d); });
+  return { band, label, evs };
 });
 
 function layout(){
   // ① 텍스트 열 폭 고정 후 자연 높이 측정
   grid.style.gridTemplateColumns = `${W_YEAR}px ${W_ISR}px 40px 40px ${W_WLD}px`;
   grid.style.gridTemplateRows = 'auto';
+  colIsr.style.width = W_ISR+'px';
   const H = [], T = [];
-  let acc = 0;
   ERAS.forEach((r,i)=>{
-    const nat = Math.max(isrCells[i].scrollHeight, wldCells[i].scrollHeight);
-    const h = Math.ceil(Math.max(nat, (r.s - r.e) * r.dens));
-    T.push(acc); H.push(h); acc += h;
+    const span = r.s - r.e;
+    // 연이은 두 사건이 각자 연도 자리에 놓이려면 필요한 밀도 (과도하면 2.5배까지만)
+    let need = r.dens;
+    const ev = ISR[i].evs.filter(e=>e.y);
+    for(let k=0;k<ev.length-1;k++){
+      const gap = ev[k].y - ev[k+1].y;
+      if(gap > 0) need = Math.max(need, (ev[k].d.offsetHeight + 3) / gap);
+    }
+    const dens = Math.min(need, r.dens * 2.5);
+    H.push(Math.ceil(Math.max(wldCells[i].scrollHeight, span * dens)));
   });
-  const TOTAL = acc;
+  let TOTAL = 0;
+  function calcT(){ T.length = 0; let a = 0; H.forEach(h=>{ T.push(a); a += h; }); TOTAL = a; }
 
   // 연도 → y(px)
   function Y(bc){
@@ -398,6 +430,38 @@ function layout(){
     }
     return bc > ERAS[0].s ? 0 : TOTAL;
   }
+
+  // 이스라엘 사건 배치: 연도 높이에 두되, 앞 항목과 겹치면 아래로 밀기.
+  // 시대 칸을 넘치면 그 시대 높이를 늘리고 다시 계산
+  function placeIsr(){
+    let grow = false;
+    ERAS.forEach((r,i)=>{
+      const it = ISR[i];
+      let cur = T[i] + 3;
+      it.band.style.top = T[i]+'px'; it.band.style.height = H[i]+'px';
+      it.label.style.top = cur+'px';
+      cur += it.label.offsetHeight + 3;
+      it.evs.forEach(e=>{
+        const h = e.d.offsetHeight;
+        let top = cur;
+        if(e.y){
+          const ty = Y(e.y);
+          const lim = T[i] + H[i] - h - 3;          // 시대 칸 아래로 넘치지 않게
+          top = Math.max(cur, Math.min(ty - 8, lim));
+          e.mark.style.top = (ty - 1)+'px';
+          e.link.style.top = Math.min(ty, top + 8)+'px';
+          e.link.style.height = Math.abs(top + 8 - ty)+'px';
+        }
+        e.d.style.top = top+'px';
+        cur = top + h + 2;
+      });
+      const over = (cur - 2) + 3 - (T[i] + H[i]);   // 마지막 항목 아래 3px 여유
+      if(over > 0){ H[i] += Math.ceil(over); grow = true; }
+    });
+    return grow;
+  }
+  calcT();
+  for(let k=0;k<15;k++){ const g = placeIsr(); calcT(); if(!g) break; }
 
   // ② 막대 위치 계산 + 레인 배정 (겹치지 않게, 먼저 등장한 순)
   function place(list, pools){
