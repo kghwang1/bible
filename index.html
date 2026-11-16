@@ -458,6 +458,10 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
   transition:all .2s;text-align:center;
 }
 .appendix-open-btn:hover{transform:translateY(-2px)}
+.appendix-link{cursor:pointer;transition:all .15s}
+.appendix-link:hover,.appendix-link:active{background:#faf3e0;border-color:#c9a84c}
+.appendix-link .appendix-section-title{display:flex;align-items:center;color:#7a4a10}
+.appendix-arr{margin-left:auto;font-size:1.3rem;color:#c9a84c;line-height:1}
 
 /* 성경 지도 목록 */
 #s-map-list{background:#1a0e05;overflow-y:auto}
@@ -2009,30 +2013,27 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     </div>
 
     <!-- 성경 지도 -->
-    <div class="appendix-section">
-      <div class="appendix-section-title">🗺 성경 지도</div>
+    <div class="appendix-section appendix-link" onclick="openAppendixPage('map')">
+      <div class="appendix-section-title">🗺 성경 지도 <span class="appendix-arr">›</span></div>
       <div class="appendix-section-desc">대한성서공회 제공 — 구약 26장 · 신약 9장</div>
-      <button class="appendix-open-btn" onclick="openAppendixPage('map')">
-        🗺 성경 지도 목록 열기
-      </button>
     </div>
 
     <!-- 성경 연대기 -->
-    <div class="appendix-section">
-      <div class="appendix-section-title">📅 성경 연대기</div>
+    <div class="appendix-section appendix-link" onclick="openAppendixPage('chronology')">
+      <div class="appendix-section-title">📅 성경 연대기 <span class="appendix-arr">›</span></div>
       <div class="appendix-section-desc">성경과 세계 역사의 시대별 비교</div>
-      <button class="appendix-open-btn" onclick="openAppendixPage('chronology')">
-        📖 성경 연대기 · 세계 비교표 열기
-      </button>
     </div>
 
     <!-- 왕과 선지자 -->
-    <div class="appendix-section">
-      <div class="appendix-section-title">👑 연대별 왕과 선지자</div>
+    <div class="appendix-section appendix-link" onclick="openAppendixPage('kings')">
+      <div class="appendix-section-title">👑 연대별 왕과 선지자 <span class="appendix-arr">›</span></div>
       <div class="appendix-section-desc">구약 왕국 시대의 왕과 선지자 타임라인</div>
-      <button class="appendix-open-btn" onclick="openAppendixPage('kings')">
-        📖 구약 왕·선지자 연대 지도 열기
-      </button>
+    </div>
+
+    <!-- 구약 왕과 선지자 (연대 비교표) -->
+    <div class="appendix-section appendix-link" onclick="openAppendixPage('kingsTable')">
+      <div class="appendix-section-title">👑 구약 왕과 선지자 <span class="appendix-arr">›</span></div>
+      <div class="appendix-section-desc">년도 · 이스라엘 역사 · 왕 · 선지자 · 세계사를 한 표로 비교</div>
     </div>
   </div>
 </div>
@@ -3284,6 +3285,9 @@ function openAppendixPage(type){
   } else if(type === 'kings'){
     title.textContent = '구약 왕 · 선지자 연대';
     frame.src = '3_구약왕선지자.html';
+  } else if(type === 'kingsTable'){
+    title.textContent = '구약 왕과 선지자';
+    frame.src = '4_구약왕선지자표.html';
   }
   showScreen('s-appendix-content');
 }
