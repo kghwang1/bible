@@ -1760,11 +1760,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;back
     <!-- 버전 안내 -->
     <p style="font-size:.74rem;color:#a08840;margin:-4px 0 0;letter-spacing:.02em">성경버전은 ⚙ 설정에서 바꿀 수 있습니다</p>
 
-    <!-- 행2: 성경책 / TTS / 부록 -->
-    <div style="display:flex;gap:8px;width:88%;margin-top:24px">
-      <button class="start-btn" style="flex:1;padding:9px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="openBibleDirect()">성경책</button>
-      <button class="start-btn" style="flex:1;padding:9px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="openBareRead()">🔊 TTS</button>
-      <button type="button" class="start-btn" style="flex:1;padding:9px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" id="selBtnApp" onclick="showScreen('s-appendix')">📚 부록</button>
+    <!-- 행2: 성경책 / TTS / 부록 / 매뉴얼 -->
+    <div style="display:flex;gap:6px;width:92%;margin-top:24px">
+      <button class="start-btn" style="flex:1;padding:9px 4px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="openBibleDirect()">성경책</button>
+      <button class="start-btn" style="flex:1;padding:9px 4px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="openBareRead()">🔊 TTS</button>
+      <button type="button" class="start-btn" style="flex:1;padding:9px 4px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" id="selBtnApp" onclick="showScreen('s-appendix')">📚 부록</button>
+      <button type="button" class="start-btn" style="flex:1;padding:9px 4px;white-space:nowrap;background:linear-gradient(135deg,#8a6a30,#5a4418,#8a6a30)" onclick="location.href='manual.html'">📘 매뉴얼</button>
     </div>
 
     <!-- 하단 교회 -->
